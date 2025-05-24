@@ -1,0 +1,12 @@
+.article-inner {
+    padding: 2em;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+#logo {
+    transition: all 0.3s ease;
+}
+
+#logo:hover {
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
