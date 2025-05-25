@@ -1,8 +1,6 @@
 .article-inner {
-    padding: 2em;
-    margin-left: -1em;
-    margin-right: -1em;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    padding: 2em;
 }
 
 #logo {
@@ -11,12 +9,4 @@
 
 #logo:hover {
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-#wrap {
-    background: rgba(0, 0, 0, 0);
-}
-
-body, #footer {
-    background: rgb(255, 253, 252);
 }
