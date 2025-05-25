@@ -1,6 +1,13 @@
 .article-inner {
+    padding: 1.5em;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-    padding: 2em;
+}
+
+@media (max-width: 768px) {
+    .article-inner {
+        padding: 0em;
+        box-shadow: none;
+    }
 }
 
 #logo {
@@ -9,4 +16,12 @@
 
 #logo:hover {
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#wrap {
+    background: rgba(0, 0, 0, 0);
+}
+
+body, #footer {
+    background: rgb(255, 253, 252);
 }
