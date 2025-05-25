@@ -1,4 +1,4 @@
-.article-inner {
+.article-inner, #about-inner {
     padding: 1.5em;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
     border: solid #CCC;
