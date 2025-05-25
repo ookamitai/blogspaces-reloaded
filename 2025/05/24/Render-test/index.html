@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Render test | ookamitai::blogspaces</title>
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/ChineseMono-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-italic-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-bold.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" content="This is only a rendering test">
+  
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox-1.3.4.css">
+  
+  
+    <link rel="stylesheet" href="/katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="/katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="/katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="/" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="/" id="subtitle">Only humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main"><article id="post-Render-test" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/05/24/Render-test/" class="article-date">
+  <time class="dt-published" datetime="2025-05-24T10:43:16.000Z" itemprop="datePublished">2025-05-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Render test
+    </h1>
+  
+
+      </header>
+    
+    
+<div id="article-toc">
+    <h2 class="widget-title">Table Of Contents</h2>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-stablediffusion%20%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%9E%B6%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">1. StableDiffusion 的原理和架构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 模型概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 核心组件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12.1-vae%20(variational%20autoencoder)"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.2.1 VAE (Variational Autoencoder)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12.2-unet"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2.2 UNet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12.3-clip%20text%20encoder"><span class="toc-number">1.2.3.</span> <span class="toc-text">1.2.3 CLIP Text Encoder</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 注意力机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13.1-self-attention"><span class="toc-number">1.3.1.</span> <span class="toc-text">1.3.1 Self-Attention</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13.2-cross-attention"><span class="toc-number">1.3.2.</span> <span class="toc-text">1.3.2 Cross-Attention</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">1.4.</span> <span class="toc-text">1.4 工作流程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%90%84%E7%A7%8D%E5%8F%82%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">2. 各种参数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E6%A8%A1%E5%9E%8B%E6%A3%80%E6%9F%A5%E7%82%B9%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3Echeckpoint)"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 模型检查点（Checkpoint)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E5%8F%82%E6%95%B0"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 生成图片参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22.1-%E6%8F%90%E7%A4%BA%E8%AF%8D%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3Eprompt%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1 提示词（Prompt）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.2-%E9%87%87%E6%A0%B7%E6%AD%A5%E6%95%B0%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3Einference%20steps%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.2 采样步数（Inference Steps）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.3-%E9%9A%8F%E6%9C%BA%E7%A7%8D%E5%AD%90%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3Eseed)"><span class="toc-number">2.2.3.</span> <span class="toc-text">2.2.3 随机种子（Seed)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.4-%E9%87%87%E6%A0%B7%E5%99%A8%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3Esampler%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-number">2.2.4.</span> <span class="toc-text">2.2.4 采样器（Sampler）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.5-%E8%B0%83%E5%BA%A6%E5%99%A8%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3Escheduler%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-number">2.2.5.</span> <span class="toc-text">2.2.5 调度器（Scheduler）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.6-cfg"><span class="toc-number">2.2.6.</span> <span class="toc-text">2.2.6 CFG</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.7-%E6%89%B9%E9%87%8F%E5%A4%A7%E5%B0%8F%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3Ebatch%20size%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-number">2.2.7.</span> <span class="toc-text">2.2.7 批量大小（Batch Size）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.8-%E5%88%86%E8%BE%A8%E7%8E%87"><span class="toc-number">2.2.8.</span> <span class="toc-text">2.2.8 分辨率</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.9-hires%20fix"><span class="toc-number">2.2.9.</span> <span class="toc-text">2.2.9 HiRes Fix</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.10-refiner"><span class="toc-number">2.2.10.</span> <span class="toc-text">2.2.10 Refiner</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.11-lora"><span class="toc-number">2.2.11.</span> <span class="toc-text">2.2.11 LoRA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22.12-%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%E3%80%8C%3C/h-inner%3E%3C/h-char%3E%3C/span%3Ebreak%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%E3%80%8D%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-number">2.2.12.</span> <span class="toc-text">2.2.12 「BREAK」</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E5%AE%9E%E8%B7%B5"><span class="toc-number">3.</span> <span class="toc-text">3. 实践</span></a></li></ol>
+</div>
+
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>打算在这里记录一下在这段时间里我对 SD 的各种了解<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也可以方便与别人知识共享<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>目录<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<hr>
+<h1 id="1-stablediffusion 的原理和架构">1. StableDiffusion 的原理和架构</h1>
+<h2 id="11-模型概述">1.1 模型概述</h2>
+<p>StableDiffusion 是一种<strong>基于潜在扩散模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Latent Diffusion Model, LDM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的文本生成图像<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Text-to-Image<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>深度生成模型</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它由 CompVis 团队于 2022 年发布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>其主要特点是通过在低维潜在空间中进行扩散过程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>大幅度降低了生成图像所需的算力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时保持了图像质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>传统的扩散模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 DDPM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>直接在高分辨率的图像空间中进行<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span><strong>添加噪声—去噪</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的迭代过程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>计算量极大<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>难以部署</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>Stable Diffusion 创新性地将生成过程转移到<strong>图像的潜在空间<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>由 VAE 编码器学习而来<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>中</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这个潜在空间<strong>信息压缩度高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>维度低<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>计算效率高</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这个做法就是 <strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>Latent Diffusion<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>版本号</strong></th>
+<th><strong>发布时间</strong></th>
+<th><strong>参数</strong></th>
+<th><strong>发布方</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>v1.1 / v1.2 / v1.3 / v1.4</strong></td>
+<td>2022/08</td>
+<td>-</td>
+<td>CompVis</td>
+</tr>
+<tr>
+<td><strong>v1.5</strong></td>
+<td>2022/10</td>
+<td>98.3m</td>
+<td>RunwayML</td>
+</tr>
+<tr>
+<td><strong>v2.0</strong></td>
+<td>2022/11</td>
+<td>-</td>
+<td>Stability AI</td>
+</tr>
+<tr>
+<td><strong>v2.1</strong></td>
+<td>2022/12</td>
+<td>-</td>
+<td>Stability AI</td>
+</tr>
+<tr>
+<td><strong>SDXL 1.0</strong></td>
+<td>2023/07</td>
+<td>3.5b</td>
+<td>Stability AI</td>
+</tr>
+<tr>
+<td><strong>SDXL Turbo</strong></td>
+<td>2023/11</td>
+<td>-</td>
+<td>Stability AI</td>
+</tr>
+</tbody>
+</table>
+<h2 id="12-核心组件">1.2 核心组件</h2>
+<h3 id="12.1-vae (variational autoencoder)">1.2.1 VAE (Variational Autoencoder)</h3>
+<p>在 VAE 中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们希望模型能够学习如何从<strong>一些隐藏的特征<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>称为<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>潜在变量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>中生成与原始数据相似的样本</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>直接让模型学习如何从压缩的信息中重建图像可能会导致模型记住每一张图像的细节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是学习到通用的特征<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><strong>换句话说<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们希望模型能够理解数据的本质<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并能够从中生成新的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>类似的数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p>VAE 旨在学习一个生成模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使得<strong>给定潜在变量 <span class="markdown-them-math-inline">$z$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以生成与输入数据 <span class="markdown-them-math-inline">$x$</span> 相似的样本</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>其结构包括<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>编码器<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Encoder<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>将输入数据 <span class="markdown-them-math-inline">$x$</span> 映射到潜在空间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>输出潜在变量的分布参数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>均值 <span class="markdown-them-math-inline">$\mu$</span> 和标准差 <span class="markdown-them-math-inline">$\sigma$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>解码器<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Decoder<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>从潜在变量 <span class="markdown-them-math-inline">$z$</span> 中生成重构数据 <span class="markdown-them-math-inline">$\hat{x}$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>VAE 的训练目标是最大化输入数据的<strong>对数似然</strong> <span class="markdown-them-math-inline">$\log p(x)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这表示<strong>模型生成数据的能力</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>直接计算这个值在实际中非常困难<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>因为它涉及到对所有可能的潜在变量进行积分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这在高维空间中是不可行的</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>采用<strong>变分推断</strong>的方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>引入变分后验分布 <span class="markdown-them-math-inline">$q(z|x)$</span> 来近似真实的后验分布 <span class="markdown-them-math-inline">$p(z|x)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>为了使得模型可以<strong>通过梯度下降</strong>进行优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>VAE 引入了<strong>重参数化</strong>技巧<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>具体地<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>将潜在变量 <span class="markdown-them-math-inline">$z$</span> 表示为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$z = \mu + \sigma \odot \epsilon,\quad \epsilon \sim \mathcal{N}(0, I)
+$$</div><p>其中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$\odot$</span> 表示按元素相乘<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>从<strong>标准正态分布</strong>中独立采样噪声向量 <span class="markdown-them-math-inline">$\epsilon \sim \mathcal{N}(0,\,I)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并且 <span class="markdown-them-math-inline">$ε$</span> 完全不依赖于网络参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>是整个重参数化过程的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>随机源<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>这种方式将随机性从模型参数中分离出来<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使得损失函数对参数 <span class="markdown-them-math-inline">$\mu$</span> 和 <span class="markdown-them-math-inline">$\sigma$</span> 可导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而可以使用<strong>反向传播</strong>进行训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>具体而言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>VAE 的损失函数由两部分组成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>重构损失</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>衡量解码器生成的样本 <span class="markdown-them-math-inline">$\hat{x}$</span> 与原始输入 <span class="markdown-them-math-inline">$x$</span> 的相似程度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>常用均方误差<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>MSE<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>KL 散度</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>衡量变分后验分布 <span class="markdown-them-math-inline">$q(z|x)$</span> 与先验分布 <span class="markdown-them-math-inline">$p(z)$</span> 之间的差异<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>鼓励潜在空间的分布接近标准正态分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>通过<strong>最小化这两个损失项的加权和</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>VAE 能够学习到有效的潜在表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时保持生成数据的多样性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在实际训练过程中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>涉及到 VAE 的流程有<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>
+<p><strong>编码阶段</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>将输入图像 <span class="markdown-them-math-inline">$x$</span> 通过编码器映射到潜在空间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>得到潜在表示 <span class="markdown-them-math-inline">$z$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+<li>
+<p><em>扩散过程</em><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在潜在空间中对 <span class="markdown-them-math-inline">$z$</span> 进行扩散建模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>逐步添加噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>训练模型学习去噪过程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>※ <em>这段过程不是由 VAE 实现的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是扩散模型负责的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但是为了完整性在这里保留这一步<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></em></p>
+</li>
+<li>
+<p><strong>解码阶段</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>将去噪后的潜在表示 <span class="markdown-them-math-inline">$z{\prime}$</span> 通过解码器还原为图像 <span class="markdown-them-math-inline">$\hat{x}$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+</ul>
+<h3 id="12.2-unet">1.2.2 UNet</h3>
+<p>UNet 是一种<strong>卷积神经网络结构<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>CNN<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>其结构特点是一个对称的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>U<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>形状<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>包括两部分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>编码器<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Encoder<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>逐步提取图像的高级特征<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>downsampling<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li><strong>解码器<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Decoder<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>逐步还原图像空间尺寸<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>upsampling<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+</ul>
+<p>中间通过**跳跃连接<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>skip connection<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>**将低层信息传递到上层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>保留细节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在扩散模型中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们的目标是<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<blockquote>
+<p>给定一张被加了噪声的 latent 图像<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 <span class="markdown-them-math-inline">$z_t$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>预测它的原始状态或噪声量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</blockquote>
+<p>这时候<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>UNet 的任务是<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$ϵθ(z_t,t,c)≈ϵ
+$$</div><p>其中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="markdown-them-math-inline">$z_t$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><span class="markdown-them-math-inline">$t$</span> 时刻加噪后的 latent 图像</li>
+<li><span class="markdown-them-math-inline">$t$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>时间步<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用来告诉网络当前处于扩散的第几步</li>
+<li><span class="markdown-them-math-inline">$c$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>条件<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如文本提示 embedding<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li><span class="markdown-them-math-inline">$ϵ$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>我们想还原的噪声</li>
+</ul>
+<p>所以 <strong>UNet 是扩散过程中的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>预测器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它学会如何从带噪数据一步一步回推原始图像<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>UNet 每一层都是由<strong>卷积操作</strong>构成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以理解为一个带权重的滑动窗口<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它从图像中提取局部模式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$y(i,j)=∑_{u,v}x(i+u,j+v)⋅w(u,v) 
+$$</div><p>这就像人看图时先看<strong>细节</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><strong>边缘<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>纹理</strong>等<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<ul>
+<li>**下采样<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Downsampling<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**通过卷积+池化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使图像<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>更小<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>更深<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>提取语义<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>**上采样<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Upsampling<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**通过反卷积或插值操作<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使图像<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>更大<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>更浅<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还原细节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>在实际生成图像中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>UNet 不只是根据 <span class="markdown-them-math-inline">$z_t$</span> 去还原图像<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它还要根据提示词生成指定内容<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>这就是<strong>条件扩散模型</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>UNet 会接收一个嵌入向量 <span class="markdown-them-math-inline">$c$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>表示输入的 prompt<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>&quot;a studio photo of a cat&quot;</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并将其融入网络<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>通过 cross-attention 等方式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现<strong>文本指导生成</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在实际训练过程中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以分为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>编码</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><span class="markdown-them-math-inline">$x \xrightarrow{\text{VAE Encoder}} z_0$</span></li>
+<li><strong>正向扩散</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><span class="markdown-them-math-inline">$z_0 \rightarrow z_1 \rightarrow \cdots \rightarrow z_T$</span><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>逐步加入噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li><strong>反向去噪</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><span class="markdown-them-math-inline">$z_T \xrightarrow{\text{UNet}} z_{T-1} \rightarrow \cdots \rightarrow z_0$</span></li>
+<li><strong>解码</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><span class="markdown-them-math-inline">$z_0 \xrightarrow{\text{VAE Decoder}} \hat{x}$</span></li>
+</ul>
+<p>在生成图片时候<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>直接从<strong>反向去噪</strong>步骤开始<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="12.3-clip text encoder">1.2.3 CLIP Text Encoder</h3>
+<p>CLIP<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Contrastive Language–Image Pretraining<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>Text Encoder 是 Stable Diffusion 中的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span><strong>语言理解器</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它的任务是<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<blockquote>
+<p>把 prompt 变成一串能被图像模型理解的数字<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>向量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用于指导图像生成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</blockquote>
+<p>他的工作结构如下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>分词</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>将文本切分为子词<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>token<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li><strong>嵌入<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Embedding<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>每个词变成一个长度为 512 的向量</li>
+<li><strong>位置编码</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>加入词语顺序信息</li>
+<li><strong>Transformer 层</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>理解词与词之间的关系</li>
+<li><strong>输出 [EOS] 位置的向量</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>得到整句话的语义表达</li>
+</ul>
+<p>例如<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我的 prompt 输入是<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>&quot;<span class="hljs-selector-tag">A</span> cat sitting on <span class="hljs-selector-tag">a</span> wooden chair&quot;
+</code></pre></div>
+<p>把文本切分成词<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>或子词<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>[<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;cat&quot;</span>, <span class="hljs-string">&quot;sitting&quot;</span>, <span class="hljs-string">&quot;on&quot;</span>, <span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;wooden&quot;</span>, <span class="hljs-string">&quot;chair&quot;</span>]
+</code></pre></div>
+<p>每个词都会被映射成一个<strong>固定长度的向量</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>例如 768 维<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\text{cat} \rarr \vec e_{\text{cat}} \in \mathbb R^{768}
+$$</div><p>这些词向量就是<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span><strong>文字的初始数学表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>下一步<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>CLIP 会把<strong>每个词的位置也编码成一个向量</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>然后加到词向量上<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\vec x_i = \vec e_i + \vec p_i
+$$</div><p>这样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>cat<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>出现在第 114 个词和第 514 个词就能被区分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>这些词向量进入 CLIP 的 Transformer 模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><br>
+在这里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每个词会<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>关注<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>整个句子的其他词<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过自注意力机制计算它们的相关性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>数学上<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每个词计算三个向量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="markdown-them-math-inline">$Q$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>Query<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>查询<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li><span class="markdown-them-math-inline">$K$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>Key<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>键<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li><span class="markdown-them-math-inline">$V$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>Value<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+</ul>
+<p>对所有词两两计算注意力权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$W_{ij} = \text{softmax}\left(\frac {Q_i \cdot K_j} {\sqrt d} \right)
+$$</div><p>再用这些权重去加权所有 Value 向量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\vec z_i = \sum_{j}{W_{ij} \cdot V_j}
+$$</div><p>这个过程会让模型理解<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span><strong>这个词应该关注哪些词</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>经过若干层这种操作后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们得到每个词新的**<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>上下文理解<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>向量**<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>Transformer 最后输出的是一个序列的向量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>比如每个词都有一个输出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>CLIP 取最后的特殊符号 <code>[EOS]</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>end-of-sentence<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>位置的向量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>作为整句话的表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\vec t_{prompt} = TF_{output} \text{[EOS]}
+$$</div><p>这个向量现在就是一个<strong>图像语义控制器</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它总结了这句话的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>意思<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>这个向量 <span class="markdown-them-math-inline">$\vec t_{prompt}$</span> 会作为一个<strong>条件</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>输入给 UNet<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>在采样的每一步<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>例如 DDIM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>DPM 等<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>UNet 需要决定怎么还原一张清晰图</li>
+<li>CLIP 的语义向量会被注入到 UNet 的中间层<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>通过 <strong>cross-attention</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+</ul>
+<p>这样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>UNet 才知道你是想要一只猫<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是<strong>大肌肌兽人的大包</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="13-注意力机制">1.3 注意力机制</h2>
+<h3 id="13.1-self-attention">1.3.1 Self-Attention</h3>
+<p>Self‑Attention 通过把图像<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>或特征图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>上的每一个空间位置看作一个<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>查询<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Query<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>一个<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>键<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Key<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>和一个<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Value<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用 Q 与 K 做点积<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>经过缩放和 Softmax<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>得到一个表示<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span> <span class="markdown-them-math-inline">$i$</span> 位置应该从 <span class="markdown-them-math-inline">$j$</span>  位置借多少信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的权重矩阵 A<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>用 A 对 V 做加权求和<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>得到融合了全局信息的新特征<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而让网络能<strong>够全局融合上下文信息</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>想像特征图上有 N 个人<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>空间位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每个人拿着自己准备的问题<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Query<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>和回答<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Value<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>为了回答自己的问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每个人会先把问题<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Q<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>与所有人的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>钥匙<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>K<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>做匹配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>打听哪些人最懂他的问法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>匹配程度决定了每个人从谁那里<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>借<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>多少回答<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Value<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>最后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每个人把<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>借<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>来的所有回答按权重加起来<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>作为自己的新答案<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>从数学的角度拆解如下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>输入</li>
+</ul>
+<div class="markdown-them-math-block">$$X \in \mathbb R ^{N \times d}, \quad N = H \times W
+$$</div><ul>
+<li>线性映射</li>
+</ul>
+<div class="markdown-them-math-block">$$Q=XW^Q, K=XW^K, V=XW^V, \quad W^Q,W^K,W^V\in\mathbb R^{d\times d}
+$$</div><ul>
+<li>点积和缩放</li>
+</ul>
+<div class="markdown-them-math-block">$$S = QK^\top, \quad \tilde{S} = \frac {S}{\sqrt{d}}
+$$</div><ul>
+<li>Softmax 得注意力矩阵</li>
+</ul>
+<div class="markdown-them-math-block">$$A_{ij} = \frac{\text{exp}(\tilde S_{ij})}{\sum^{N}_{k=1}\text{exp}(\tilde S_{ik})}, \quad \sum_{j}A_{ij} =1
+$$</div><ul>
+<li>加权求和</li>
+</ul>
+<div class="markdown-them-math-block">$$\text{Attention}(X) = AV
+$$</div><p>插入 Self‑Attention 可以补足纯卷积只能<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>看见小邻域<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的不足<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>使特征既能保留局部细节<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>卷积擅长<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>又能建立跨远距离的全局语义关系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>助力在各分辨率上生成连贯同时具有良好细节的图像<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="13.2-cross-attention">1.3.2 Cross-Attention</h3>
+<p>Cross‑Attention 与 Self‑Attention 的公式几乎相同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但它从 <strong>两个不同的序列</strong> 中取信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>Query</strong> <span class="markdown-them-math-inline">$Q$</span> 通常来自 UNet Decoder</li>
+<li><strong>Key/Value</strong> <span class="markdown-them-math-inline">$(K,V)$</span> 来自 Text Encoder</li>
+</ul>
+<p>这样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型在生成每个输出时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>都能有针对性地<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>询问<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span> Encoder 哪些位置最相关<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并据此融合全局信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>设源序列特征矩阵为 <span class="markdown-them-math-inline">$X_{enc} \in \mathbb R^{N_1 \times d}$</span> <span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>目标序列特征矩阵为 <span class="markdown-them-math-inline">$X_{dec} \in \mathbb R^{N_2 \times d}$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<ul>
+<li>线性映射</li>
+</ul>
+<div class="markdown-them-math-block">$$Q=X_{dec}W^Q, K=X_{enc}W^K, V=X_{enc}W^V, \quad W^Q,W^K,W^V\in\mathbb R^{d\times d}
+$$</div><ul>
+<li>点积和缩放</li>
+</ul>
+<div class="markdown-them-math-block">$$S = QK^\top, \quad \tilde{S} = \frac {S}{\sqrt{d}}
+$$</div><ul>
+<li>
+<p>Softmax 得注意力矩阵</p>
+<div class="markdown-them-math-block">$$A_{ij} = \frac{\text{exp}(\tilde S_{ij})}{\sum^{N}_{k=1}\text{exp}(\tilde S_{ik})}, \quad \sum_{j}A_{ij} =1
+$$</div></li>
+<li>
+<p>加权求和</p>
+</li>
+</ul>
+<div class="markdown-them-math-block">$$\text{CrossAttention}(Q,K&lt;V) = AV
+$$</div><h2 id="14-工作流程">1.4 工作流程</h2>
+<p>通过上面的阅读<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们可以总结<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>
+<p>将输入图像通过 VAE 编码为<strong>潜在表示</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>latent representation<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></p>
+<p>※ <em>如果是 txt2img<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们直接从纯噪声开始<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不需要原图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></em></p>
+</li>
+<li>
+<p>在潜在空间中<strong>添加噪声</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>形成初始的噪声图</p>
+</li>
+<li>
+<p>使用 UNet 预测噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并逐步<strong>去噪</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>生成<strong>清晰的潜在表示</strong></p>
+</li>
+<li>
+<p>将去噪后的潜在表示通过 VAE 解码为<strong>最终图像</strong></p>
+</li>
+</ul>
+<hr>
+<h1 id="2-各种参数">2. 各种参数</h1>
+<p>因为最常用的是 txt2img<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这里主要介绍这里会涉及到的一些<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="21-模型检查点&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;checkpoint)">2.1 模型检查点<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Checkpoint)</h2>
+<p>选择不同版本的 StableDiffusion 权重或者不同的训练的模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>会直接影响到生成图片的风格与能力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="22-生成图片参数">2.2 生成图片参数</h2>
+<h3 id="22.1-提示词&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;prompt&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">2.2.1 提示词<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Prompt<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h3>
+<p>Prompt 由正向提示<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>positive prompt<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>和负向提示<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>negative prompt<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>组成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>支持通过括号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>方括号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>冒号等符号来对关键词进行加权或减重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>Prompt 中的每个词默认权重为 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使用 <code>(…)</code> 可以增加该词缀的注意力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使用 <code>[…]</code> 可以减弱<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>在括号内通过冒号指定数值可进行更精确的加权<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>比如 <code>(cat:1.5)</code> 表示将 <span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>cat<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span> 的权重设为 1.5<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>括号可以嵌套<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>多个括号效果会相乘<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><strong>方括号仅支持默认减弱系数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>0.9<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不支持数值指定<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p>若要在 Prompt 中出现<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>(<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>或<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>)<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>等特殊字符<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>需要在前面加反斜杠转义<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>特别的</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>reForge 继承了上述 A1111 语法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并额外集成了 LoRA 控制扩展<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>使用 <code>&lt;lora:name:weight&gt;</code> 可直接在 Prompt 中加载 LoRA 模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并可通过逗号和<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>@<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>符号在不同步骤或不同分辨率<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>低分辨率/高分辨率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>下动态调整 LoRA 权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>例如 <code>&lt;lora:network:0@0.4,0.7@0.8:hr=0.7@0,0@0.5&gt;</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在 Prompt 权重计算时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>系统会先对每个词缀提取分词<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再按综合权重对各 token 进行注意力分配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>最终影响图像生成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><strong>所有权重调整都在推理阶段生效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>且多词 Prompt 会按逗号顺序决定初步权重排序<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>逗号前的词缀优先级更高</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.2-采样步数&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;inference steps&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">2.2.2 采样步数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Inference Steps<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h3>
+<p>StableDiffusion 从一张完全随机的噪声图像开始<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每一步通过模型去噪并朝向 prompt 描述的方向迭代一次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>整个过程共执行 N 次去噪迭代<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这个 N 即为 <strong>采样步数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Inference Steps<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p>步数越多<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型对噪声的迭代越充分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>能还原更多细节及纹理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>太少则可能看起来模糊或缺乏清晰边缘<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>图像质量随步数增长呈现<strong>对数递增</strong>趋势<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>前 10–20 步质量提升最为显著<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>此后增益递减<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>每一步都需执行一次前向推理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>采样步数与总体推理时间<strong>线性正相关</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>双倍步数近乎双倍耗时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>但对于质量提升却不是双倍<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通常存在<strong>边际递减<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<h3 id="22.3-随机种子&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;seed)">2.2.3 随机种子<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Seed)</h3>
+<p>设定生成过程的随机初始状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>相同的 seed 与相同的参数组合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可多次生成完全一致的图像<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>便于对比实验与批量生成管理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.4-采样器&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;sampler&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">2.2.4 采样器<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Sampler<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h3>
+<p>采样器本质上是对反向扩散方程进行数值积分的<strong>不同算法实现</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它们在<strong>收敛速度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>随机性与图像质量</strong>上各有侧重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>因为个人使用习惯<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>重点聚焦于 <strong>Euler a</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Euler ancestral<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>和 <strong>DPM++ 2Sa</strong> 两种方法</p>
+<ul>
+<li><strong>Euler a</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Euler ancestral<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>是在经典 Euler 方法基础上<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>额外引入随机噪声以增加多样性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>它适合在较少步数下保持结构连贯<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时呈现丰富变化</li>
+<li><strong>DPM++ 2Sa</strong> 属于 DPM-Solver 的第二阶单步祖先采样器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过二阶导数近似与随机重采样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在维持高质量细节的同时显著提升了在高 CFG scale 下的表现</li>
+</ul>
+<p>采样器可分为三大类<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>确定性方法</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 Euler<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>DDIM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>不引入额外随机性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同一 seed 可复现相同结果</li>
+<li><strong>祖先采样</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>带 <span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>A<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span> 的方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如 Euler a<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>DPM++ 2Sa<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>每步注入随机噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>提高生成多样性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>结果因噪声路径不同而异<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>高阶求解器</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 LMS<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>DPM++ 2M<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>DPM++ 3M<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>利用多步或高阶误差校正<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>提高收敛速度和细节表现</li>
+</ul>
+<p><strong>先从 Euler a 看起<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong></p>
+<p>Euler a 继承自经典 Euler Solver<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但在每一步<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>过量去噪</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>按照噪声调度<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>noise schedule<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>计算并去除比 deterministic Euler 更多的噪声</li>
+<li><strong>随机重采样</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>为补偿过量去噪<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>重新加入符合当前噪声水平的随机噪声</li>
+<li><strong>迭代进行</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在整个噪声调度周期内重复以上操作<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>直至降噪完成</li>
+</ul>
+<p>特点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>输出多样性</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>由于每步注入随机噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同一 seed 重复生成会得到不同结果</li>
+<li><strong>低步数连贯性</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在 20–30 步甚至更低步数时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>Euler a 往往比纯 Euler 或 DDIM 保持更好结构和细节</li>
+<li><strong>成本</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>与 Euler 类似<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每步计算量相同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但因需生成随机噪声略微增加随机数开销<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>整体速度与 Euler 相近</li>
+</ul>
+<p>在精度要求适中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>迭代速度优先时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使用 20–30 步 Euler a 即可获得多样且连贯的初步效果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>再来看 DPM++ 2Sa<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong></p>
+<p>DPM++ 2Sa 属于 <strong>Diffusion Probabilistic Model (DPM) Solvers</strong> 的二阶单步祖先采样器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>其中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ol>
+<li><strong>二阶近似</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>基于 DPM-Solver 论文的二阶数值积分公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>对扩散微分方程进行更准确的离散化处理</li>
+<li><strong>祖先采样</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在单步更新中加入随机噪声成分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使输出具有多样性</li>
+<li><strong>一次更新完成</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>不同于多步方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>DPM++ 2Sa 在每个迭代步都融合多阶信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现更快收敛</li>
+</ol>
+<p>特点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>高保真度</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>二阶算法在同等步数下能够提供比一阶或无祖先采样的 DPM-Solver 更清晰细节</li>
+<li><strong>步数效率</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>通常在 20–30 步内收敛到极好的细节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>较传统 DPM2M 或 Euler a 在相同步数下质量更优</li>
+<li><strong>算力需求</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>每步计算相对比一阶方法稍高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但因步数更少<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>总体推理时间可与其他高阶方法持平</li>
+</ul>
+<p>如果对图像细节和清晰度要求极高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>推荐使用 DPM++ 2Sa 搭配 25–35 步<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.5-调度器&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;scheduler&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">2.2.5 调度器<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Scheduler<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h3>
+<p>调度器负责决定在每一步采样过程中的<strong>噪声水平<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><span class="markdown-them-math-inline">$σ$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>或时间步长<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><span class="markdown-them-math-inline">$t$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而影响去噪迭代的<strong>轨迹与效果</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它是连接模型输出与扩散过程的核心组件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不同的调度策略会显著改变<strong>图像的收敛速度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>细节表现与多样性</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>每个 Scheduler 根据<strong>预先定义的噪声计划或时间步表</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>指导模型在去噪过程中的迭代路径<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>调度器通过映射 <span class="markdown-them-math-inline">$\text{timestep} \rarr \sigma$</span>  来控制每一步的噪声强度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>让模型从纯噪声逐步恢复到清晰图像<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在这里重点介绍两种常见调度策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><strong>Karras<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Align Your Steps<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p><strong>先是 Karras<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong></p>
+<p>Karras 源自 Karras et al. 在 2022 年提出的<strong>指数或余弦噪声计划</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>旨在为不同噪声阶段分配更合理的采样密度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而提升高质量样本的生成能力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>与线性或简单余弦不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>Karras 计划在初期与末期阶段使用更密集的采样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使图像结构与细节均得到更充分的迭代<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>部分模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 SDXL<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>在训练时即采用 Karras sigmas<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>故推荐配合使用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>而其他模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 SD1.5<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>通常依赖默认调度器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>大的 <span class="markdown-them-math-inline">$\sigma$</span> 值表示更激进的噪声添加/移除<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>根据上面两张图可见<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>一般策略是从较大的 <span class="markdown-them-math-inline">$\sigma$</span> 值开始<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并且随着 <span class="markdown-them-math-inline">$\text{timestep}$</span> 的增加减小 <span class="markdown-them-math-inline">$\sigma$</span> 来完善图片细节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>参数 <span class="markdown-them-math-inline">$\rho$</span> 它控制噪声水平从最大值 <code>sigma_max</code> 到最小值 <code>sigma_min</code> 的过渡曲线形状<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而影响图像生成中的去噪过程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>接着是 Align Your Steps:</strong></p>
+<p>AYS 是 NVIDIA 团队提出的一种<strong>优化噪声步长对齐</strong>方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过解析性地推导出针对不同采样器和数据集的<strong>最优时间步表</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以在极少步数下仍能保持高质量输出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>AYS 分为 AYS11, AYS32<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>即为 11 步和 32 步优化的调度器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.6-cfg">2.2.6 CFG</h3>
+<p>Classifier‑Free Guidance<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>CFG<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>是一种<strong>无需额外分类器</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>通过同时利用<strong>条件与无条件扩散模型</strong>来增强生成质量的引导技术<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>其核心在于在每一步去噪中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>将模型在<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span><strong>带文本条件</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>与<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span><strong>不带条件</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>两种输出的线性插值作为最终值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而在<strong>保持创意多样性的同时大幅提高对文本提示的遵循度</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>常用范围约为 7–13<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但也有低至 1–5 或高至 20+ 的应用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<ul>
+<li>**条件模型 <span class="markdown-them-math-inline">$\epsilon_\theta(x_t,y)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**在去噪过程中同时输入噪声图像 <span class="markdown-them-math-inline">$x_t$</span> 和文本提示 <span class="markdown-them-math-inline">$y$</span> 得到针对提示的去噪预测</li>
+<li>**无条件模型 <span class="markdown-them-math-inline">$\epsilon_\theta(x_t)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**仅输入噪声图像 <span class="markdown-them-math-inline">$x_t$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>忽略提示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>在第 <span class="markdown-them-math-inline">$t$</span> 步<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>CFG 将两者按权重 <span class="markdown-them-math-inline">$w$</span><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>即 CFG Scale<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>融合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\tilde \epsilon(x_t,y)=(1+w)\epsilon_\theta(x_t,y)-w\epsilon_\theta(x_t)
+$$</div><p>其中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$w \ge 0$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$w$</span> 越大表示越忠实于 prompt<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>越小则保留更多无条件生成的随机性与多样性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.7-批量大小&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;batch size&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">2.2.7 批量大小<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Batch Size<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h3>
+<p>一次生成调用中并行生成的图像数量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>增加 batch size 可提高 GPU 利用率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但显著增加显存需求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>常见设置为 1–4 张<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.8-分辨率">2.2.8 分辨率</h3>
+<p>定义输出图像的宽度和高度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>常见为 512×512<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但也可根据硬件能力与场景需求调整<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如 768×768<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>1024×768 等<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在 SDXL 中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>小于 1024x1024 的分辨率大小会导致 <em>artifacts</em><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.9-hires fix">2.2.9 HiRes Fix</h3>
+<p>HiRes Fix 即在初始低分辨率生成基础上<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过一次或两次 img2img 迭代<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>将图像<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>无缝<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>放大到目标分辨率并细化细节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>先以原生<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 512×512<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>或自定义小于目标的分辨率生成图像<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再对该图以<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>上采样→img2img denoise<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>方式放大<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>最后可选地再迭代第二次以进一步增强清晰度与纹理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该方案避免了直接高分辨率生成带来的**<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>构图畸变<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>或<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>多头<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>问题**<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可在保证构图稳定的同时获得更高分辨率输出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<ul>
+<li><strong>低分辨率初步生成</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>先在模型原生分辨率<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>通常 512×512<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>或略低于目标的分辨率上完成基础合成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>保证构图正常</li>
+<li><strong>上采样<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Upscale<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>使用像素或潜空间上采样方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>将图像大小放大到目标分辨率<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 2×<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>4×等<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li><strong>img2img 精细化</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>对放大后的图像以一定的 <strong>denoising strength</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>去噪强度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>和步数执行 img2img<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再次去噪以补充细节</li>
+</ul>
+<p>HiRes Fix 本质是两次采样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>时间与显存消耗大约是常规 txt2img 的 1.8–3倍<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>可通过将 Hires steps 设为原始步数的 50% 左右来平衡速度和质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.10-refiner">2.2.10 Refiner</h3>
+<p>Refiner 是一种专门针对扩散模型后期低噪声阶段的<strong>图像微调去噪器</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它接收基础模型在中高噪声阶段输出的潜在表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>进一步去除剩余噪声并补充细节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<ul>
+<li><strong>基础生成</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>首先使用基础模型在 N₁ 步中将完全随机噪声映射为带有初步结构的潜在图像<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但其依旧拥有噪声</li>
+<li><strong>传递</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>将此潜在表示无缝移交给 Refiner 模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>Refiner 会在剩余 N₂ 步内继续迭代<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以去除更细微的噪声成分并增强纹理细节</li>
+</ul>
+<p>当同时加载基础与 Refiner 模型时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>Diffusers 会在前半程调用基础模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>后半程自动切换到 Refiner<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而在一次调用中完成两段去噪<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这种方式被称为 <a target="_blank" rel="noopener" href="https://research.nvidia.com/labs/dir/eDiff-I/"><em>ensemble of expert denoisers</em></a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.11-lora">2.2.11 LoRA</h3>
+<p>LoRA<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Low-Rank Adaptation<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>是一种<strong>参数高效的微调技术</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过在保持预训练模型权重不变的情况下<strong>注入低秩<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>low-rank<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>适应矩阵</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现对大规模模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如Stable Diffusion<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的快速<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>轻量级微调<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在 Stable Diffusion 中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>LoRA 将额外的可训练矩阵插入到模型的关键层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如注意力<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Attention<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>模块或卷积层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而只需训练这些新增矩阵<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而无需对原始模型权重进行更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>相比于传统的全量微调<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>LoRA 显著降低了可训练参数量和显存消耗<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使得在有限资源下<strong>也能高效地对特定风格<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>人物或场景进行定制化训练</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时生成的 LoRA 权重文件通常仅百兆字节级别<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>减小了存储和分享的代价<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>通过向预训练模型的某些层<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 Transformer 的注意力层或 Stable Diffusion 的 U-Net 中间层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>注入一对低秩矩阵<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>通常记作 <span class="markdown-them-math-inline">$A$</span> 和 <span class="markdown-them-math-inline">$B$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并保持原始权重矩阵 <span class="markdown-them-math-inline">$W$</span> 不变<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仅对这对新增矩阵进行优化训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>具体而言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如果原始模型某一层的权重矩阵为 <span class="markdown-them-math-inline">$W \in \mathbb{R}^{d \times k}$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>LoRA 会构造两个小规模矩阵 <span class="markdown-them-math-inline">$A \in \mathbb{R}^{d \times r}$</span> 和 <span class="markdown-them-math-inline">$B \in \mathbb{R}^{r \times k}$</span><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>其中 <span class="markdown-them-math-inline">$r \ll \min(d, k)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>则原模型在向前传播时实际使用的权重为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$W{\prime} = W + \Delta W = W + \frac \alpha r \cdot A B
+$$</div><p>其中 <span class="markdown-them-math-inline">$\alpha$</span> 是缩放因子<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用来控制 LoRA 更新的幅度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span><span class="markdown-them-math-inline">$AB$</span> 的矩阵秩为 <span class="markdown-them-math-inline">$r$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>显著低于对原始权重直接更新时的秩要求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>此时  <span class="markdown-them-math-inline">$\text{rank}(A B) = r$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此新增的可训练参数量为 <span class="markdown-them-math-inline">$d \times r + r \times k$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>远小于 <span class="markdown-them-math-inline">$d \times k$</span> 的规模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>LoRA 最常在 Cross-Attention 层插入低秩矩阵<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因为文本条件化通常发生在这些层中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过对这些层进行微调可有效改变生成图像的特定风格或主题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不必干预到所有卷积核<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>如果选取 LoRA 的秩 <span class="markdown-them-math-inline">$r$</span> 远小于 <span class="markdown-them-math-inline">$\min(d, k)$</span><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 <span class="markdown-them-math-inline">$r=4$</span> 或 <span class="markdown-them-math-inline">$r=8$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>则新增矩阵的参数量为 <span class="markdown-them-math-inline">$d \times r + r \times k$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仅为原始可训练参数量  <span class="markdown-them-math-inline">$\frac{r(d + k)}{d k}$</span> 倍<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>显著降低了可训练参数数量和训练时显存开销<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>此外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>LoRA 仅保存矩阵 <span class="markdown-them-math-inline">$A$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><span class="markdown-them-math-inline">$B$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这意味着在推理的时候需要指定 <span class="markdown-them-math-inline">$\alpha$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也就是<strong>模型的权重</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="markdown-them-math-inline">$\alpha$</span> 在训练中常被称为 <em>Network Alpha</em><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span> <span class="markdown-them-math-inline">$r$</span> 常被称为 <em>Network Rank</em><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="22.12-&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;「&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;break&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;」&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">2.2.12 <span class="bd-box"><h-char class="bd bd-end"><h-inner>「</h-inner></h-char></span>BREAK<span class="bd-box"><h-char class="bd bd-beg"><h-inner>」</h-inner></h-char></span></h3>
+<p><em>本质上不是一个可控参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但是 BREAK 在 prompt 中非常实用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>遂介绍<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></em></p>
+<p>BREAK 是 Stable Diffusion 提示语法中的一种特殊标记<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用于在提示词中手动划分<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>断点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>chunk boundary<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>当提示词总 Token 数超过 CLIP 编码器支持的上限<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>75 Token<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>若提示中存在 BREAK<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>系统会将提示分割为两个子提示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>各自取其靠近 BREAK 的 75 Token 进行单独编码<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>最后合并为一个完整的注意力条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>若提示中有多个风格元素或场景叙事<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>直接连接可能导致模型对整体语义的 <span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>混乱<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span> 或 <span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>串词<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过 BREAK 可以将意图明确分段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>让每一段相对独立地参与编码与视觉引导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而减少不期望的内容交叉干扰<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>例如<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<blockquote>
+<p>柔和日落背景<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>几株盛开的樱花树<br>
+BREAK<br>
+侧面俯瞰视角<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>穿着和服的少女漫步</p>
+</blockquote>
+<h1 id="3-实践">3. 实践</h1>
+<p>虽然 reForge 在 2025/04/13 已经暂缓更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但是依旧是个人感觉功能最完善/速度最快的一个 fork<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因此这段方法论将还在使用 reForge<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/05/24/Previous-Posts/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          Previous Posts
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/05/24/Render-test/">Render test</a>
+          </li>
+        
+          <li>
+            <a href="/2025/05/24/Previous-Posts/">Previous Posts</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Archive/" style="font-size: 10px;">Archive</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="/js/clipboard.min.js"></script>
+<script src="/js/jquery-1.4.3.min.js"></script>
+
+<script src="/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>
