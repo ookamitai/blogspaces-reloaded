@@ -16,7 +16,7 @@ widgets:
 - tagcloud
 
 copyright: |-
-  <p>Ars gratia artis.</p>
+  <p>- Ars gratia artis. -</p>
 
 # toc open 
 toc:
@@ -47,7 +47,7 @@ valine:
 
 math:
   enable: true
-  engine: mathjax
+  engine: katex
 
 # title-number : all | config | none
 title-number: config
@@ -57,5 +57,3 @@ blockquote: italic
 
 custom_css:
   - /css/custom.css
-
-  

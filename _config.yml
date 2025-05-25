@@ -102,4 +102,6 @@ theme: mashiro
 deploy:
   type: ''
 
-transpunc: true
+markdown:
+  render:
+    typographer: false
