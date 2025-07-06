@@ -7,4 +7,4 @@ excerpt: Here are all my previous works...
 ---
 
 ## Welcome to ...?
-All previous posts can be found here: [Old blog](https://blog.ookamitai.com/)
+All previous posts can be found here: [Old blog](https://oldblog.ookamitai.com/)

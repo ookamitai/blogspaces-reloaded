@@ -1,11 +1,11 @@
 .article-inner, #about-inner {
     padding: 1.5em;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border: solid #CCC;
     border-width: 1px 1px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 470px) {
     .article-inner {
         position: relative;
         left: 50%;
@@ -24,4 +24,51 @@
 
 body, #footer, #wrap {
     background: rgb(255, 253, 252);
+}
+
+#header-title {
+    position: relative; /* Needed for absolute positioning of ::before */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    box-sizing: border-box;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 3em; 
+    padding-bottom: 3em;
+    border: solid #CCC;
+    border-width: 1px 0px;
+}
+
+#header-title::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 1) 100%), url('/images/ste-2.svg');
+    background-size: cover;
+    background-position: right;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+    pointer-events: none; 
+}
+
+#header-title > * {
+    position: relative;
+    z-index: 1;
+}
+
+#nav-outer {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid #CCC;
+    color: white;
+    backdrop-filter: brightness(1.2) contrast(1.2) blur(5px) url(#glass);
+    -webkit-backdrop-filter: contrast(1.1) blur(3px);
+    box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+    transition: all 0.4s ease;
+}
+
+#nav-outer:hover {
+    filter: brightness(1.1);
 }

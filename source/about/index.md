@@ -3,23 +3,18 @@ title: About myself...
 layout: about
 ---
 
-In silent halls where circuits gleam,
-He walks alone, a living dream.
-A codewright young, with fervent eyes,
-He crafts his world 'neath glowing skies.
+![](index/avatar.jpg)
 
-（你好，“标点”《挤「压」》【测试】”。）
-
-**Mermaid Graph Test** :
-
-``` mermaid
-graph TD
-    A[Client] --> B[Load Balancer]
+```mermaid
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> CoinInserted : insert coin
+  CoinInserted --> ProductSelected : select product
+  ProductSelected --> Dispensing : confirm
+  Dispensing --> Idle : item dispensed
+  CoinInserted --> Idle : cancel
 ```
 
-todo-list:
-   - [x] LaTeX formula
-   - [X] mermaid diagram
-   - [x] GFM todo list
-   - [ ] highlight
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
+**Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.**
