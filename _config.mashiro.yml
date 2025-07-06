@@ -21,7 +21,7 @@ copyright: |-
 # toc open 
 toc:
   enable: true
-  default: true
+  default: false
 
 # Widget behavior
 archive_type: 'monthly'

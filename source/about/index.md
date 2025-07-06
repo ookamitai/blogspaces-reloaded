@@ -3,18 +3,12 @@ title: About myself...
 layout: about
 ---
 
-![](index/avatar.jpg)
+I'm ookamitai. I spend my time coding and figuring out how things really work under the hood. I don't just want to use tech - I want to understand it, break it down, and build better stuff from the ground up. Learning by doing is how I roll, tackling problems head-on and learning from the mess-ups along the way.
 
-```mermaid
-stateDiagram-v2
-  [*] --> Idle
-  Idle --> CoinInserted : insert coin
-  CoinInserted --> ProductSelected : select product
-  ProductSelected --> Dispensing : confirm
-  Dispensing --> Idle : item dispensed
-  CoinInserted --> Idle : cancel
-```
+I've worked with different programming languages and tools, always looking to get better and sharpen my skills. Tech isn't just a job or hobby for me - it's how I see the world and how I make sense of things.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+My goal's simple: keep growing, take on new challenges, and share what I learn with anyone interested.
 
-**Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.**
+<br>
+
+![Cute Me](index/avatar.jpg)
