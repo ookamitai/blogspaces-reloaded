@@ -63,7 +63,28 @@ body, #footer, #wrap {
     border-bottom: 1px solid #CCC;
     color: white;
     backdrop-filter: brightness(1.2) contrast(1.2) blur(5px) url(#glass);
-    -webkit-backdrop-filter: contrast(1.1) blur(3px);
+    -webkit-backdrop-filter: contrast(1.1) blur(5px);
     box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
     inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.aff-text {
+    color: #333 !important;
+    margin-left: 1rem;
+    white-space: nowrap;
+}
+
+.aff-box {
+    display: flex; align-items: center; margin-left: 3rem;
+}
+
+.aff-img {
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+    margin-right: 0.5em; 
+    border-radius: 50%; 
+    border: solid 1px #CCC;
 }

@@ -53,7 +53,4 @@ math:
 title-number: config
 
 # blockquote: italic | grey
-blockquote: italic
-
-custom_css:
-  - /css/custom.css
+blockquote: grey
