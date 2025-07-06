@@ -43,7 +43,7 @@ $$
 
 解得 $t = \pm 3$, 即 $\displaystyle \left(\sin\alpha, \cos\alpha\right) = \left(1, 0\right) \text{or} \left(-\frac{5}{13}, -\frac{12}{13}\right)$
 
-## 三角互余正切关系
+## 三角互补正切关系
 
 > 【例2】证明：$\tan x + \tan y + \tan z = \tan x \tan y \tan z \quad \left(x+y+z = k\pi, k \in \mathbf{Z}\right)$
 
@@ -76,6 +76,12 @@ $$
                  &= 2\sin\alpha\left(1-\sin^2\alpha\right) + \sin\alpha - 2\sin^3\alpha \\
                  &= 3\sin\alpha -4\sin^3\alpha
 \end{alignedat}
+$$
+
+$$
+\begin{equation*}
+    \cos3\alpha = 4\cos^3\alpha-3\cos\alpha = -3\cos\alpha + 4\cos^3\alpha
+\end{equation*}
 $$
 
 ## 正切二倍角定义域
