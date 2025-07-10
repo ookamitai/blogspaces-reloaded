@@ -15,7 +15,7 @@ layout: about
 ## 关于网站
 
 ```text
--- Now featuring *Liquid Glass*! --
+-- Now featuring *EVEN BETTER Liquid Glass*! --
 ```
 
 - 感谢 [ShellWen](https://shellwen.com) 赠送我的域名（你正在看的这一个）。
