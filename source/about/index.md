@@ -7,7 +7,7 @@ layout: about
 
 我是狼太，目前在读高中，热爱软件开发和技术探索。我掌握 C++、Rust、Swift 等语言，对数据结构、算法和桌面应用开发有扎实基础。我也在研究机器学习、语音合成与逆向工程。
 
-除了编程，我也喜欢创作音乐，尤其是使用自己制作的声库“OKAMI”进行声乐合成。我相信持续好奇和主动挑战是成长的关键。技术不只是工具，它是我理解世界的方式，也是我表达自我的方式。我也喜欢打音游，比如《Project SEKAI》、《CHUNITHM》和《Project DIVA》等。
+除了编程，我也喜欢创作音乐，尤其是使用自己制作的声库“OKAMI”进行声乐合成。我也喜欢打音游，比如《Project SEKAI》、《CHUNITHM》和《Project DIVA》等。
 
 <br>
 <img src="index/avatar.jpg" alt="It's-a me!" style="max-width: 200px; border-radius: 1em; border: 1px solid #CCC">
@@ -15,8 +15,12 @@ layout: about
 ## 关于网站
 
 ```text
--- Now featuring *EVEN BETTER Liquid Glass*! --
+-- Now featuring *ALMOST PERFECT Liquid Glass*! --
 ```
+
+- Now featuring {% marker highlighted text %} that stands out!
+
+---
 
 - 感谢 [ShellWen](https://shellwen.com) 赠送我的域名（你正在看的这一个）。
 - 使用了 [Hexo](https://hexo.io/) 框架。
