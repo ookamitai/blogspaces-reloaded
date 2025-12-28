@@ -9,9 +9,6 @@ layout: about
 
 除了编程，我也喜欢创作音乐，尤其是使用自己制作的声库“OKAMI”进行声乐合成。我也喜欢打音游，比如《Project SEKAI》、《CHUNITHM》和《Project DIVA》等。
 
-<br>
-<img src="index/avatar.jpg" alt="It's-a me!" style="max-width: 200px; border-radius: 1em; border: 1px solid #CCC">
-
 ## 关于网站
 
 ```text

@@ -15,7 +15,7 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://mem.ookamitai.com
+url: http://blog.ookamitai.com
 permalink: :year/:month/:day/:title/
 
 permalink_defaults:
@@ -44,7 +44,7 @@ external_link:
 filename_case: 0
 render_drafts: false
 post_asset_folder: true
-relative_link: false
+relative_link: true
 future: true
 syntax_highlighter: # empty
 highlight:
