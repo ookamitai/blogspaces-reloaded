@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>高中数学碎碎念【三角函数】（Part1） | ookamitai::blogspaces</title>
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/ChineseMono-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-italic-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-bold.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" content="从一轮复习总结下来的各种零散小知识……">
+  
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox-1.3.4.css">
+  
+  
+    <link rel="stylesheet" href="/katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="/katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="/katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="../../../../index.html">Home</a>
+    
+      <a class="main-nav-link" href="../../../../archives">Archives</a>
+    
+      <a class="main-nav-link" href="../../../../about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main"><article id="post-trigs1" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="" class="article-date">
+  <time class="dt-published" datetime="2025-07-06T11:29:50.000Z" itemprop="datePublished">2025-07-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      高中数学碎碎念【三角函数】（Part1）
+    </h1>
+  
+
+      </header>
+    
+    
+<div id="article-toc">
+    <h2 class="widget-title">Table Of Contents</h2>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E5%81%B6%E6%9E%84%E9%80%A0"><span class="toc-number">1.</span> <span class="toc-text">对偶构造</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E8%A7%92%E4%BA%92%E8%A1%A5%E6%AD%A3%E5%88%87%E5%85%B3%E7%B3%BB"><span class="toc-number">2.</span> <span class="toc-text">三角互补正切关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E5%80%8D%E8%A7%92%E5%85%AC%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">三倍角公式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E5%88%87%E4%BA%8C%E5%80%8D%E8%A7%92%E5%AE%9A%E4%B9%89%E5%9F%9F"><span class="toc-number">4.</span> <span class="toc-text">正切二倍角定义域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#n-%E5%80%8D%E8%A7%92"><span class="toc-number">5.</span> <span class="toc-text">n 倍角</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%99%E8%A7%92%E5%8C%96%E7%AE%80%E8%A7%82%E5%AF%9F%E6%AC%A1%E6%95%B0"><span class="toc-number">6.</span> <span class="toc-text">给角化简观察次数</span></a></li></ol>
+</div>
+
+    <div class="e-content article-entry article-with-titlenum" itemprop="articleBody">
+      
+        <h2 id="对偶构造">对偶构造</h2>
+<blockquote>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>【</h-inner></h-char></span>例1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>】</h-inner></h-char></span><span class="markdown-them-math-inline">$ 2\sin\alpha - 3\cos\alpha = 2 $</span>, 求 <span class="markdown-them-math-inline">$ \sin\alpha $</span>, <span class="markdown-them-math-inline">$\cos\alpha $</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</blockquote>
+<p>难度不大<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但是如果用 <span class="markdown-them-math-inline">$\sin^2\alpha + \cos^2\alpha = 1$</span> 换元会速度偏慢<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>现在给出一个简化的计算方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<p><strong>构造<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> <span class="markdown-them-math-inline">$ 2\cos\alpha + \sin\alpha = t $</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>联立方程组<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\begin{cases}
+    \begin{alignedat}{2}
+        2\sin\alpha - 3\cos\alpha &amp;= 2  &amp;\quad&amp; \textcircled{1} \\
+        2\cos\alpha + \sin\alpha &amp;= t  &amp;\quad&amp; \textcircled{2}
+    \end{alignedat}
+\end{cases}
+$$</div><p>把 <span class="markdown-them-math-inline">$\textcircled{1}\textcircled{2}$</span> 式平方<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\begin{cases}
+    \begin{alignedat}{1}
+        4\sin^2\alpha-12\sin\alpha \cos\alpha+9\cos^2\alpha &amp;= 4 \\
+        4\cos^2\alpha+12\sin\alpha \cos\alpha+9\sin^2\alpha &amp;= t^2
+    \end{alignedat}
+\end{cases}
+$$</div><p>两式相加就有<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$13 = 4 + t^2
+$$</div><p>解得 <span class="markdown-them-math-inline">$t = \pm 3$</span>, 即 <span class="markdown-them-math-inline">$\displaystyle \left(\sin\alpha, \cos\alpha\right) = \left(1, 0\right) \text{or} \left(-\frac{5}{13}, -\frac{12}{13}\right)$</span></p>
+<h2 id="三角互补正切关系">三角互补正切关系</h2>
+<blockquote>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>【</h-inner></h-char></span>例2<span class="bd-box"><h-char class="bd bd-beg"><h-inner>】</h-inner></h-char></span>证明<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><span class="markdown-them-math-inline">$\tan x + \tan y + \tan z = \tan x \tan y \tan z \quad \left(x+y+z = k\pi, k \in \mathbf{Z}\right)$</span></p>
+</blockquote>
+<p>证明不难<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但是可以作为一个结论记忆<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>解三角形题目会用到<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\begin{alignedat}{2}
+    \text{LHS} &amp;= \tan x + \tan y + \tan \left(k\pi - x - y\right) \\
+               &amp;= \tan x + \tan y - \tan \left(x+y\right) \\
+               &amp;= \tan x + \tan y - \frac{\tan x+\tan y}{1-\tan x\tan y} \quad &amp;\textcircled{3}\\
+               &amp;= -\left(\tan x+\tan y\right)\frac{\tan x\tan y}{1-\tan x\tan y} \quad &amp;\textcircled{4}\\
+               &amp;= - \tan \left(x+y\right)\tan x\tan y quad &amp;\textcircled{5} \\
+               &amp;= \tan x \tan y \tan z
+\end{alignedat}
+$$</div><p>注意 3,4 步之间的提取公因式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以及 4,5 步之间再次利用正弦两角相加把分式收起来<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="三倍角公式">三倍角公式</h2>
+<blockquote>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>【</h-inner></h-char></span>例3<span class="bd-box"><h-char class="bd bd-beg"><h-inner>】</h-inner></h-char></span>用 <span class="markdown-them-math-inline">$\sin \alpha$</span> 表示 <span class="markdown-them-math-inline">$\sin 3\alpha$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用 <span class="markdown-them-math-inline">$\cos \alpha$</span> 表示 <span class="markdown-them-math-inline">$\cos 3\alpha$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</blockquote>
+<p>主要运用<strong>拆角</strong>的思想<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>即 <span class="markdown-them-math-inline">$3\alpha = 2\alpha + \alpha$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这里只给出 <span class="markdown-them-math-inline">$\sin 3\alpha$</span> 的解答过程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$\cos 3\alpha$</span> 是平凡的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\begin{alignedat}{1}
+    \sin 3\alpha &amp;= \sin \left(2\alpha+\alpha\right) \\
+                 &amp;= \sin 2\alpha \cos\alpha + \cos 2\alpha \sin\alpha \\
+                 &amp;= 2\sin\alpha\cos^2\alpha + \left(1-2\sin^2\alpha\right)\sin\alpha \\
+                 &amp;= 2\sin\alpha\left(1-\sin^2\alpha\right) + \sin\alpha - 2\sin^3\alpha \\
+                 &amp;= 3\sin\alpha -4\sin^3\alpha
+\end{alignedat}
+$$</div><div class="markdown-them-math-block">$$\begin{equation*}
+    \cos3\alpha = 4\cos^3\alpha-3\cos\alpha = -3\cos\alpha + 4\cos^3\alpha
+\end{equation*}
+$$</div><h2 id="正切二倍角定义域">正切二倍角定义域</h2>
+<blockquote>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>【</h-inner></h-char></span>例4<span class="bd-box"><h-char class="bd bd-beg"><h-inner>】</h-inner></h-char></span>求 <span class="markdown-them-math-inline">$\displaystyle y=\frac{2\tan x}{1-\tan^2x}$</span> 的最小正周期<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</blockquote>
+<p><strong>标准错误</strong> be like<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><span class="markdown-them-math-inline">$y=\tan2x$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>所以 <span class="markdown-them-math-inline">$\displaystyle T = \frac{\pi}{2}$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>正解</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<p><span class="markdown-them-math-inline">$\textcircled{1}$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span> <span class="markdown-them-math-inline">$\displaystyle \tan x \quad \mathbf{D}_f \Rightarrow x \neq \frac{\pi}{2} + k\pi$</span></p>
+<p><span class="markdown-them-math-inline">$\textcircled{2}$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>分母 <span class="markdown-them-math-inline">$\neq 0$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>即 <span class="markdown-them-math-inline">$\displaystyle \tan x \neq \pm 1 \Rightarrow x \neq \frac{\pi}{4} + k\pi \land x \neq \frac{3\pi}{4} + k\pi$</span></p>
+<p>结合 <span class="markdown-them-math-inline">$\textcircled{1}\textcircled{2}$</span> 可知<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$T$</span> 应该等于 <span class="markdown-them-math-inline">$\pi$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="n-倍角">n 倍角</h2>
+<div class="markdown-them-math-block">$$\begin{alignedat}{2}
+    \left(\cos x+i\sin x\right)^n &amp;= \cos nx + i\sin nx \quad &amp;\textcircled{1} \\
+                                  &amp;= \sum^{n}_{j=0}{\binom{n}{j}\cdot\cos^{n-j}x\cdot i^j\sin^jx} \quad &amp;\textcircled{2} \\
+                                  &amp;= \left(\binom{0}{n}\cos^nx-\binom{2}{n}cos^{n-2}x\sin^2x+\binom{4}{n}\cos^{n-4}x\sin^4x-\cdots\right) \\
+                                  &amp;+ i\left(\binom{1}{n}\cos^{n-1}x\sin x-\binom{3}{n}\cos^{n-3}sin^3x+\binom{5}{n}cos^{n-5}\sin^5x-\cdots\right)
+\end{alignedat}
+$$</div><p>其中 <span class="markdown-them-math-inline">$\textcircled{1}$</span> 运用了 <strong>棣莫弗定理 (de Moivre's formula)</strong> (也可以看成复数的几何意义), <span class="markdown-them-math-inline">$\textcircled{2}$</span> 运用了<strong>二项式定理</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>因为 <span class="markdown-them-math-inline">$\sin^{2k}x \left(k\in\mathbf{N}_+\right)$</span> 都可以用 <span class="markdown-them-math-inline">$\cos x$</span> 表示出来<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此 <span class="markdown-them-math-inline">$\cos nx$</span> 都可以只用 <span class="markdown-them-math-inline">$\cos x$</span> 表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而 <span class="markdown-them-math-inline">$\sin nx$</span> 不可<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="给角化简观察次数">给角化简观察次数</h2>
+<blockquote>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>【</h-inner></h-char></span>例5.1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>】</h-inner></h-char></span>化简<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span> <span class="markdown-them-math-inline">$\displaystyle \frac{\left(\sin 50\degree + \sin 70\degree\right)^2}{1+\cos20\degree} (\ast)$</span></p>
+</blockquote>
+<p>观察分子是 <strong>2 次</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>分母是 <strong>1 次</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>且观察 <span class="markdown-them-math-inline">$50\degree$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><span class="markdown-them-math-inline">$70\degree$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><span class="markdown-them-math-inline">$20\degree$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>考虑使用<strong>二倍角</strong>把分母变成 2 次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>且 <span class="markdown-them-math-inline">$20\degree$</span> 变成 <span class="markdown-them-math-inline">$10\degree$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>分子 <span class="markdown-them-math-inline">$50\degree$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><span class="markdown-them-math-inline">$70\degree$</span> 变成 <span class="markdown-them-math-inline">$60\degree-10\degree$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><span class="markdown-them-math-inline">$60\degree+10\degree$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\begin{alignedat}{1}
+    (\ast) &amp;= \frac{\left(2\sin 60\degree\cos10\degree\right)^2}{2\cos10\degree} \\
+           &amp;= \frac{3\cos^2 10\degree}{2\cos^2 10\degree} \\ 
+           &amp;= \frac{3}{2}
+\end{alignedat}
+$$</div><blockquote>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>【</h-inner></h-char></span>例5.2<span class="bd-box"><h-char class="bd bd-beg"><h-inner>】</h-inner></h-char></span>化简<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span> <span class="markdown-them-math-inline">$\displaystyle \frac{\sqrt{3}\sin10\degree}{\sin40\degree}+4\cos^2 20\degree (\ast)$</span></p>
+</blockquote>
+<p>观察原多项式是 <strong>0次 + 2次</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使用<strong>二倍角</strong>变成<strong>0次 + 1次</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\begin{equation*}
+    (\ast) = \frac{\sqrt{3}\sin10\degree}{\sin40\degree}+2\cos40\degree+2
+\end{equation*}
+$$</div><p>观察到分母和外面的 <span class="markdown-them-math-inline">$\cos$</span> 可以构成 <span class="markdown-them-math-inline">$\sin2\alpha$</span> 的形式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>进行通分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\begin{alignedat}{1}
+    (\ast) &amp;= \frac{\sqrt{3}\sin10\degree+2\cos40\degree\sin40\degree}{\sin40\degree}+2 \\
+           &amp;= \frac{\sqrt{3}\sin10\degree+\sin80\degree}{\sin40\degree}+2 \\
+           &amp;= \frac{\sqrt{3}\sin10\degree+\cos10\degree}{\sin40\degree}+2 \\
+           &amp;= 4+2 = 6
+\end{alignedat}
+$$</div><p>我们可以总结出来<strong>1次项的处理方法</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>用 <span class="markdown-them-math-inline">$\tan$</span> / 原有的分式通分</li>
+<li>出现 <strong>2次</strong> <span class="markdown-them-math-inline">$\div$</span> <strong>1次</strong>的形式</li>
+<li>使用<strong>二倍角</strong> etc. 公式降次</li>
+<li>出现 <strong>1次</strong> <span class="markdown-them-math-inline">$\div$</span> <strong>1次</strong> <span class="markdown-them-math-inline">$\Rightarrow$</span> 常数</li>
+</ul>
+<blockquote>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>【</h-inner></h-char></span>变式 5.1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>】</h-inner></h-char></span><span class="markdown-them-math-inline">$\displaystyle \frac{\sin10\degree}{1-\sqrt{3}\tan10\degree}$</span></p>
+</blockquote>
+<blockquote>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>【</h-inner></h-char></span>变式 5.2<span class="bd-box"><h-char class="bd bd-beg"><h-inner>】</h-inner></h-char></span><span class="markdown-them-math-inline">$\sin40\degree\left(\tan10\degree-\sqrt{3}\right)$</span></p>
+</blockquote>
+<p>可以看看这两个式子<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>找到思路<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<p>Part 1 先在这里草草结束了<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>速等我更新<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>bushi<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" rel="tag">三角函数</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" rel="tag">高中数学</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../../../08/28/rating/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Rating 计算器
+        
+      </div>
+    </a>
+  
+  
+    <a href="../../../05/24/Previous-Posts/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          Previous Posts
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../../12/28/anomaly/">如何在日二节奏触发异象</a>
+          </li>
+        
+          <li>
+            <a href="../../../08/28/rating/">Rating 计算器</a>
+          </li>
+        
+          <li>
+            <a href="">高中数学碎碎念【三角函数】（Part1）</a>
+          </li>
+        
+          <li>
+            <a href="../../../05/24/Previous-Posts/">Previous Posts</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../../../archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="../../../../about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="../../../../js/clipboard.min.js"></script>
+<script src="../../../../js/jquery-1.4.3.min.js"></script>
+
+<script src="../../../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+<script src="../../../../js/script.js"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>
