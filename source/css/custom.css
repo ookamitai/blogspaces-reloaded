@@ -1,7 +1,5 @@
 .article-inner, #about-inner {
     padding: 2em;
-    margin-left: -1em;
-    margin-right: -1em;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border: solid #CCC;
     border-width: 1px 1px;
