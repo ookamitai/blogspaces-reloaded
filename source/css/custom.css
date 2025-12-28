@@ -59,12 +59,10 @@
 }
 
 #nav-outer {
-    border-bottom: 1px solid #CCC;
+    border: 1px solid #CCC;
     background-color: rgba(255, 255, 255, 0.1);
     backdrop-filter: url(#glass) brightness(1.2) contrast(1.2) blur(1.2px);
-    -webkit-backdrop-filter: contrast(1.1) blur(3px);
-    box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
-    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+    -webkit-backdrop-filter: contrast(1.1) blur(2px);
 }
 
 .aff-text {
@@ -89,6 +87,10 @@
 }
 
 .marker {
-    background-color: rgb(255, 220, 0) !important;
-    border: 1px solid rgba(255, 220, 0, 0.8) !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 37%, rgba(255, 220, 0, 0.6) 37%) !important;
+}
+
+body {
+    background-color: rgb(255, 253, 252) !important;
 }
