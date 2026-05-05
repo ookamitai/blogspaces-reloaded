@@ -99,3 +99,45 @@
 body {
     background-color: rgb(255, 253, 252) !important;
 }
+
+html.dark body {
+    background-color: #1a1a1a !important;
+}
+
+html.dark .article-inner,
+html.dark #about-inner {
+    border-color: #444;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+html.dark #footer,
+html.dark #wrap {
+    background: #1a1a1a;
+}
+
+html.dark #header-title {
+    border-color: #444;
+}
+
+html.dark #header-title::before {
+    background-image: linear-gradient(to right, rgba(26, 26, 26, 1) 0%, rgba(26, 26, 26, 0) 30%, rgba(26, 26, 26, 1) 100%), url('/images/ste-2.svg');
+    filter: invert(1);
+}
+
+html.dark #nav-outer {
+    border-color: #444;
+    background-color: rgba(30, 30, 30, 0.7);
+}
+
+html.dark .aff-text {
+    color: #d4d4d4 !important;
+}
+
+html.dark .aff-img {
+    border-color: #555;
+}
+
+html.dark .marker {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 37%, rgba(100, 190, 255, 0.3) 37%) !important;
+}
+
