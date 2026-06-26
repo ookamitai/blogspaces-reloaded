@@ -5,9 +5,7 @@ layout: about
 
 ## 关于我
 
-我是狼太，目前在读高中，热爱软件开发和技术探索。我掌握 C++、Rust、Swift 等语言，对数据结构、算法和桌面应用开发有扎实基础。我也在研究机器学习、语音合成与逆向工程。
-
-除了编程，我也喜欢创作音乐，尤其是使用自己制作的声库“OKAMI”进行声乐合成。我也喜欢打音游，比如《Project SEKAI》、《CHUNITHM》和《Project DIVA》等。
+i create things uwu
 
 ## 关于网站
 
