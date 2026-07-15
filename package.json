@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "build": "hexo generate",
+    "build:clean": "npm run clean && npm run build",
+    "check": "npm run build:clean",
     "clean": "hexo clean",
-    "deploy": "hexo deploy",
+    "new": "hexo new",
+    "preview": "hexo server --draft",
     "server": "hexo server"
   },
   "hexo": {

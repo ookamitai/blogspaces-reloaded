@@ -55,7 +55,7 @@ $$
                &= \tan x + \tan y - \tan \left(x+y\right) \\
                &= \tan x + \tan y - \frac{\tan x+\tan y}{1-\tan x\tan y} \quad &\textcircled{3}\\
                &= -\left(\tan x+\tan y\right)\frac{\tan x\tan y}{1-\tan x\tan y} \quad &\textcircled{4}\\
-               &= - \tan \left(x+y\right)\tan x\tan y quad &\textcircled{5} \\
+               &= - \tan \left(x+y\right)\tan x\tan y \quad &\textcircled{5} \\
                &= \tan x \tan y \tan z
 \end{alignedat}
 $$
