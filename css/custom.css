@@ -1,0 +1,365 @@
+.article-inner, #about-inner {
+    padding: 2em;
+    box-shadow: none;
+    border: none !important;
+    background: transparent !important;
+    position: relative;
+    overflow: visible !important;
+}
+
+@media (max-width: 470px) {
+    .article-inner {
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100vw;
+        max-width: 100vw;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+}
+
+#logo:hover {
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+#footer, #wrap {
+    background: rgb(255, 253, 252);
+}
+
+#header-title {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: 120px;
+    margin-bottom: 0;
+    box-sizing: border-box;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 3em; 
+    padding-bottom: 3em;
+    border: solid #CCC;
+    border-width: 1px 0px;
+}
+
+#header-title::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 1) 100%), url('/images/ste-2.svg');
+    background-size: cover;
+    background-position: right;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+    pointer-events: none; 
+}
+
+#header-title > * {
+    position: relative;
+    z-index: 1;
+}
+
+#nav-outer {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: url(#glass) brightness(0.9) contrast(1.2) blur(1.2px);
+    -webkit-backdrop-filter: contrast(1.1) blur(2px);
+}
+
+#reading-progress-bar {
+    height: 2px;
+    width: 0%;
+    background: #999;
+}
+
+html.dark #reading-progress-bar {
+    background: #888;
+}
+
+.aff-text {
+    color: #333 !important;
+    margin-left: 1rem;
+    white-space: nowrap;
+}
+
+.aff-box {
+    display: flex; align-items: center; margin-left: 3rem;
+}
+
+.aff-img {
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+    margin-right: 0.5em; 
+    border-radius: 50%; 
+    border: solid 1px #CCC;
+}
+
+.article-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8em;
+    color: #aaa;
+    padding-top: 1.3em;
+}
+
+.article-subtitle-sep {
+    color: #ccc;
+}
+
+.article-subtitle-line {
+    flex: 1;
+    height: 0;
+    border-bottom: 1px solid #ddd;
+    margin-left: 6px;
+}
+
+html.dark .article-subtitle {
+    color: #666;
+}
+
+html.dark .article-subtitle-sep {
+    color: #555;
+}
+
+html.dark .article-subtitle-line {
+    border-bottom-color: #444;
+}
+
+.marker {
+    background-color: rgba(0, 0, 0, 0) !important;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 37%, rgba(255, 220, 0, 0.7) 37%) !important;
+}
+
+.marker code {
+    background-color: transparent !important;
+    background: none !important;
+}
+
+body {
+    background-color: rgb(255, 253, 252) !important;
+}
+
+html.dark body {
+    background-color: #1a1a1a !important;
+}
+
+html.dark .article-inner,
+html.dark #about-inner {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+html.dark #footer,
+html.dark #wrap {
+    background: #1a1a1a;
+}
+
+html.dark #header-title {
+    border-color: #444;
+}
+
+html.dark #header-title::before {
+    background-image: linear-gradient(to right, rgba(26, 26, 26, 1) 0%, rgba(26, 26, 26, 0) 30%, rgba(26, 26, 26, 1) 100%), url('/images/ste-2.svg');
+}
+
+html.dark #nav-outer {
+    border-color: #444;
+    background-color: rgba(30, 30, 30, 0.7);
+}
+
+html.dark .aff-text {
+    color: #d4d4d4 !important;
+}
+
+html.dark .aff-img {
+    border-color: #555;
+}
+
+html.dark .marker {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 37%, rgba(100, 190, 255, 0.3) 37%) !important;
+}
+
+#article-toc {
+    font-size: 0.8em;
+    margin: 0;
+    padding: 0;
+}
+
+@media (max-width: 1099px) {
+    #article-toc {
+        position: static;
+        width: 100%;
+        max-height: none;
+    }
+}
+
+@media (min-width: 1100px) {
+    #article-toc {
+        position: absolute;
+        right: calc(100% + 2rem);
+        top: 4em;
+        width: 180px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+}
+
+#article-toc .widget-title {
+    margin-bottom: 0.5em;
+    font-size: 0.9em;
+}
+
+#article-toc ol {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+#article-toc .toc-child {
+    padding-left: 1em;
+}
+
+#article-toc .toc-link {
+    display: block;
+    padding: 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+html.dark #article-toc {
+    color: #888;
+}
+
+html.dark #article-toc .toc-link {
+    color: #888;
+}
+
+html.dark #article-toc .toc-link:hover {
+    color: #bbb;
+}
+
+/* Complete dark palette. Kept here so CI does not depend on local theme edits. */
+html.dark {
+    color-scheme: dark;
+}
+
+html.dark body,
+html.dark #wrap {
+    color: #d4d4d4;
+    background: #1a1a1a !important;
+}
+
+html.dark a {
+    color: #b0b0b0;
+}
+
+html.dark #logo,
+html.dark #subtitle,
+html.dark .article-title {
+    color: #e0e0e0;
+}
+
+html.dark .main-nav-link,
+html.dark .nav-icon {
+    color: #d4d4d4;
+}
+
+html.dark .article-entry {
+    color: #d4d4d4;
+}
+
+html.dark .article-entry table {
+    border-top-color: #555;
+    border-bottom-color: #555;
+}
+
+html.dark .article-entry th {
+    border-bottom-color: #555;
+}
+
+html.dark .article-entry blockquote {
+    border-left-color: #444;
+    background: #2a2a2a;
+}
+
+html.dark .article-entry code {
+    color: #d4d4d4;
+    background: #2a2a2a;
+    text-shadow: none;
+}
+
+html.dark .article-entry pre,
+html.dark .highlight {
+    color: #d4d4d4;
+    border-color: #333;
+    background: #1e1e1e;
+}
+
+html.dark .article-entry pre code {
+    background: none;
+}
+
+html.dark .copy-button {
+    color: #ccc;
+    border-color: #444;
+    background: #333;
+}
+
+html.dark .article-more-link a {
+    color: #999;
+    border-color: #444;
+    background: #2a2a2a;
+}
+
+html.dark .article-footer a,
+html.dark .article-share-link {
+    color: #888;
+    text-shadow: none;
+}
+
+html.dark #footer,
+html.dark #page-nav {
+    color: #999;
+    background: #222;
+}
+
+html.dark .archive-article-title {
+    color: #bbb;
+}
+
+html.dark .archive-article-line {
+    border-bottom-color: #444;
+}
+
+html.dark #mobile-nav {
+    border-right-color: #333;
+    background: #222;
+}
+
+html.dark .mobile-nav-link,
+html.dark .widget-title {
+    color: #bbb;
+}
+
+html.dark .widget {
+    border-color: #444;
+}
+
+html.dark .article-category {
+    color: #777;
+    text-shadow: none;
+}
+
+html.dark .article-nav-link-wrap {
+    text-shadow: none;
+}
