@@ -37,12 +37,12 @@ jobs:
       - name: Build site
         run: npm run build:clean
 
-      - name: Publish deploy branch
+      - name: Publish GitHub Pages branch
         if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: deploy
+          publish_branch: gh-pages
           publish_dir: public
           force_orphan: true
           enable_jekyll: false

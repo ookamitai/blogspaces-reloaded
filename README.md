@@ -52,8 +52,8 @@ The push to `master` triggers the **Build and publish website** workflow, which 
 
 1. install the locked dependencies with `npm ci`;
 2. build the site from a clean output directory;
-3. replace the `deploy` branch with the generated `public/` directory.
+3. replace the `gh-pages` branch with the generated `public/` directory.
 
 Pull requests run the complete build check but do not publish. A deployment can also be rerun manually from the Actions tab with **Run workflow**.
 
-GitHub Pages should be configured to serve the root of the `deploy` branch. The custom domain is retained through `source/CNAME`.
+GitHub Pages serves the root of the `gh-pages` branch. The custom domain is retained through `source/CNAME`.
