@@ -193,7 +193,7 @@ html.dark .marker {
     padding: 0;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 1099px) {
     #article-toc {
         position: static;
         width: 100%;
@@ -201,7 +201,7 @@ html.dark .marker {
     }
 }
 
-@media (min-width: 1301px) {
+@media (min-width: 1100px) {
     #article-toc {
         position: absolute;
         right: calc(100% + 2rem);
@@ -248,3 +248,118 @@ html.dark #article-toc .toc-link:hover {
     color: #bbb;
 }
 
+/* Complete dark palette. Kept here so CI does not depend on local theme edits. */
+html.dark {
+    color-scheme: dark;
+}
+
+html.dark body,
+html.dark #wrap {
+    color: #d4d4d4;
+    background: #1a1a1a !important;
+}
+
+html.dark a {
+    color: #b0b0b0;
+}
+
+html.dark #logo,
+html.dark #subtitle,
+html.dark .article-title {
+    color: #e0e0e0;
+}
+
+html.dark .main-nav-link,
+html.dark .nav-icon {
+    color: #d4d4d4;
+}
+
+html.dark .article-entry {
+    color: #d4d4d4;
+}
+
+html.dark .article-entry table {
+    border-top-color: #555;
+    border-bottom-color: #555;
+}
+
+html.dark .article-entry th {
+    border-bottom-color: #555;
+}
+
+html.dark .article-entry blockquote {
+    border-left-color: #444;
+    background: #2a2a2a;
+}
+
+html.dark .article-entry code {
+    color: #d4d4d4;
+    background: #2a2a2a;
+    text-shadow: none;
+}
+
+html.dark .article-entry pre,
+html.dark .highlight {
+    color: #d4d4d4;
+    border-color: #333;
+    background: #1e1e1e;
+}
+
+html.dark .article-entry pre code {
+    background: none;
+}
+
+html.dark .copy-button {
+    color: #ccc;
+    border-color: #444;
+    background: #333;
+}
+
+html.dark .article-more-link a {
+    color: #999;
+    border-color: #444;
+    background: #2a2a2a;
+}
+
+html.dark .article-footer a,
+html.dark .article-share-link {
+    color: #888;
+    text-shadow: none;
+}
+
+html.dark #footer,
+html.dark #page-nav {
+    color: #999;
+    background: #222;
+}
+
+html.dark .archive-article-title {
+    color: #bbb;
+}
+
+html.dark .archive-article-line {
+    border-bottom-color: #444;
+}
+
+html.dark #mobile-nav {
+    border-right-color: #333;
+    background: #222;
+}
+
+html.dark .mobile-nav-link,
+html.dark .widget-title {
+    color: #bbb;
+}
+
+html.dark .widget {
+    border-color: #444;
+}
+
+html.dark .article-category {
+    color: #777;
+    text-shadow: none;
+}
+
+html.dark .article-nav-link-wrap {
+    text-shadow: none;
+}
