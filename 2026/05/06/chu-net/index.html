@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>日二节奏启用国服上传体验 | ookamitai::blogspaces</title>
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/ChineseMono-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-italic-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-bold.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" content="手台网太好了怎么办">
+  
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox-1.3.4.css">
+  
+  
+    <link rel="stylesheet" href="/katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="/katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="/katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="../../../../index.html">Home</a>
+    
+      <a class="main-nav-link" href="../../../../archives">Archives</a>
+    
+      <a class="main-nav-link" href="../../../../about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main"><article id="post-chu-net" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="" class="article-date">
+  <time class="dt-published" datetime="2026-05-06T21:07:49.000Z" itemprop="datePublished">2026-05-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      日二节奏启用国服上传体验
+    </h1>
+  
+
+      </header>
+    
+    
+<div id="article-toc">
+    <h2 class="widget-title">Table Of Contents</h2>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E7%8E%B0%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">发现过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#step-1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E4%BB%8E%20rtti%20%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%85%A5%E6%89%8B"><span class="toc-number">2.1.</span> <span class="toc-text">Step 1：从 RTTI 字符串入手</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#step-2%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%B7%9F%E8%B8%AA%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%BC%95%E7%94%A8"><span class="toc-number">2.2.</span> <span class="toc-text">Step 2：跟踪字符串引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#step-3%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E5%AE%9A%E4%BD%8D%20clientupload%20%E7%B1%BB%E7%9A%84%E8%99%9A%E8%A1%A8"><span class="toc-number">2.3.</span> <span class="toc-text">Step 3：定位 ClientUpload 类的虚表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#step-4%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%89%BE%E5%88%B0%E5%AE%9E%E9%99%85%E7%9A%84%E5%8F%91%E9%80%81%E5%87%BD%E6%95%B0"><span class="toc-number">2.4.</span> <span class="toc-text">Step 4：找到实际的发送函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#step-5%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E7%A1%AE%E8%AE%A4%E8%B0%83%E7%94%A8%E7%BA%A6%E5%AE%9A"><span class="toc-number">2.5.</span> <span class="toc-text">Step 5：确认调用约定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">代码逻辑结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E4%B8%8A%E4%BC%A0%E6%9E%B6%E6%9E%84"><span class="toc-number">3.1.</span> <span class="toc-text">整体上传架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#upsertuserall-%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">3.2.</span> <span class="toc-text">UpsertUserAll 的数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A2%9E%E9%87%8F-vs%20%E5%85%A8%E9%87%8F%E4%B8%8A%E4%BC%A0"><span class="toc-number">3.2.1.</span> <span class="toc-text">增量 vs 全量上传</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0%E6%9C%BA%E5%88%B6"><span class="toc-number">3.3.</span> <span class="toc-text">分片上传机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sendupsertuserall-%E5%86%85%E9%83%A8%E9%80%BB%E8%BE%91"><span class="toc-number">3.4.</span> <span class="toc-text">sendUpsertUserAll 内部逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE%E6%80%BB%E8%A7%88"><span class="toc-number">3.5.</span> <span class="toc-text">调用链总览</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#patch-%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">Patch 分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#patch-%E7%9B%AE%E6%A0%87"><span class="toc-number">4.1.</span> <span class="toc-text">Patch 目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E8%BF%99%E4%B8%AA%E5%87%BD%E6%95%B0"><span class="toc-number">4.2.</span> <span class="toc-text">为什么选这个函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#patch-%E5%86%85%E5%AE%B9"><span class="toc-number">4.3.</span> <span class="toc-text">Patch 内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8E%9F%E5%A7%8B%E5%AD%97%E8%8A%82"><span class="toc-number">4.3.1.</span> <span class="toc-text">原始字节</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#patched-%E5%AD%97%E8%8A%82"><span class="toc-number">4.3.2.</span> <span class="toc-text">Patched 字节</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E7%BC%96%E8%AF%91%E5%AF%B9%E6%AF%94"><span class="toc-number">4.3.3.</span> <span class="toc-text">反编译对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF-%60retn%208%60%20%E8%80%8C%E4%B8%8D%E6%98%AF%20%60retn%60"><span class="toc-number">4.3.4.</span> <span class="toc-text">为什么是 retn 8 而不是 retn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%8B%E7%95%99%E5%AD%97%E8%8A%82%E5%A4%84%E7%90%86"><span class="toc-number">4.3.5.</span> <span class="toc-text">残留字节处理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+</div>
+
+    <div class="e-content article-entry article-with-titlenum" itemprop="articleBody">
+      
+        <h2 id="概述">概述</h2>
+<p>本文记录了如何定位并 patch 掉成绩上传函数 projClient::ClientUpload::sendUpsertUserAll<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使游戏在一局结束后成绩上传直接失败<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>所有分析基于 X-VERSE-X 的 chusanApp.exe<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>base address 0x400000<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">仅供学习参考<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="发现过程">发现过程</h2>
+<h3 id="step-1&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;从 rtti 字符串入手">Step 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>从 RTTI 字符串入手</h3>
+<p>第一步是在 IDA Pro 的 string window 里搜索已知的关键字<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>目标是找到和成绩上传相关的类和方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>搜 <code>upsertUserAll</code> 和 <code>ClientUpload</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-number">0x18B8B74</span>: <span class="hljs-string">&quot;upsertUserAll&quot;</span>
+<span class="hljs-number">0x18B40BC</span>: <span class="hljs-string">&quot;clientUpload&quot;</span>
+<span class="hljs-number">0x1C1C1BC</span>: <span class="hljs-string">&quot;.?AVUpsertUserAll@projClient@@&quot;</span>
+<span class="hljs-number">0x1C1BC8C</span>: <span class="hljs-string">&quot;.?AVClientUpload@projClient@@&quot;</span>
+</code></pre></div>
+<p>RTTI 字符串暴露了 <code>projClient</code> 命名空间下的两个类<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>UpsertUserAll</code> 和 <code>ClientUpload</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这说明游戏用的是 C++ 类继承体系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>上传逻辑封装在 <code>ClientUpload</code> 类里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="step-2&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;跟踪字符串引用">Step 2<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>跟踪字符串引用</h3>
+<p>对 <code>&quot;upsertUserAll&quot;</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>0x18B8B74</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>做 xref 分析<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>找到它在 <code>0x9D7F00</code> 处被引用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>反编译这个函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> __thiscall <span class="hljs-title">sub_9D7F00</span><span class="hljs-params">(<span class="hljs-keyword">int</span> <span class="hljs-keyword">this</span>, <span class="hljs-keyword">int</span> a2)</span> </span>{
+    <span class="hljs-comment">// ...</span>
+    <span class="hljs-built_in">sub_410D48</span>(<span class="hljs-string">&quot;userId&quot;</span>, <span class="hljs-number">6u</span>);
+    <span class="hljs-built_in">sub_40EE12</span>(<span class="hljs-keyword">this</span>, v6);
+
+    <span class="hljs-built_in">sub_410D48</span>(<span class="hljs-string">&quot;segaIdAuthKey&quot;</span>, <span class="hljs-number">0xD</span>u);
+    <span class="hljs-built_in">sub_468688</span>((<span class="hljs-keyword">void</span> *)(<span class="hljs-keyword">this</span> + <span class="hljs-number">8</span>), (<span class="hljs-keyword">int</span>)v6);
+
+    <span class="hljs-built_in">sub_410D48</span>(<span class="hljs-string">&quot;upsertUserAll&quot;</span>, <span class="hljs-number">0xD</span>u);
+    <span class="hljs-built_in">sub_430134</span>(<span class="hljs-keyword">this</span> + <span class="hljs-number">32</span>, v4);
+    <span class="hljs-comment">// ...</span>
+}
+</code></pre></div>
+<p>这是一个 JSON 键值构建函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>往某个数据结构里写入 <code>userId</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><code>segaIdAuthKey</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><code>upsertUserAll</code> 三个字段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这很像是构建 HTTP 请求体的过程 —— <code>upsertUserAll</code> 是发送给服务端的 API 端点名或者 payload 键名<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="step-3&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;定位 clientupload 类的虚表">Step 3<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>定位 ClientUpload 类的虚表</h3>
+<p>对 <code>&quot;clientUpload&quot;</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>0x18B40BC</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>做 xref<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>找到 <code>0x9989E0</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这个函数构建了包含 <code>clientUpload</code> 字段的请求体<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它是上层调度逻辑<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>负责组装整个上传请求的元数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>进一步对 <code>0x9989E0</code> 做 xref<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>发现它通过 thunk <code>0x45B6FE</code> 被调用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而 <code>0x45B6FE</code> 的调用者是 <code>0x99CE10</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><code>0x99CE10</code> 是一个较大的函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它负责<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ol>
+<li>把游戏数据分片<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>chunk size = 10240 字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li>对每个分片调用 <code>sub_45B6FE</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>即 <code>ClientUpload</code> 调度器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li>组装成带 <code>orderId</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><code>divNumber</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><code>divLength</code> 的上传包</li>
+</ol>
+<p>这说明上传机制是<strong>分片上传</strong> —— 大的成绩数据被拆成多个 10KB 的 chunk 依次发送<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="step-4&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;找到实际的发送函数">Step 4<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>找到实际的发送函数</h3>
+<p>顺着 <code>0x99CE10</code> 的调用链往上追<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>经过 thunk <code>0x45FDA8</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>找到 <code>0x99CC50</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这个函数是分片上传的协调器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它管理一个数据缓冲区<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>this + 4</code> 指向 buffer<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>this + 12</code> 是总大小<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>this + 16</code> 是当前 chunk index<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每次调用时读取下一片数据并发送<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>而真正把序列化后的数据通过 HTTP 发送出去的函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>需要从 <code>ClientUpload</code> 的虚表里找<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>我注意到 <code>0x18B3EA0</code> 处有一个 vtable<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>其中第二个条目指向 <code>0x420AD6</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这是一个跳转到 <code>0x98C1D0</code> 的 thunk<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而 <code>0x98C1D0</code> 又跳转到 <code>0x995050</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>反编译 <code>0x995050</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">char</span> __thiscall <span class="hljs-title">sub_995050</span><span class="hljs-params">(_DWORD *<span class="hljs-keyword">this</span>, <span class="hljs-keyword">int</span> a2, <span class="hljs-keyword">int</span> a3)</span> </span>{
+    <span class="hljs-built_in">sub_47007C</span>(v8);                                    <span class="hljs-comment">// 初始化某种缓冲区</span>
+    <span class="hljs-built_in">sub_42E5DC</span>(v9, *(<span class="hljs-keyword">this</span> + <span class="hljs-number">24</span>), *(<span class="hljs-keyword">this</span> + <span class="hljs-number">25</span>), a2, a3); <span class="hljs-comment">// 序列化 UserAll 数据</span>
+    v4 = <span class="hljs-built_in">sub_458E31</span>();                                  <span class="hljs-comment">// 获取 HTTP 客户端实例</span>
+    v5 = <span class="hljs-built_in">sub_461856</span>(v4, v9, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>);                     <span class="hljs-comment">// 发送 HTTP 请求</span>
+    <span class="hljs-comment">// ... cleanup ...</span>
+    <span class="hljs-keyword">return</span> v5;
+}
+</code></pre></div>
+<p>这就是 <code>sendUpsertUserAll</code> —— 它把完整的 UserAll 数据序列化后通过 HTTP 发送到服务端<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>函数返回一个 <code>char</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>bool<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>表示上传成功或失败<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="step-5&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;确认调用约定">Step 5<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>确认调用约定</h3>
+<p><code>sendUpsertUserAll</code> 是一个 <code>__thiscall</code> 虚函数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>通过 vtable 调用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>this</code> 指针在 <code>ecx</code> 中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>另有 2 个显式参数在栈上<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>a2</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><code>a3</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因此 caller 通过栈传递了 8 字节的参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>函数退出时需要 <code>retn 8</code> 来清理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>这可以通过栈帧布局验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-attribute">arg_0</span> @ offset <span class="hljs-number">0</span>x<span class="hljs-number">44</span> (a<span class="hljs-number">2</span>)
+<span class="hljs-attribute">arg_4</span> @ offset <span class="hljs-number">0</span>x<span class="hljs-number">48</span> (a<span class="hljs-number">3</span>)
+<span class="hljs-attribute">__return_address</span> @ offset <span class="hljs-number">0</span>x<span class="hljs-number">40</span>
+<span class="hljs-attribute">__saved_registers</span> @ offset <span class="hljs-number">0</span>x<span class="hljs-number">3</span>c  (ebp push)
+</code></pre></div>
+<p><code>this</code> 不在栈上<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>在 <code>ecx</code> 中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>栈上只有 2 个 DWORD = 8 字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>确认 <code>retn 8</code> 正确<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="代码逻辑结构">代码逻辑结构</h2>
+<h3 id="整体上传架构">整体上传架构</h3>
+<p>CHUNITHM 的成绩上传采用<strong>分片 JSON 上传</strong>机制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>整个流程可以分成 4 层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>Layer <span class="hljs-number">1</span>: 序列化层 (Serialization)
+    UpsertUserAll<span class="hljs-number">::</span>serialize() @ <span class="hljs-number">0x9D6C40</span>
+    │  将 <span class="hljs-number">27</span>+ 种玩家数据序列化为 JSON
+    │
+Layer <span class="hljs-number">2</span>: HTTP 请求构建层 (Request Builder)
+    UpsertUserAll<span class="hljs-number">::</span>buildRequest() @ <span class="hljs-number">0x9D7F00</span>
+    │  写入 userId / segaIdAuthKey / upsertUserAll 字段
+    │
+Layer <span class="hljs-number">3</span>: 分片上传调度层 (Chunked Upload Dispatcher)
+    ChunkedUplo<span class="hljs-number">ad::</span>dispatchNext() @ <span class="hljs-number">0</span>x99CC50
+    ChunkedUplo<span class="hljs-number">ad::</span>sendChunk() @ <span class="hljs-number">0</span>x99CE10
+    ClientUplo<span class="hljs-number">ad::</span>buildMetadata() @ <span class="hljs-number">0x9989E0</span>
+    │  把大数据拆成 <span class="hljs-number">10240</span> 字节的分片
+    │  为每片附加 orderId / divNumber / divLength 元数据
+    │
+Layer <span class="hljs-number">4</span>: HTTP 发送层 (Network Transport)
+    ClientUplo<span class="hljs-number">ad::</span>sendUpsertUserAll() @ <span class="hljs-number">0x995050</span>  ← 我们 patch 的目标
+    HTTPClient<span class="hljs-number">::</span>send() @ <span class="hljs-number">0</span>x996DC0
+    │  通过 WinHTTP 发送 POST 请求
+    │  返回 bool 表示成功/失败
+</code></pre></div>
+<h3 id="upsertuserall-的数据结构">UpsertUserAll 的数据结构</h3>
+<p><code>sub_9D6C40</code> @ <code>0x9D6C40</code> 是序列化函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它把一个巨大的聚合数据对象拆成 27+ 个子字段逐个序列化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>完整的字段列表<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<table>
+<thead>
+<tr>
+<th>Index</th>
+<th>字段名</th>
+<th>序列化函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>userData</code></td>
+<td><code>sub_46B6F3</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>userGameOption</code></td>
+<td><code>sub_41B81A</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>userCharacterList</code></td>
+<td><code>sub_40AFC9</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>userItemList</code></td>
+<td><code>sub_40ECFF</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>userMusicDetailList</code></td>
+<td><code>sub_41FA46</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>userActivityList</code></td>
+<td><code>sub_40E12E</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>userRecentRatingList</code></td>
+<td><code>sub_42700C</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>userPlaylogList</code></td>
+<td><code>sub_44493B</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>userChargeList</code></td>
+<td><code>sub_43EF40</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>userCourseList</code></td>
+<td><code>sub_42CFF7</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>userDuelList</code></td>
+<td><code>sub_4625D5</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>userCMissionList</code></td>
+<td><code>sub_424EEC</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>userTeamPoint</code></td>
+<td><code>sub_462B3E</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>userRatingBaseHotList</code></td>
+<td><code>sub_460BD1</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>userRatingBaseList</code></td>
+<td><code>sub_460BD1</code></td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>userRatingBaseNextList</code></td>
+<td><code>sub_460BD1</code></td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>userRatingBaseNewList</code></td>
+<td><code>sub_460BD1</code></td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>userRatingBaseNewNextList</code></td>
+<td><code>sub_460BD1</code></td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>userLoginBonusList</code></td>
+<td><code>sub_449D6E</code></td>
+</tr>
+<tr>
+<td>19</td>
+<td><code>userMapAreaList</code></td>
+<td><code>sub_44836F</code></td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>userOverPowerList</code></td>
+<td><code>sub_42C70F</code></td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>userNetBattlelogList</code></td>
+<td><code>sub_433DCA</code></td>
+</tr>
+<tr>
+<td>22</td>
+<td><code>userEmoneyList</code></td>
+<td><code>sub_40C248</code></td>
+</tr>
+<tr>
+<td>23</td>
+<td><code>userNetBattleData</code></td>
+<td><code>sub_417F2B</code></td>
+</tr>
+<tr>
+<td>24</td>
+<td><code>userFavoriteMusicList</code></td>
+<td><code>sub_46A7BC</code></td>
+</tr>
+<tr>
+<td>25</td>
+<td><code>userUnlockChallengeList</code></td>
+<td><code>sub_45FE98</code></td>
+</tr>
+<tr>
+<td>26</td>
+<td><code>userLinkedVerseList</code></td>
+<td><code>sub_465AFF</code></td>
+</tr>
+<tr>
+<td>27-31</td>
+<td><code>isNewCharacterList</code> 等</td>
+<td><code>sub_468688</code></td>
+</tr>
+</tbody>
+</table>
+<p>其中 <code>userMusicDetailList</code> 包含每首歌的成绩记录<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>每条含 score<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>judge<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>maxCombo 等<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>userPlaylogList</code> 包含游玩日志<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>userRatingBase*List</code> 包含 Rating 计算所需的 Hot/Best/New 列表<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="增量-vs 全量上传">增量 vs 全量上传</h4>
+<p>序列化函数有两条路径<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>增量路径</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>this[n] != this[n+1]</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>检查每个子列表的脏标记<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>只序列化变化过的数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>每个子对象用一对指针表示范围<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>begin/end<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如果 <code>begin == end</code> 说明没有变化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>跳过<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>全量路径</strong><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>byte at a2+52 == 0</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>无条件序列化所有 27+ 个字段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用于首次上传或强制同步<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<h3 id="分片上传机制">分片上传机制</h3>
+<p><code>sub_99CC50</code> @ <code>0x99CC50</code> 是分片协调器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>推断出来的对象布局<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ChunkedUpload</span> {</span>
+    <span class="hljs-comment">/* +0  */</span> byte  enabled;        <span class="hljs-comment">// 是否启用上传</span>
+    <span class="hljs-comment">/* +4  */</span> <span class="hljs-keyword">void</span>* buffer;         <span class="hljs-comment">// 序列化后的数据 buffer</span>
+    <span class="hljs-comment">/* +8  */</span> <span class="hljs-keyword">int</span>   bufferSize;     <span class="hljs-comment">// buffer 总大小</span>
+    <span class="hljs-comment">/* +12 */</span> <span class="hljs-keyword">int</span>   totalChunks;    <span class="hljs-comment">// 总分片数 (bufferSize / 10240)</span>
+    <span class="hljs-comment">/* +16 */</span> <span class="hljs-keyword">int</span>   currentChunk;   <span class="hljs-comment">// 当前分片 index</span>
+    <span class="hljs-comment">// ...</span>
+};
+</code></pre></div>
+<p>核心逻辑<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>-&gt;enabled) {
+    <span class="hljs-comment">// 返回空字符串&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;，&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;跳过上传</span>
+    <span class="hljs-keyword">return</span> empty_response;
+}
+
+<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>-&gt;buffer &amp;&amp; <span class="hljs-keyword">this</span>-&gt;currentChunk &lt; <span class="hljs-keyword">this</span>-&gt;totalChunks) {
+    offset = <span class="hljs-number">10240</span> * <span class="hljs-keyword">this</span>-&gt;currentChunk;
+    remaining = <span class="hljs-keyword">this</span>-&gt;bufferSize - offset;
+    chunkSize = <span class="hljs-built_in">min</span>(<span class="hljs-number">10240</span>, remaining);
+
+    chunk = <span class="hljs-built_in">make_slice</span>(<span class="hljs-keyword">this</span>-&gt;buffer + offset, chunkSize);
+    result = <span class="hljs-built_in">SendChunk</span>(<span class="hljs-keyword">this</span>, chunk);  <span class="hljs-comment">// -&gt; 0x99CE10</span>
+    <span class="hljs-keyword">this</span>-&gt;currentChunk++;
+    <span class="hljs-keyword">return</span> result;
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">return</span> empty_string;  <span class="hljs-comment">// 所有分片发送完毕</span>
+}
+</code></pre></div>
+<p>每次调用处理一个 10KB 分片<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>由上层循环驱动直到所有分片发完<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="sendupsertuserall-内部逻辑">sendUpsertUserAll 内部逻辑</h3>
+<p><strong>函数</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>projClient::ClientUpload::sendUpsertUserAll</code> @ <code>0x995050</code></p>
+<p>原始反编译结果<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>patch 前<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">char</span> __thiscall <span class="hljs-title">sendUpsertUserAll</span><span class="hljs-params">(_DWORD *<span class="hljs-keyword">this</span>, <span class="hljs-keyword">int</span> a2, <span class="hljs-keyword">int</span> a3)</span> </span>{
+    <span class="hljs-keyword">int</span> v4;
+    <span class="hljs-keyword">char</span> v5;
+
+    <span class="hljs-built_in">sub_47007C</span>(v8);                                         <span class="hljs-comment">// 初始化局部缓冲区</span>
+    <span class="hljs-built_in">sub_42E5DC</span>(v9, *(<span class="hljs-keyword">this</span> + <span class="hljs-number">24</span>), *(<span class="hljs-keyword">this</span> + <span class="hljs-number">25</span>), a2, a3);    <span class="hljs-comment">// 序列化完整 UserAll 数据</span>
+    v4 = <span class="hljs-built_in">sub_458E31</span>();                                      <span class="hljs-comment">// 获取全局 HTTP 客户端单例</span>
+    v5 = <span class="hljs-built_in">sub_461856</span>(v4, v9, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>);                         <span class="hljs-comment">// 发送 HTTP POST 请求</span>
+    <span class="hljs-comment">// ... cleanup SSO strings ...</span>
+    <span class="hljs-keyword">return</span> v5;                                              <span class="hljs-comment">// 返回 true/false</span>
+}
+</code></pre></div>
+<p>关键子调用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>地址</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sub_47007C</code></td>
+<td><code>0x47007C</code></td>
+<td>初始化一个 std::string 或 buffer</td>
+</tr>
+<tr>
+<td><code>sub_42E5DC</code></td>
+<td><code>0x42E5DC</code></td>
+<td>核心序列化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调用 <code>0x9E3D50</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>把 UserAll 聚合对象序列化为 JSON 字符串</td>
+</tr>
+<tr>
+<td><code>sub_458E31</code></td>
+<td><code>0x458E31</code></td>
+<td>返回全局 HTTP 客户端单例<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>&amp;dword_1C7462C</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td><code>sub_461856</code></td>
+<td><code>0x461856</code></td>
+<td>HTTP 发送 thunk<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>跳转到 <code>0x996DC0</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>sub_996DC0</code> @ <code>0x996DC0</code> 是实际的 HTTP 传输函数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>约 1098 字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ol>
+<li>检查连接状态<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>this + 64</code> 处的 flag<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如果为 1 直接返回 0<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li>序列化请求体<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>带 <code>#</code> 分隔符<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li>计算 HMAC 或签名<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>sub_45B717</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使用 <code>this + 96</code> 和 <code>this + 100</code> 处的密钥<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li>通过 WinHTTP 发送请求</li>
+<li>返回成功/失败标志</li>
+</ol>
+<h3 id="调用链总览">调用链总览</h3>
+<p>从游戏结束到成绩上传的完整调用链<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>游戏结束
+  → PlaySM<span class="hljs-number">::</span>postResultDecision()
+    → ChunkedUplo<span class="hljs-number">ad::</span>dispatchNext() @ <span class="hljs-number">0</span>x99CC50
+      → ChunkedUplo<span class="hljs-number">ad::</span>sendChunk() @ <span class="hljs-number">0</span>x99CE10
+        → ClientUplo<span class="hljs-number">ad::</span>buildMetadata() @ <span class="hljs-number">0x9989E0</span>
+          → [构建 orderId / divNumber / divLength / clientUpload 元数据]
+        → ClientUpload vtable[<span class="hljs-number">1</span>]() @ <span class="hljs-number">0x995050</span>  (sendUpsertUserAll)
+          → UpsertUserAll<span class="hljs-number">::</span>serialize() @ <span class="hljs-number">0x9E3D50</span> → <span class="hljs-number">0x9D6C40</span>
+            → [序列化 <span class="hljs-number">27</span>+ 种玩家数据为 JSON]
+          → HTTPClient<span class="hljs-number">::</span>getInstance() @ <span class="hljs-number">0x9E3530</span>
+          → HTTPClient<span class="hljs-number">::</span>send() @ <span class="hljs-number">0</span>x996DC0
+            → [签名 → WinHTTP POST → 返回结果]
+</code></pre></div>
+<h2 id="patch-分析">Patch 分析</h2>
+<h3 id="patch-目标">Patch 目标</h3>
+<p><strong>函数</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>projClient::ClientUpload::sendUpsertUserAll</code> @ <code>0x995050</code></p>
+<p>这是成绩上传流程中最关键的一环 —— 它是虚表中唯一负责把完整 UserAll 数据通过网络发出去的入口<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>在它之上是分片调度和元数据构建<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在它之下是 WinHTTP 传输层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>patch 掉这一层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>上面的所有逻辑都变成了无用功<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="为什么选这个函数">为什么选这个函数</h3>
+<p>它是 <code>ClientUpload</code> 虚表的第 2 个条目<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>vtable slot 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>所有成绩上传请求最终都经过这个函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>不存在绕过它的旁路<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>并且它只影响 <code>UpsertUserAll</code> 这个请求类型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>其他网络功能<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>认证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>匹配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>下载等<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>走的是不同的 vtable slot 或完全不同的类<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不受影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="patch-内容">Patch 内容</h3>
+<h4 id="原始字节">原始字节</h4>
+<div class="highlight"><pre class="code"><code><span class="hljs-number">995050</span>: <span class="hljs-number">55</span>                 <span class="hljs-keyword">push</span>    <span class="hljs-built_in">ebp</span>
+<span class="hljs-number">995051</span>: 8B EC              <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">ebp</span>, <span class="hljs-built_in">esp</span>
+<span class="hljs-number">995053</span>: 6A FF              <span class="hljs-keyword">push</span>    <span class="hljs-number">0FFFFFFFFh</span>
+<span class="hljs-number">995055</span>: <span class="hljs-number">68</span> <span class="hljs-number">70</span> C1 <span class="hljs-number">59</span> <span class="hljs-number">01</span>     <span class="hljs-keyword">push</span>    offset SEH_995050
+99505a: <span class="hljs-number">64</span> A1 <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">eax</span>, large <span class="hljs-built_in">fs</span>:<span class="hljs-number">0</span>
+...
+</code></pre></div>
+<p>原始函数有完整的 SEH prologue<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>局部变量初始化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>序列化调用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>HTTP 发送<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>cleanup 等等<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="patched-字节">Patched 字节</h4>
+<div class="highlight"><pre class="code"><code><span class="hljs-attribute">995050</span>: <span class="hljs-number">33</span> C<span class="hljs-number">0</span>              xor     eax, eax
+<span class="hljs-attribute">995052</span>: C<span class="hljs-number">2</span> <span class="hljs-number">08</span> <span class="hljs-number">00</span>           retn    <span class="hljs-number">8</span>
+</code></pre></div>
+<div class="highlight"><pre class="code"><code>原始:<span class="hljs-number"> 55 </span>8B EC 6A FF ...
+补丁:<span class="hljs-number"> 33 </span>C0 C2<span class="hljs-number"> 08 </span>00 ...
+</code></pre></div>
+<p>只有 5 字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>前两条原始指令<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>push ebp</code> + <code>mov ebp, esp</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>共 3 字节被覆盖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>外加第 3 条指令 <code>push -1</code> 的前 2 字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="反编译对比">反编译对比</h4>
+<div class="highlight"><pre class="code"><code><span class="hljs-comment">// BEFORE:</span>
+<span class="hljs-function"><span class="hljs-keyword">char</span> __thiscall <span class="hljs-title">sendUpsertUserAll</span><span class="hljs-params">(_DWORD *<span class="hljs-keyword">this</span>, <span class="hljs-keyword">int</span> a2, <span class="hljs-keyword">int</span> a3)</span> </span>{
+    <span class="hljs-built_in">sub_47007C</span>(v8);                                         <span class="hljs-comment">// 初始化缓冲区</span>
+    <span class="hljs-built_in">sub_42E5DC</span>(v9, *(<span class="hljs-keyword">this</span> + <span class="hljs-number">24</span>), *(<span class="hljs-keyword">this</span> + <span class="hljs-number">25</span>), a2, a3);    <span class="hljs-comment">// 序列化 UserAll</span>
+    v4 = <span class="hljs-built_in">sub_458E31</span>();                                      <span class="hljs-comment">// 获取 HTTP 客户端</span>
+    v5 = <span class="hljs-built_in">sub_461856</span>(v4, v9, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>);                         <span class="hljs-comment">// 发送请求</span>
+    <span class="hljs-comment">// ... cleanup ...</span>
+    <span class="hljs-keyword">return</span> v5;
+}
+
+<span class="hljs-comment">// AFTER:</span>
+<span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall <span class="hljs-title">sendUpsertUserAll</span><span class="hljs-params">(<span class="hljs-keyword">int</span> a1, <span class="hljs-keyword">int</span> a2)</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre></div>
+<p>函数入口直接返回 0<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>false<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不做任何操作<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="为什么是-`retn 8` 而不是 `retn`">为什么是 <code>retn 8</code> 而不是 <code>retn</code></h4>
+<p><code>sendUpsertUserAll</code> 是通过虚表调用的 <code>__thiscall</code> 方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><code>this</code> 在 <code>ecx</code> 中<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>不需要栈清理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></li>
+<li>2 个显式参数 <code>a2</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><code>a3</code> 在栈上<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>各 4 字节 = 8 字节</li>
+</ul>
+<p>栈帧验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-attribute">__saved_registers</span> @ ebp+<span class="hljs-number">0</span>x<span class="hljs-number">3</span>c   (pushed ebp)
+<span class="hljs-attribute">__return_address</span> @ ebp+<span class="hljs-number">0</span>x<span class="hljs-number">40</span>    (return address)
+<span class="hljs-attribute">arg_0</span>            @ ebp+<span class="hljs-number">0</span>x<span class="hljs-number">44</span>    (a<span class="hljs-number">2</span>, <span class="hljs-number">4</span> bytes)
+<span class="hljs-attribute">arg_4</span>            @ ebp+<span class="hljs-number">0</span>x<span class="hljs-number">48</span>    (a<span class="hljs-number">3</span>, <span class="hljs-number">4</span> bytes)
+</code></pre></div>
+<p>调用者 push 了 8 字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>callee 必须通过 <code>retn 8</code> 来清理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>如果用裸 <code>retn</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>C3</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>栈会不平衡<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>调用者会崩溃<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="残留字节处理">残留字节处理</h4>
+<p><code>0x995055</code> 之后的原始字节<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>68 70 C1 59 01 ...</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>在 patch 后变成不可达的死代码<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>不需要 NOP 它们 —— 执行流从 <code>0x995052</code> 的 <code>retn 8</code> 直接返回<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>永远不会碰到那些字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>IDA 的分析可能会对残留的 <code>SEH_995050</code> 引用报警告<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>因为 SEH setup 被跳过了但 <code>.pdata</code> 里还有条目<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这纯粹是外观问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>运行时没有任何影响 —— SEH handler 只在异常发生时才会被查找<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而这个函数根本不会触发异常<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="总结">总结</h2>
+<p>这个 patch 的核心思路极其简单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在成绩上传函数的入口处放一个 <code>return false</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>最终结果是 5 字节的 patch<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>精确阻断单个 API<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不影响任何其他功能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>和之前的自检跳过 patch 一样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>修改函数入口比修改中间逻辑更可靠 —— 你不需要理解函数内部做了什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>只需要知道它返回什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>调用者如何处理返回值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><code>xor eax, eax; retn N</code> 是最通用的 &quot;kill switch&quot; 模式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" rel="tag">中二节奏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" rel="tag">逆向工程</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../../../06/18/chu-wunv/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          巫女插件使用说明书
+        
+      </div>
+    </a>
+  
+  
+    <a href="../../../04/05/chu-reverse/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          日二节奏跳过自检
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../../06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../../06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="">日二节奏启用国服上传体验</a>
+          </li>
+        
+          <li>
+            <a href="../../../04/05/chu-reverse/">日二节奏跳过自检</a>
+          </li>
+        
+          <li>
+            <a href="../../../../2025/12/28/anomaly/">如何在日二节奏触发异象</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 15px;">逆向工程</a> <a href="../../../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../../../archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="../../../../about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="../../../../js/clipboard.min.js"></script>
+<script src="../../../../js/jquery-1.4.3.min.js"></script>
+
+<script src="../../../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+<script src="../../../../js/script.js"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>

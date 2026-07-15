@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>日二节奏跳过自检 | ookamitai::blogspaces</title>
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/ChineseMono-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-italic-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-bold.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" content="通过一些 educated guess 和 vibe-coding 取得的结果">
+  
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox-1.3.4.css">
+  
+  
+    <link rel="stylesheet" href="/katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="/katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="/katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="../../../../index.html">Home</a>
+    
+      <a class="main-nav-link" href="../../../../archives">Archives</a>
+    
+      <a class="main-nav-link" href="../../../../about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main"><article id="post-chu-reverse" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="" class="article-date">
+  <time class="dt-published" datetime="2026-04-05T22:46:58.000Z" itemprop="datePublished">2026-04-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      日二节奏跳过自检
+    </h1>
+  
+
+      </header>
+    
+    
+<div id="article-toc">
+    <h2 class="widget-title">Table Of Contents</h2>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#state-machine%20%E6%9E%B6%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">State Machine 架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">2.1.</span> <span class="toc-text">整体结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#state-machine%20base%20class"><span class="toc-number">2.2.</span> <span class="toc-text">State Machine Base Class</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">分析方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#step-1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">3.1.</span> <span class="toc-text">Step 1：字符串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#step-2%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3Exrefs%20%E5%88%86%E6%9E%90"><span class="toc-number">3.2.</span> <span class="toc-text">Step 2：xrefs 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#step-3%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3Econstructor%20%E8%BF%BD%E8%B8%AA"><span class="toc-number">3.3.</span> <span class="toc-text">Step 3：Constructor 追踪</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#step-4%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3Ecopyright%20%E5%AE%9A%E4%BD%8D"><span class="toc-number">3.4.</span> <span class="toc-text">Step 4：Copyright 定位</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#patch-%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">Patch 分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#patch-1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3Epoweron%20state%20count"><span class="toc-number">4.1.</span> <span class="toc-text">Patch 1：PowerOn State Count</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#patch-2%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3Epowerontest%20factory%20registration%20nop"><span class="toc-number">4.2.</span> <span class="toc-text">Patch 2：PowerOnTest Factory Registration NOP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#patch-3%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3Einitialize%20state%20count"><span class="toc-number">4.3.</span> <span class="toc-text">Patch 3：Initialize State Count</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#patch-4%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3Einitialize%20factory%20registrations%20nop"><span class="toc-number">4.4.</span> <span class="toc-text">Patch 4：Initialize Factory Registrations NOP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#patch-5%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3Ecopyright%20bypass"><span class="toc-number">4.5.</span> <span class="toc-text">Patch 5：Copyright Bypass</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="toc-number">5.</span> <span class="toc-text">验证与测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E9%AA%8C%E8%AF%81"><span class="toc-number">5.1.</span> <span class="toc-text">静态验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%B5%8B%E8%AF%95"><span class="toc-number">5.2.</span> <span class="toc-text">动态测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E9%99%84%E5%BD%95"><span class="toc-number">6.</span> <span class="toc-text">技术附录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a-patch%20%E6%95%B0%E6%8D%AE"><span class="toc-number">6.1.</span> <span class="toc-text">A. Patch 数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b-state%20machine%20vtable%20%E7%BB%93%E6%9E%84"><span class="toc-number">6.2.</span> <span class="toc-text">B. State Machine Vtable 结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#c-factory%20registration%20%E6%9C%BA%E5%88%B6"><span class="toc-number">6.3.</span> <span class="toc-text">C. Factory Registration 机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#d-patch%20%E5%BA%94%E7%94%A8%E4%BB%A3%E7%A0%81"><span class="toc-number">6.4.</span> <span class="toc-text">D. Patch 应用代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#e-%E7%89%88%E6%9C%AC%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7"><span class="toc-number">6.5.</span> <span class="toc-text">E. 版本可移植性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#f-%E5%B7%B2%E7%9F%A5%E5%B1%80%E9%99%90%E6%80%A7"><span class="toc-number">6.6.</span> <span class="toc-text">F. 已知局限性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%B8%A3%E8%B0%A2"><span class="toc-number">8.</span> <span class="toc-text">鸣谢</span></a></li></ol>
+</div>
+
+    <div class="e-content article-entry article-with-titlenum" itemprop="articleBody">
+      
+        <h2 id="概述">概述</h2>
+<p>所有分析基于 X-VERSE-X 的 <code>chusanApp.exe</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>base address <code>0x400000</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">仅供学习参考<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="state-machine 架构">State Machine 架构</h2>
+<h3 id="整体结构">整体结构</h3>
+<p>CHUNITHM 用了一套层级式的 state machine 来管理启动流程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-string">Root</span> <span class="hljs-string">StateMachine</span>
+<span class="hljs-string">├─</span> <span class="hljs-attr">State 0:</span> <span class="hljs-string">PowerOn</span>
+<span class="hljs-string">│</span>  <span class="hljs-string">├─</span> <span class="hljs-attr">State 0:</span> <span class="hljs-string">PowerOnLoad</span> <span class="hljs-string">(XML</span> <span class="hljs-string">asset</span> <span class="hljs-string">loading)</span>
+<span class="hljs-string">│</span>  <span class="hljs-string">└─</span> <span class="hljs-attr">State 1:</span> <span class="hljs-string">PowerOnTest</span> <span class="hljs-string">(hardware</span> <span class="hljs-string">diagnostics)</span>
+<span class="hljs-string">└─</span> <span class="hljs-attr">State 1:</span> <span class="hljs-string">Initialize</span>  
+   <span class="hljs-string">├─</span> <span class="hljs-attr">State 0:</span> <span class="hljs-string">InitializeMecha</span> <span class="hljs-string">(device</span> <span class="hljs-string">tests)</span>
+   <span class="hljs-string">└─</span> <span class="hljs-attr">State 1:</span> <span class="hljs-string">InitializeCollab</span> <span class="hljs-string">(network</span> <span class="hljs-string">+</span> <span class="hljs-string">dist</span> <span class="hljs-string">server)</span>
+</code></pre></div>
+<h3 id="state-machine base class">State Machine Base Class</h3>
+<p><strong>函数</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>StateMachineBase_ctor</code> @ <code>0xA33E10</code></p>
+<p>反编译签名长这样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function">StateMachineBase* __thiscall <span class="hljs-title">StateMachineBase_ctor</span><span class="hljs-params">(
+    StateMachineBase* <span class="hljs-keyword">this</span>,
+    <span class="hljs-keyword">int</span> parentSM,
+    <span class="hljs-keyword">int</span> stateCount  <span class="hljs-comment">// ← the key parameter</span>
+)</span>
+</span></code></pre></div>
+<p>核心逻辑<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>反编译结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-keyword">this</span>-&gt;field_5 = parentSM;
+<span class="hljs-keyword">this</span>-&gt;field_6 = stateCount;  <span class="hljs-comment">// Stored at this+0x18</span>
+<span class="hljs-comment">// ... initialization of factory registry ...</span>
+</code></pre></div>
+<p>从 xref 推断出的 state transition 逻辑<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">StateMachine::IsComplete</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> (<span class="hljs-keyword">this</span>-&gt;currentState &gt;= <span class="hljs-keyword">this</span>-&gt;stateCount);
+}
+</code></pre></div>
+<p><span class="marker"> 当 <code>currentState &gt;= stateCount</code> 时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这个 SM 就会向它的 parent 发送完成信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>然后把控制权交出去<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> 整个 bypass 的核心就建立在这个简单的判断上<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<h2 id="分析方法">分析方法</h2>
+<h3 id="step-1&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;字符串">Step 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>字符串</h3>
+<p>第一步是在 IDA Pro 里搜索已知的 state 名称字符串<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>目的是找到 state machine 的 constructor 和 factory registration 的位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>搜出来的结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-number">0x18E9B18</span>: <span class="hljs-string">&quot;PowerOnTest&quot;</span>
+<span class="hljs-number">0x18E9BBC</span>: <span class="hljs-string">&quot;InitializeMecha&quot;</span>  
+<span class="hljs-number">0x18E9BD0</span>: <span class="hljs-string">&quot;InitializeCollab&quot;</span>
+<span class="hljs-number">0x1C3A200</span>: <span class="hljs-string">&quot;.?AV?$FactoryConstructor@VPowerOnTest@projGame@@...&quot;</span>
+<span class="hljs-number">0x1C3A328</span>: <span class="hljs-string">&quot;.?AV?$FactoryConstructor@VInitializeMecha@projGame@@...&quot;</span>
+<span class="hljs-number">0x1C3A398</span>: <span class="hljs-string">&quot;.?AV?$FactoryConstructor@VInitializeCollab@projGame@@...&quot;</span>
+</code></pre></div>
+<p>RTTI 字符串暴露了 <code>FactoryConstructor&lt;StateClass&gt;</code> 的 template 实例化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这些都是在 parent SM 构建时注册进去的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="step-2&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;xrefs 分析">Step 2<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>xrefs 分析</h3>
+<p>对字符串 &quot;PowerOnTest&quot; 做 xref<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在 <code>0xD9D5B3</code> 附近找到了用法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>d9d5b3  push    <span class="hljs-number">1</span>              ; <span class="hljs-keyword">state</span> index
+d9d5b5  mov     ecx, esi       ; this = PowerOn SM
+d9d5b7  call    sub_44C05A     ; factory registration function
+</code></pre></div>
+<p><code>push &lt;index&gt;; mov ecx, &lt;sm&gt;; call &lt;register_func&gt;</code> 这个 pattern 就是 factory registration 的特征 —— 每个 child state 在构建期间都会把自己注册到 parent SM 里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="step-3&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;constructor 追踪">Step 3<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>Constructor 追踪</h3>
+<p>从 <code>0xD9D5B3</code> 往上追<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>找到了 parent 函数 <code>PowerOnSM_ctor</code> @ <code>0xD9D440</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><code>0xD9D46A</code> 处的 constructor prologue<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>d9d46a  push    <span class="hljs-number">2</span>              ; ← <span class="hljs-keyword">state</span>Count = <span class="hljs-number">2</span>
+d9d46c  push    [ebp+arg_0]    ; <span class="hljs-keyword">parent</span>SM
+d9d46f  call    j_StateMachineBase_ctor
+</code></pre></div>
+<p>反编译出来是这样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">int</span> __thiscall <span class="hljs-title">PowerOnSM_ctor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> <span class="hljs-keyword">this</span>, <span class="hljs-keyword">int</span> a2, <span class="hljs-keyword">int</span> a3)</span> </span>{
+    <span class="hljs-built_in">j_StateMachineBase_ctor</span>(a2, <span class="hljs-number">2</span>);  <span class="hljs-comment">// ← stateCount hardcoded as immediate</span>
+    *<span class="hljs-keyword">this</span> = &amp;earth::StateMachine&lt;projGame::PowerOn&gt;::`vftable<span class="hljs-number">&#x27;</span>;
+    <span class="hljs-comment">// ... vtable setup, member initialization ...</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+</code></pre></div>
+<p><span class="marker"> state count 是以 immediate value 的形式 push 进去的<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>push 2</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>直接改这一个字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>就能在不碰任何逻辑的情况下改变 SM 的终止条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> 这是整个方案的基础发现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="step-4&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;copyright 定位">Step 4<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>Copyright 定位</h3>
+<p>其实这个自己并没有找到<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是参照了 tangent90 大佬的 X-VERSE 的跳过版权 patch<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>然后 sigscan 了一下来找到了 X-VERSE-X 对应的上一层 xref 和上下文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>反编译上下文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">char</span> __thiscall <span class="hljs-title">InitializeCollab_Execute</span><span class="hljs-params">(_DWORD* <span class="hljs-keyword">this</span>)</span> </span>{
+    <span class="hljs-comment">// ... device checks ...</span>
+    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">IsCopyrightWarningAcknowledged_thunk</span>()) {
+        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;  <span class="hljs-comment">// Block progression</span>
+    }
+    <span class="hljs-comment">// ... proceed with initialization ...</span>
+    <span class="hljs-keyword">this</span>[<span class="hljs-number">5</span>] = <span class="hljs-number">2</span>;  <span class="hljs-comment">// Transition to next state</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+}
+</code></pre></div>
+<p>顺着 thunk 找到目标函数 @ <code>0x7D4CA0</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>7d4ca0  <span class="hljs-keyword">xor</span>     <span class="hljs-built_in">al</span>, <span class="hljs-built_in">al</span>    <span class="hljs-comment">; return 0</span>
+7d4ca2  <span class="hljs-keyword">retn</span>
+</code></pre></div>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">char</span> <span class="hljs-title">IsCopyrightWarningAcknowledged</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;  <span class="hljs-comment">// Always returns &quot;not acknowledged&quot;</span>
+}
+</code></pre></div>
+<p><span class="marker">这是个永远返回 false 的 stub<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>强制让对话框显示出来<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> 直接 patch 它就行<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<h2 id="patch-分析">Patch 分析</h2>
+<h3 id="patch-1&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;poweron state count">Patch 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>PowerOn State Count</h3>
+<p><strong>Patch</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>0xD9D46B</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>在 <code>PowerOnSM_ctor</code> 里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>原始字节 <code>6A 02</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>push 2</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>改成 <code>6A 01</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>push 1</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>; BEFORE:
+d9d46a  push    <span class="hljs-number">2</span>              ; <span class="hljs-keyword">state</span>Count = <span class="hljs-number">2</span> (PowerOnLoad, PowerOnTest)
+d9d46c  push    [ebp+arg_0]
+d9d46f  call    j_StateMachineBase_ctor
+
+; AFTER:
+d9d46a  push    <span class="hljs-number">1</span>              ; <span class="hljs-keyword">state</span>Count = <span class="hljs-number">1</span> (PowerOnLoad only)
+d9d46c  push    [ebp+arg_0]
+d9d46f  call    j_StateMachineBase_ctor
+</code></pre></div>
+<p>PowerOnLoad<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>state 0<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>执行完后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>currentState</code> 自增到 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>条件 <code>1 &gt;= 1</code> 成立<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>SM 发出完成信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>PowerOnTest<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>state 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>永远不会执行<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker"> state transition 逻辑检查的是 <code>&gt;=</code> 而不是 <code>==</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>所以把 count 设成 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>state 1 就直接不可达了<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<hr>
+<h3 id="patch-2&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;powerontest factory registration nop">Patch 2<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>PowerOnTest Factory Registration NOP</h3>
+<p><strong>Patch</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>0xD9D5B3</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>在 <code>PowerOn_ctor</code> 里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>原始 9 字节 <code>6A 01 8B CE E8 9E EA 6A FF</code> 全替换成 NOP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-comment">; BEFORE:</span>
+d9d5b3  <span class="hljs-keyword">push</span>    <span class="hljs-number">1</span>              <span class="hljs-comment">; state index = 1</span>
+d9d5b5  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">ecx</span>, <span class="hljs-built_in">esi</span>       <span class="hljs-comment">; this = PowerOn SM</span>
+d9d5b7  <span class="hljs-keyword">call</span>    sub_44C05A     <span class="hljs-comment">; RegisterStateFactory(1, PowerOnTest)</span>
+d9d5bc  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">eax</span>, <span class="hljs-built_in">esi</span>
+
+<span class="hljs-comment">; AFTER:</span>
+d9d5b3  <span class="hljs-keyword">nop</span>                    <span class="hljs-comment">; 9 bytes of NOP</span>
+d9d5bc  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">eax</span>, <span class="hljs-built_in">esi</span>
+</code></pre></div>
+<p>这个 patch 和 Patch 1 是冗余的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但作为 defense-in-depth 存在 —— 万一 state count 检查失效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>缺失的 factory 也能阻止执行<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<h3 id="patch-3&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;initialize state count">Patch 3<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>Initialize State Count</h3>
+<p><strong>Patch</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>0xD9DF5B</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>在 <code>InitializeSM_ctor</code> 里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>6A 02</code> 改成 <code>6A 00</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>; BEFORE:
+d9df5a  push    <span class="hljs-number">2</span>              ; <span class="hljs-keyword">state</span>Count = <span class="hljs-number">2</span> (InitializeMecha, InitializeCollab)
+d9df5c  push    [ebp+arg_0]
+d9df5f  call    j_StateMachineBase_ctor
+
+; AFTER:
+d9df5a  push    <span class="hljs-number">0</span>              ; <span class="hljs-keyword">state</span>Count = <span class="hljs-number">0</span> (<span class="hljs-keyword">no</span> states)
+d9df5c  push    [ebp+arg_0]
+d9df5f  call    j_StateMachineBase_ctor
+</code></pre></div>
+<p><span class="marker"><code>stateCount = 0</code> 的时候<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>初始 <code>currentState = 0</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>条件 <code>0 &gt;= 0</code> 立刻成立<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>SM 不执行任何 state 直接发出完成信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> InitializeMecha 和 InitializeCollab 全部跳过<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这里用 0 而不是 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>是因为设成 0 连 state 0 都不进<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>连第一个 state 的初始化开销都省了<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<h3 id="patch-4&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;initialize factory registrations nop">Patch 4<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>Initialize Factory Registrations NOP</h3>
+<p><strong>Patch</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>0xD9E0A8</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>在 <code>Initialize_ctor</code> 里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>连续 18 字节全 NOP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-comment">; BEFORE:</span>
+d9e0a8  <span class="hljs-keyword">push</span>    <span class="hljs-number">0</span>              <span class="hljs-comment">; state index = 0</span>
+d9e0aa  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">ecx</span>, <span class="hljs-built_in">esi</span>
+d9e0ac  <span class="hljs-keyword">call</span>    j_InitializeMecha_factoryReg    <span class="hljs-comment">; 9 bytes total</span>
+d9e0b1  <span class="hljs-keyword">push</span>    <span class="hljs-number">1</span>              <span class="hljs-comment">; state index = 1</span>
+d9e0b3  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">ecx</span>, <span class="hljs-built_in">esi</span>
+d9e0b5  <span class="hljs-keyword">call</span>    j_InitializeCollab_factoryReg   <span class="hljs-comment">; 9 bytes total</span>
+d9e0ba  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">eax</span>, <span class="hljs-built_in">esi</span>
+
+<span class="hljs-comment">; AFTER:</span>
+d9e0a8  <span class="hljs-keyword">nop</span>                    <span class="hljs-comment">; 18 bytes of NOP</span>
+d9e0ba  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">eax</span>, <span class="hljs-built_in">esi</span>
+</code></pre></div>
+<p>两个 factory registration 恰好相邻<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>所以一次性 NOP 掉 18 字节就能同时搞定 InitializeMecha 和 InitializeCollab<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>同样是和 Patch 3 冗余的 defense-in-depth<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<h3 id="patch-5&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;copyright bypass">Patch 5<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>Copyright Bypass</h3>
+<p><strong>Patch</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><code>0x7D4CA0</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>函数 <code>IsCopyrightWarningAcknowledged</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>32 C0</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>xor al, al</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>改成 <code>B0 01</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span><code>mov al, 1</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>就 2 字节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-comment">; BEFORE:</span>
+7d4ca0  <span class="hljs-keyword">xor</span>     <span class="hljs-built_in">al</span>, <span class="hljs-built_in">al</span>         <span class="hljs-comment">; AL = 0 (false)</span>
+7d4ca2  <span class="hljs-keyword">retn</span>
+
+<span class="hljs-comment">; AFTER:</span>
+7d4ca0  <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">al</span>, <span class="hljs-number">1</span>          <span class="hljs-comment">; AL = 1 (true)</span>
+7d4ca2  <span class="hljs-keyword">retn</span>
+</code></pre></div>
+<hr>
+<h2 id="验证与测试">验证与测试</h2>
+<h3 id="静态验证">静态验证</h3>
+<p>指令长度合计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-attribute">Patch</span> <span class="hljs-number">1</span>:  <span class="hljs-number">1</span> 字节  (<span class="hljs-number">0</span>xD<span class="hljs-number">9</span>D<span class="hljs-number">46</span>B: <span class="hljs-number">02</span> → <span class="hljs-number">01</span>)
+<span class="hljs-attribute">Patch</span> <span class="hljs-number">2</span>:  <span class="hljs-number">9</span> 字节  (<span class="hljs-number">0</span>xD<span class="hljs-number">9</span>D<span class="hljs-number">5</span>B<span class="hljs-number">3</span>: push+mov+call → NOP×<span class="hljs-number">9</span>)
+<span class="hljs-attribute">Patch</span> <span class="hljs-number">3</span>:  <span class="hljs-number">1</span> 字节  (<span class="hljs-number">0</span>xD<span class="hljs-number">9</span>DF<span class="hljs-number">5</span>B: <span class="hljs-number">02</span> → <span class="hljs-number">00</span>)
+<span class="hljs-attribute">Patch</span> <span class="hljs-number">4</span>: <span class="hljs-number">18</span> 字节  (<span class="hljs-number">0</span>xD<span class="hljs-number">9</span>E<span class="hljs-number">0</span>A<span class="hljs-number">8</span>: <span class="hljs-number">2</span>×(push+mov+call) → NOP×<span class="hljs-number">18</span>)
+<span class="hljs-attribute">Patch</span> <span class="hljs-number">5</span>:  <span class="hljs-number">2</span> 字节  (<span class="hljs-number">0</span>x<span class="hljs-number">7</span>D<span class="hljs-number">4</span>CA<span class="hljs-number">0</span>: xor al,al → mov al,<span class="hljs-number">1</span>)
+</code></pre></div>
+<p>所有被 NOP 掉的区域都包含完整的 <code>call</code> 指令<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因为整条指令都被替换了<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不需要另外修 relative offset<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>所有 patch 也都是自然对齐的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>没有指令跨越 patch 边界的情况<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="动态测试">动态测试</h3>
+<p>结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>PowerOn SM 在 PowerOnLoad<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>state 0<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>完成后直接结束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>Initialize SM 立刻完成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>没有硬件测试对话框<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>没有版权对话框<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>游戏直接跳到主菜单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker">没有观察到任何 crash<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>state machine 逻辑对 <code>stateCount = 0</code> 和 <code>stateCount = 1</code> 的情况都能优雅地处理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<hr>
+<h2 id="技术附录">技术附录</h2>
+<h3 id="a-patch 数据">A. Patch 数据</h3>
+<div class="highlight"><pre class="code"><code><span class="hljs-attribute">Patch</span> <span class="hljs-number">1</span> @ <span class="hljs-number">0</span>xD<span class="hljs-number">9</span>D<span class="hljs-number">46</span>B:
+  <span class="hljs-attribute">Original</span>: <span class="hljs-number">02</span>
+  <span class="hljs-attribute">Patched</span>:  <span class="hljs-number">01</span>
+
+<span class="hljs-attribute">Patch</span> <span class="hljs-number">2</span> @ <span class="hljs-number">0</span>xD<span class="hljs-number">9</span>D<span class="hljs-number">5</span>B<span class="hljs-number">3</span>:
+  <span class="hljs-attribute">Original</span>: <span class="hljs-number">6</span>A <span class="hljs-number">01</span> <span class="hljs-number">8</span>B CE E<span class="hljs-number">8</span> <span class="hljs-number">9</span>E EA <span class="hljs-number">6</span>A FF
+  <span class="hljs-attribute">Patched</span>:  <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span>
+
+<span class="hljs-attribute">Patch</span> <span class="hljs-number">3</span> @ <span class="hljs-number">0</span>xD<span class="hljs-number">9</span>DF<span class="hljs-number">5</span>B:
+  <span class="hljs-attribute">Original</span>: <span class="hljs-number">02</span>
+  <span class="hljs-attribute">Patched</span>:  <span class="hljs-number">00</span>
+
+<span class="hljs-attribute">Patch</span> <span class="hljs-number">4</span> @ <span class="hljs-number">0</span>xD<span class="hljs-number">9</span>E<span class="hljs-number">0</span>A<span class="hljs-number">8</span>:
+  <span class="hljs-attribute">Original</span>: <span class="hljs-number">6</span>A <span class="hljs-number">00</span> <span class="hljs-number">8</span>B CE E<span class="hljs-number">8</span> DC C<span class="hljs-number">5</span> <span class="hljs-number">6</span>A FF <span class="hljs-number">6</span>A <span class="hljs-number">01</span> <span class="hljs-number">8</span>B CE E<span class="hljs-number">8</span> B<span class="hljs-number">3</span> BB <span class="hljs-number">67</span> FF
+  <span class="hljs-attribute">Patched</span>:  <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span> <span class="hljs-number">90</span>
+
+<span class="hljs-attribute">Patch</span> <span class="hljs-number">5</span> @ <span class="hljs-number">0</span>x<span class="hljs-number">7</span>D<span class="hljs-number">4</span>CA<span class="hljs-number">0</span>:
+  <span class="hljs-attribute">Original</span>: <span class="hljs-number">32</span> C<span class="hljs-number">0</span>
+  <span class="hljs-attribute">Patched</span>:  B<span class="hljs-number">0</span> <span class="hljs-number">01</span>
+</code></pre></div>
+<h3 id="b-state machine vtable 结构">B. State Machine Vtable 结构</h3>
+<p><strong>PowerOn SM vtable</strong> @ <code>0x18D3xxx</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">StateMachine_PowerOn_vtable</span> {</span>
+    <span class="hljs-keyword">void</span>* dtor;
+    <span class="hljs-keyword">void</span>* Execute;
+    <span class="hljs-keyword">void</span>* OnEnter;
+    <span class="hljs-keyword">void</span>* OnExit;
+    <span class="hljs-keyword">void</span>* GetStateName;
+    <span class="hljs-comment">// ... additional virtual methods ...</span>
+};
+</code></pre></div>
+<p>State 执行流<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-keyword">while</span> (!sm-&gt;<span class="hljs-built_in">IsComplete</span>()) {
+    sm-&gt;vtable-&gt;<span class="hljs-built_in">Execute</span>(sm);
+    sm-&gt;currentState++;
+}
+</code></pre></div>
+<h3 id="c-factory registration 机制">C. Factory Registration 机制</h3>
+<p><code>sub_44C05A</code><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>thunk to <code>sub_D9D190</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>负责把一个 state factory 注册到 parent SM 的 factory registry 里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>推断出来的签名<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">void</span> __thiscall <span class="hljs-title">RegisterStateFactory</span><span class="hljs-params">(
+    StateMachine* parentSM,
+    <span class="hljs-keyword">int</span> stateIndex,
+    FactoryConstructor* factory
+)</span></span>;
+</code></pre></div>
+<p>效果是在 <code>parentSM-&gt;factoryRegistry[stateIndex]</code> 里添加一个条目<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用于按需实例化 child state<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="d-patch 应用代码">D. Patch 应用代码</h3>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">ApplyEarlyPatches</span><span class="hljs-params">()</span> </span>{
+    DWORD oldProtect;
+    
+    <span class="hljs-comment">// Patch 1: PowerOn state count 2 → 1</span>
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9D46B</span>, <span class="hljs-number">1</span>, PAGE_EXECUTE_READWRITE, &amp;oldProtect);
+    *(BYTE*)<span class="hljs-number">0xD9D46B</span> = <span class="hljs-number">0x01</span>;
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9D46B</span>, <span class="hljs-number">1</span>, oldProtect, &amp;oldProtect);
+    
+    <span class="hljs-comment">// Patch 2: NOP PowerOnTest factory registration</span>
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9D5B3</span>, <span class="hljs-number">9</span>, PAGE_EXECUTE_READWRITE, &amp;oldProtect);
+    <span class="hljs-built_in">memset</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9D5B3</span>, <span class="hljs-number">0x90</span>, <span class="hljs-number">9</span>);
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9D5B3</span>, <span class="hljs-number">9</span>, oldProtect, &amp;oldProtect);
+    
+    <span class="hljs-comment">// Patch 3: Initialize state count 2 → 0</span>
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9DF5B</span>, <span class="hljs-number">1</span>, PAGE_EXECUTE_READWRITE, &amp;oldProtect);
+    *(BYTE*)<span class="hljs-number">0xD9DF5B</span> = <span class="hljs-number">0x00</span>;
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9DF5B</span>, <span class="hljs-number">1</span>, oldProtect, &amp;oldProtect);
+    
+    <span class="hljs-comment">// Patch 4: NOP both Initialize factory registrations</span>
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9E0A8</span>, <span class="hljs-number">18</span>, PAGE_EXECUTE_READWRITE, &amp;oldProtect);
+    <span class="hljs-built_in">memset</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9E0A8</span>, <span class="hljs-number">0x90</span>, <span class="hljs-number">18</span>);
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0xD9E0A8</span>, <span class="hljs-number">18</span>, oldProtect, &amp;oldProtect);
+    
+    <span class="hljs-comment">// Patch 5: Copyright check xor al,al → mov al,1</span>
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0x7D4CA0</span>, <span class="hljs-number">2</span>, PAGE_EXECUTE_READWRITE, &amp;oldProtect);
+    *(BYTE*)<span class="hljs-number">0x7D4CA0</span> = <span class="hljs-number">0xB0</span>;
+    *(BYTE*)<span class="hljs-number">0x7D4CA1</span> = <span class="hljs-number">0x01</span>;
+    <span class="hljs-built_in">VirtualProtect</span>((<span class="hljs-keyword">void</span>*)<span class="hljs-number">0x7D4CA0</span>, <span class="hljs-number">2</span>, oldProtect, &amp;oldProtect);
+}
+</code></pre></div>
+<p>在 <code>DllMain</code> 的 <code>DLL_PROCESS_ATTACH</code> 里调用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在任何游戏代码执行之前<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>用 <code>VirtualProtect</code> 临时把内存页标记为可写<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>操作完再还原原来的保护属性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>符合 DEP 的要求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="e-版本可移植性">E. 版本可移植性</h3>
+<p>对于未来版本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>有三种移植思路<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>基于字符串的 AOB scan<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>基于 pattern 的 scan<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>以及 signature 验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-function">DWORD <span class="hljs-title">FindPowerOnCtor</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-comment">// Search for &quot;PowerOn&quot; string</span>
+    DWORD strAddr = <span class="hljs-built_in">FindString</span>(<span class="hljs-string">&quot;PowerOn&quot;</span>);
+    <span class="hljs-comment">// Find xrefs to string</span>
+    DWORD* xrefs = <span class="hljs-built_in">GetXrefs</span>(strAddr);
+    <span class="hljs-comment">// Locate constructor via xref analysis</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">LocateConstructor</span>(xrefs);
+}
+</code></pre></div>
+<div class="highlight"><pre class="code"><code><span class="hljs-comment">// Pattern: push 2; push [ebp+arg]; call &lt;ctor&gt;</span>
+BYTE pattern[] = {<span class="hljs-number">0x6A</span>, <span class="hljs-number">0x02</span>, <span class="hljs-number">0xFF</span>, <span class="hljs-number">0x75</span>, <span class="hljs-string">&#x27;?&#x27;</span>, <span class="hljs-number">0xE8</span>, <span class="hljs-string">&#x27;?&#x27;</span>, <span class="hljs-string">&#x27;?&#x27;</span>, <span class="hljs-string">&#x27;?&#x27;</span>, <span class="hljs-string">&#x27;?&#x27;</span>};
+DWORD addr = <span class="hljs-built_in">AOBScan</span>(pattern, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(pattern));
+</code></pre></div>
+<div class="highlight"><pre class="code"><code><span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">ValidatePowerOnCtor</span><span class="hljs-params">(DWORD addr)</span> </span>{
+    <span class="hljs-comment">// Verify vtable assignment follows constructor call</span>
+    <span class="hljs-keyword">if</span> (*(BYTE*)(addr + <span class="hljs-number">5</span>) != <span class="hljs-number">0x8B</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;  <span class="hljs-comment">// mov ecx, esi</span>
+    <span class="hljs-keyword">if</span> (*(BYTE*)(addr + <span class="hljs-number">10</span>) != <span class="hljs-number">0xC7</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; <span class="hljs-comment">// mov [esi], vtable</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+</code></pre></div>
+<h3 id="f-已知局限性">F. 已知局限性</h3>
+<p>所有 patch 用的都是硬编码的绝对地址<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>游戏更新后需要重新分析<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>Patch 假设启动流程正常进行<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如果游戏在运行时尝试重新进入启动 state<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>比如按 TEST<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>行为是 undefined 的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>此外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>跳过的硬件测试<span class="marker">可能会掩盖真实的硬件问题</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>另外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>NOP 掉 factory registration 会阻止 state 实例化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但不会阻止 constructor 里其他初始化代码的执行<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如果 constructor 在 factory registration 之外还有 side effect<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>那些 side effect 仍然会发生<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<h2 id="总结">总结</h2>
+<p><span class="marker">修改 control flow 的 metadata<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>state count<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>比 patch control flow 逻辑本身<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>jump<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>call<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>更可靠<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>State machine 自己的 completion check 反而成了 bypass 的工具<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="鸣谢">鸣谢</h2>
+<ul>
+<li><strong>tangent90</strong> 协助我了很多前备知识<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>CaochengQWQ</strong> 协助了很多测试和游戏知识<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以及出给我了他的 chupico 手台<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>所有的群 u 们<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" rel="tag">中二节奏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" rel="tag">逆向工程</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../../../05/06/chu-net/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          日二节奏启用国服上传体验
+        
+      </div>
+    </a>
+  
+  
+    <a href="../../../../2025/12/28/anomaly/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          如何在日二节奏触发异象
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../../06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../../06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../../05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+          <li>
+            <a href="">日二节奏跳过自检</a>
+          </li>
+        
+          <li>
+            <a href="../../../../2025/12/28/anomaly/">如何在日二节奏触发异象</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 15px;">逆向工程</a> <a href="../../../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../../../archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="../../../../about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="../../../../js/clipboard.min.js"></script>
+<script src="../../../../js/jquery-1.4.3.min.js"></script>
+
+<script src="../../../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+<script src="../../../../js/script.js"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>

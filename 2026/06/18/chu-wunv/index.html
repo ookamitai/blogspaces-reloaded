@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>巫女插件使用说明书 | ookamitai::blogspaces</title>
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/ChineseMono-normal-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-italic-normal.min.css">
+  <link rel="stylesheet" href="/css/fonts/Chinese-normal-bold.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" content="来自 kohaD 的馈赠">
+  
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox-1.3.4.css">
+  
+  
+    <link rel="stylesheet" href="/katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="/katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="/katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="../../../../index.html">Home</a>
+    
+      <a class="main-nav-link" href="../../../../archives">Archives</a>
+    
+      <a class="main-nav-link" href="../../../../about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main"><article id="post-chu-wunv" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="" class="article-date">
+  <time class="dt-published" datetime="2026-06-18T10:12:06.000Z" itemprop="datePublished">2026-06-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      巫女插件使用说明书
+    </h1>
+  
+
+      </header>
+    
+    
+<div id="article-toc">
+    <h2 class="widget-title">Table Of Contents</h2>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E4%B8%8E%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">启动与基础操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#song-info"><span class="toc-number">2.</span> <span class="toc-text">Song Info</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#controls"><span class="toc-number">3.</span> <span class="toc-text">Controls</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mouse-touch%20input"><span class="toc-number">4.</span> <span class="toc-text">Mouse Touch Input</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#judgement-override"><span class="toc-number">5.</span> <span class="toc-text">Judgement Override</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#custom-skill"><span class="toc-number">6.</span> <span class="toc-text">Custom Skill</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#display-rating"><span class="toc-number">7.</span> <span class="toc-text">Display Rating</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#display-name"><span class="toc-number">8.</span> <span class="toc-text">Display Name</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#atom-sound"><span class="toc-number">9.</span> <span class="toc-text">Atom Sound</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#visuals"><span class="toc-number">10.</span> <span class="toc-text">Visuals</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#freecam"><span class="toc-number">11.</span> <span class="toc-text">Freecam</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#field-wall"><span class="toc-number">12.</span> <span class="toc-text">Field Wall</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#text-/%20font"><span class="toc-number">13.</span> <span class="toc-text">Text &#x2F; Font</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fumen-randomizer"><span class="toc-number">14.</span> <span class="toc-text">Fumen Randomizer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#patches"><span class="toc-number">15.</span> <span class="toc-text">Patches</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sigscan-report"><span class="toc-number">16.</span> <span class="toc-text">Sigscan Report</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">17.</span> <span class="toc-text">注意事项</span></a></li></ol>
+</div>
+
+    <div class="e-content article-entry article-with-titlenum" itemprop="articleBody">
+      
+        <p><span class="marker">Codex 帮我写的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我懒死了</span></p>
+<p>本说明书按功能介绍插件的主要用途<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>界面内可通过 <span class="marker">Function</span> 下拉菜单切换功能页<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也可以勾选 <span class="marker">Pinned</span> 将常用功能固定在顶部<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/1.png" alt></p>
+<h2 id="启动与基础操作">启动与基础操作</h2>
+<p>首次打开插件时会显示免责声明页面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>阅读后点击 <span class="marker">I agree</span> 才会进入主界面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>插件不会记住同意状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每次启动都需要重新确认<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker">(但是会记住各个功能的状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>！</h-inner></h-char></span>)</span></p>
+<p><img src="/2026/06/18/chu-wunv/2.png" alt></p>
+<p>主界面左上角显示当前 FPS<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并提供语言选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>按 <span class="marker">HOME</span> 可以隐藏或显示插件窗口<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>底部有几个全局设置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Scale</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整插件窗口缩放<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Opacity</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整插件窗口透明度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Rounded corners</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>切换圆角样式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Reset all settings</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>重置插件设置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p><img src="/2026/06/18/chu-wunv/3.png" alt></p>
+<h2 id="song-info">Song Info</h2>
+<p><span class="marker">Song Info</span> 用于查看当前歌曲和谱面的基础信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>它会显示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>当前曲名<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>当前难度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>歌曲 ID<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>当前分数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>当前谱面 Rating<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>总物量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>当前进度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>例如 <span class="marker">1234/2000 61.7%</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>谱面密度图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>TAP 判定延迟<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>谱面密度图会用不同颜色表示不同类型音符<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>TAP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>红色<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>HOLD<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>黄色<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>SLIDE<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>深蓝色<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>AIR<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>绿色<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>FLICK<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>浅蓝色<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>游玩中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>密度图上会有当前位置指示线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>方便观察当前段落的物量分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>(如上图)</p>
+<h2 id="controls">Controls</h2>
+<p><span class="marker">Controls</span> 放置游玩控制相关功能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">SUPER MYSTERIOUS FUNCTION?! </span> 是自动游玩相关开关<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>启用后会让游戏自动处理谱面输入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>适合测试判定<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>技能和视觉效果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">SERVICE restart method</span> 用于选择 SERVICE 键触发重开的方式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>不同方式适用于不同状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>如果某个方式在当前版本不可用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以切换另一种<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">Restart now</span> 可以立即手动触发重开<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该按钮主要用于测试<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不建议在非游玩状态反复点击<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/4.png" alt></p>
+<h2 id="mouse-touch input">Mouse Touch Input</h2>
+<p><span class="marker">Mouse Touch Input</span> 可以把鼠标点击映射成触摸板输入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>适合没有实体触摸板时测试谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>主要选项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Enable mouse touch lanes</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用鼠标触摸输入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Click both rows</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>点击时同时触发上下两排<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">AIR tower input</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用 AIR 区域输入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">AIR with lane clicks</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>点击普通面板时同时触发 AIR<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">AIR strip height</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整 AIR 区域高度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Half width</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整触摸区域从屏幕中心向左右展开的宽度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Panel height</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整底部触摸面板高度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Default values</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>恢复默认触摸区域<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Clear touch</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>清除当前触摸状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>启用后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>画面上会显示蓝色网格区域<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>方便确认点击范围<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/5.png" alt></p>
+<h2 id="judgement-override">Judgement Override</h2>
+<p><span class="marker">Judgement Override</span> 用于替换游戏判定结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>常用功能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Enable judgement substitution</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用判定替换<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Force every judgement</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>强制所有判定使用指定结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Critical -&gt; Justice</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>把 Justice Critical 替换为 Justice<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Identity</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>恢复默认映射<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">All Justice</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>快速设置为全 Justice 风格<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>下方表格可以针对不同判定类型设置替换规则<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这个功能适合测试结算<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>技能和不同判定结果下的显示效果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/6.png" alt></p>
+<h2 id="custom-skill">Custom Skill</h2>
+<p><span class="marker">Custom Skill</span> 用于自定义技能槽的增长规则<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>顶部的 <span class="marker">Gauge loudness display</span> 是特殊显示模式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>启用后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>技能槽会变成音频响度显示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>其他自定义技能规则会暂时失效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">Base filled slots</span> 可以指定基础填充槽数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>例如设置为 <span class="marker">6</span> 时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>显示会围绕第 6 槽附近变化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/7.png" alt></p>
+<p>普通自定义技能模式包括<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Preset</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>选择预设规则<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Enable Custom Skill</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用自定义技能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Reset rules</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>恢复规则<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Base delta</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>选择基础增减方式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Overall</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>整体倍率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Scale negative deltas</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>负增长也按倍率缩放<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>当前预设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Normal</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>整体 200%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Temperance</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>只让最后 1/4 进度生效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并使用高倍率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Keyboard</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>按音符类型分配不同倍率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>更偏向键盘玩法测试<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Fear of Heights</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>整体提高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但 AIR 类音符会减少<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p><span class="marker">Only selected note types give gauge</span> 可以让只有选中的音符类型提供技能槽<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>下面的表格可以分别调整 TAP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>HOLD<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>SLIDE<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>AIR<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>FLICK 等类型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">Use progress window</span> 可以限制只有歌曲某一段进度提供技能槽<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>例如只让后半段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>最后 25% 或某个区间生效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/8.png" alt></p>
+<h2 id="display-rating">Display Rating</h2>
+<p><span class="marker">Display Rating</span> 只修改画面上显示的 Rating<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不修改真实玩家数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>主要选项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Override display rating</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用显示 Rating 覆盖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Force 99.99 rating</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>强制显示 <span class="marker">99.99</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时禁用手动输入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Rating</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>输入想显示的数值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>允许负数和任意范围<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>关闭覆盖后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>显示会回到游戏真实数值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/9.png" alt></p>
+<h2 id="display-name">Display Name</h2>
+<p><span class="marker">Display Name</span> 用于覆盖画面中的玩家显示名称<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>主要选项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Override display name</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用显示名称覆盖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Name</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>输入要显示的名称<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>该功能只影响显示层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不用于修改实际账号资料<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/10.png" alt></p>
+<h2 id="atom-sound">Atom Sound</h2>
+<p><span class="marker">Atom Sound</span> 用于查看和控制游戏音频通道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>常用操作<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Apply master volume to all channels</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用全局音量倍率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Master volume</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整总音量倍率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Mute all</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>一键静音<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Restore volumes</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>恢复音量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Stop all channels</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>停止所有通道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Channel</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>选择单个通道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Override selected</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用当前通道覆盖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Selected volume</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整当前通道音量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Apply selected now</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>立即应用当前通道设置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Reset selected</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>重置当前通道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p><span class="marker">Channel Overrides</span> 表格可以一次查看多个通道的状态和音量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>常见用途是降低 BGM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>保留打击音<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>或单独测试某个声音通道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/11.png" alt></p>
+<p><img src="/2026/06/18/chu-wunv/12.png" alt><br>
+<img src="/2026/06/18/chu-wunv/13.png" alt></p>
+<h2 id="visuals">Visuals</h2>
+<p><span class="marker">Visuals</span> 用于改变音符和部分游戏画面元素的视觉表现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">Bounce</span> 可以让目标元素在 XYZ 方向上偏移或弹跳<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>关闭 <span class="marker">Continuous</span> 时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>设置的是固定偏移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>开启 <span class="marker">Continuous</span> 时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>元素会持续弹跳<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Bounce speed</span> 控制弹跳速度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Bounce extra UI</span> 会让更多 UI 元素也参与弹跳<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p><span class="marker">Rotate</span> 可以让目标元素旋转<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li>关闭 <span class="marker">Continuous</span> 时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>设置的是固定角度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>开启 <span class="marker">Continuous</span> 时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>设置的是旋转速度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Rotate extra UI</span> 会让更多 UI 元素参与旋转<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p><span class="marker">Restore default</span> 可以恢复视觉参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/14.png" alt></p>
+<h2 id="freecam">Freecam</h2>
+<p><span class="marker">Freecam</span> 用于调整游戏摄像机视角<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>主要选项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Enable freecam</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用自由摄像机<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Position</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整摄像机位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Yaw</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>左右旋转<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Pitch</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>上下俯仰<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>范围为 <span class="marker">-90°</span> 到 <span class="marker">90°</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Roll</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>画面横滚<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>Freecam 适合观察谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>场景和特效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>恢复默认视角时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>请先关闭 Freecam 或使用页面内的默认恢复功能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/15.png" alt></p>
+<h2 id="field-wall">Field Wall</h2>
+<p><span class="marker">Field Wall</span> 用于调整游戏场地墙体的位置和拉伸<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>主要选项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Enable transform</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>启用墙体变换<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">XYZ offset</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整墙体在 X<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Y<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Z 方向的位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">XYZ stretch</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>调整墙体在 X<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Y<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Z 方向的缩放<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Restore default</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>恢复默认墙体参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>该功能主要用于画面效果测试<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>数值过大可能导致画面元素跑出可见范围<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/16.png" alt></p>
+<h2 id="text-/ font">Text / Font</h2>
+<p><span class="marker">Text / Font</span> 用于把游戏内文字随机打乱成无意义文本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">Shuffle game text into nonsense</span> 开启后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>部分游戏文字会变成随机内容<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>适合娱乐或测试字体渲染<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不建议在正常游玩时开启<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/17.png" alt></p>
+<h2 id="fumen-randomizer">Fumen Randomizer</h2>
+<p><span class="marker">Fumen Randomizer</span> 用于在谱面加载时随机修改谱面表现和音符属性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>主要功能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Randomize note positions</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>随机音符位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Randomly replace tap/chara/flick with damage</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>按概率把 TAP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>角色音符<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>FLICK 替换为伤害音符<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Damage chance</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>伤害音符替换概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Randomize note size</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>随机音符大小<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Override AIR height</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>覆盖 AIR 高度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Height</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>指定 AIR 高度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Use out-of-range lanes (-16..31)</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>允许使用正常 16 键以外的左右扩展区域<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Avoid tap/chara/flick overlap</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>避免 TAP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>exTAP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>FLICK 互相重叠<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Randomize slide notes and paths</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>随机 SLIDE 的头尾和路径<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Reseed</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>重新生成随机种子<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p><img src="/2026/06/18/chu-wunv/18.png" alt></p>
+<h2 id="patches">Patches</h2>
+<p><span class="marker">Patches</span> 是独立补丁开关页面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>常见补丁包括<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">Skip PowerOnTest</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>跳过部分开机测试<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Skip Initialize</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>跳过部分初始化流程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Skip Copyright Warning</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>跳过版权提示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Experimental 240Hz chart/UI timing</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>实验性 240Hz 相关补丁<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Force Rainbow Song Jackets</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>强制歌曲封面显示彩虹效果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Block UpsertUserAll</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>阻止用户数据上传<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Block BS1/AllNet ban</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>阻止特定 AllNet/BS1 请求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">Unlock MASTER/ULTIMA select gate</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>绕过 MASTER/ULTIMA 选择门槛<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p>部分补丁关闭后可能需要重启游戏才能完全恢复<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>建议只开启自己明确需要的补丁<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/19.png" alt></p>
+<h2 id="sigscan-report">Sigscan Report</h2>
+<p><span class="marker">Sigscan Report</span> 用于查看插件是否成功找到各项功能需要的位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>状态含义<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><span class="marker">OK</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>已成功匹配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">fallback</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>使用了备用地址<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><span class="marker">failed</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>没有找到<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>相关功能会不可用或被禁用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<p><span class="marker">Export txt</span> 可以导出报告文本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>便于排查不同游戏版本的兼容性问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/06/18/chu-wunv/20.png" alt></p>
+<h2 id="注意事项">注意事项</h2>
+<ul>
+<li>这个插件包含大量实验性功能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>建议一次只改一个功能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>确认效果后再继续<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>谱面随机<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>视觉变换<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>判定替换<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>技能规则等功能会明显改变游玩体验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>显示 Rating 和显示名称只影响画面显示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不用于修改真实账号资料<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>如果某个功能显示不可用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通常是当前游戏版本没有匹配到对应位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以查看 <span class="marker">Sigscan Report</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>使用前建议保留一份可用配置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>出现问题时优先重置设置或关闭最近启用的功能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" rel="tag">中二节奏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" rel="tag">逆向工程</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../chu-cam/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          日二节奏 Freecam Patch
+        
+      </div>
+    </a>
+  
+  
+    <a href="../../../05/06/chu-net/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          日二节奏启用国服上传体验
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../../05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+          <li>
+            <a href="../../../04/05/chu-reverse/">日二节奏跳过自检</a>
+          </li>
+        
+          <li>
+            <a href="../../../../2025/12/28/anomaly/">如何在日二节奏触发异象</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 15px;">逆向工程</a> <a href="../../../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../../../archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="../../../../about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="../../../../js/clipboard.min.js"></script>
+<script src="../../../../js/jquery-1.4.3.min.js"></script>
+
+<script src="../../../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+<script src="../../../../js/script.js"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>
