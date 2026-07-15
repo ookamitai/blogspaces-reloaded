@@ -7,8 +7,10 @@
     "build:clean": "npm run clean && npm run build",
     "check": "npm run build:clean",
     "clean": "hexo clean",
-    "new": "hexo new",
-    "preview": "hexo server --draft",
+    "draft": "hexo new draft",
+    "post": "hexo new post",
+    "preview": "hexo server --draft --open",
+    "ready": "hexo publish",
     "server": "hexo server"
   },
   "hexo": {

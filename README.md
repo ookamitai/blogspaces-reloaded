@@ -2,23 +2,53 @@
 
 The source for [blog.ookamitai.com](https://blog.ookamitai.com), built with Hexo and published by GitHub Actions.
 
-## Write and preview
+## First-time setup
 
 ```sh
 npm ci
-npm run new -- post "Post title"
+```
+
+## Write a draft
+
+Create a draft instead of publishing an unfinished post:
+
+```sh
+npm run draft -- "Post title"
+```
+
+Hexo creates `source/_drafts/Post-title.md`. Fill in its description, categories, and tags, then write the article below the front matter.
+
+Preview the entire site, including drafts, in your browser:
+
+```sh
 npm run preview
 ```
 
-Drafts are visible in the local preview. Before pushing, run the same clean build used by CI:
+When the draft is ready, move it into the published posts directory:
+
+```sh
+npm run ready -- "Post-title"
+```
+
+The argument is the draft filename without `.md`. To create a published post immediately, use `npm run post -- "Post title"`.
+
+## Check and publish
+
+Run the same clean build used by GitHub Actions:
 
 ```sh
 npm run check
 ```
 
-## Publish
+Then commit and push normally:
 
-Push changes to `master`. The **Build and publish website** workflow will:
+```sh
+git add source
+git commit -m "Add Post title"
+git push
+```
+
+The push to `master` triggers the **Build and publish website** workflow, which will:
 
 1. install the locked dependencies with `npm ci`;
 2. build the site from a clean output directory;

@@ -266,8 +266,6 @@ Freecam 适合观察谱面、场景和特效。恢复默认视角时，请先关
 - ==Randomize slide notes and paths==：随机 SLIDE 的头尾和路径。
 - ==Reseed==：重新生成随机种子。
 
-修改谱面类功能通常需要重新进入歌曲或重新加载谱面后才能看到完整效果。
-
 ![](18.png)
 
 ## Patches
