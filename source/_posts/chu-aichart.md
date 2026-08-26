@@ -671,16 +671,3 @@ grammar mask 保证的是句法合法性。合法的密集纵连、手位冲突�
 BARGen-C2S 将自动写谱建模为节拍坐标、层级规划、条件事件生成与形式语法共同约束的问题。现有实验显示，模型能够稳定学习 C2S 事件语言，timing accuracy 超过 84%，opcode accuracy 接近 79%，并在完整 tempo map 上输出可被语法自动机约束的候选。更重要的结果并不是某个 accuracy 数值，而是音频损失与 token 损失呈现不同的收敛行为：模型较早掌握“怎样写得像谱面”，但“怎样针对这首音乐写谱”仍是主要瓶颈。
 
 因此，后续工作的优先级不应是盲目扩大模型或延长 epoch，而应是完成反事实音频评价、decoder 级困难负样本训练、严格基线和人工盲测。只有当正确音频相对错配音频显著提高条件似然，并在未见歌曲上提升音乐对应性，才能把该系统从一个高质量谱面语言模型称为真正的音频条件写谱模型。
-
-### 参考文献
-
-1. Vaswani, A., et al. Attention Is All You Need. *NeurIPS*, 2017.
-2. Huang, C.-Z. A., et al. Music Transformer: Generating Music with Long-Term Structure. *ICLR*, 2019.
-3. Huang, Y.-S., Yang, Y.-H. Pop Music Transformer: Beat-based Modeling and Generation of Expressive Pop Piano Compositions. *ACM Multimedia*, 2020.
-4. Hsiao, W.-Y., et al. Compound Word Transformer: Learning to Compose Full-Song Music over Dynamic Directed Hypergraphs. *AAAI*, 2021.
-5. Li, Y., et al. MERT: Acoustic Music Understanding Model with Large-Scale Self-supervised Training. *ICLR*, 2024.
-6. Donahue, C., Lipton, Z. C., McAuley, J. Dance Dance Convolution. *ICML Workshop on Machine Learning for Music Discovery*, 2017.
-7. Holtzman, A., et al. The Curious Case of Neural Text Degeneration. *ICLR*, 2020.
-8. Loshchilov, I., Hutter, F. Decoupled Weight Decay Regularization. *ICLR*, 2019.
-9. Müller, M. Fundamentals of Music Processing. Springer, 2015.
-10. Anderson, P., et al. Guided Open Vocabulary Image Captioning with Constrained Beam Search. *EMNLP*, 2017.
