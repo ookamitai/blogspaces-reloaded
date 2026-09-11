@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>中二节奏 AI 写谱 | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="Next level vibe-charting……">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/2026/07/31/chu-aichart/">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="中二节奏 AI 写谱 | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/2026/07/31/chu-aichart/">
+  
+  <meta property="og:description" content="Next level vibe-charting……">
+  
+  
+  
+  <meta property="article:published_time" content="2026-07-31T15:20:23.000Z">
+  
+  
+  <meta property="article:modified_time" content="2026-09-11T14:07:17.927Z">
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="中二节奏 AI 写谱 | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="Next level vibe-charting……">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main"><article id="post-chu-aichart" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      中二节奏 AI 写谱
+    </h1>
+  
+
+        <div class="article-subtitle">
+          <span class="article-subtitle-date">2026-07-31</span>
+          <span class="article-subtitle-sep">&middot;</span>
+          <span class="article-subtitle-reading">19 min read</span>
+          <span class="article-subtitle-sep">&middot;</span>
+          <span class="article-subtitle-words">6.4k words</span>
+          <span class="article-subtitle-line"></span>
+        </div>
+      </header>
+    
+    
+<div id="article-toc">
+    <h2 class="widget-title">Table Of Contents</h2>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#bargen-c2s%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%8A%82%E6%8B%8D%E5%9D%90%E6%A0%87%E4%B8%8E%E5%BD%A2%E5%BC%8F%E8%AF%AD%E6%B3%95%E7%BA%A6%E6%9D%9F%E4%B8%8B%E7%9A%84%E9%9F%B3%E9%A2%91%E6%9D%A1%E4%BB%B6%E6%B8%B8%E6%88%8F%E8%B0%B1%E9%9D%A2%E7%94%9F%E6%88%90"><span class="toc-number">1.</span> <span class="toc-text">BARGen-C2S：节拍坐标与形式语法约束下的音频条件游戏谱面生成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.2.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.3.</span> <span class="toc-text">相关工作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%A6%E5%8F%B7%E9%9F%B3%E4%B9%90%E7%94%9F%E6%88%90"><span class="toc-number">1.3.1.</span> <span class="toc-text">符号音乐生成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E5%88%B0%E8%B0%B1%E9%9D%A2%E7%94%9F%E6%88%90"><span class="toc-number">1.3.2.</span> <span class="toc-text">音频到谱面生成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%97%E7%BA%A6%E6%9D%9F%E5%BA%8F%E5%88%97%E8%A7%A3%E7%A0%81"><span class="toc-number">1.3.3.</span> <span class="toc-text">受约束序列解码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90%E4%B8%8E%E6%9D%A1%E4%BB%B6%E5%A4%B1%E6%95%88"><span class="toc-number">1.3.4.</span> <span class="toc-text">可控生成与条件失效</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E5%AE%9A%E4%B9%89"><span class="toc-number">1.4.</span> <span class="toc-text">任务定义</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%B1%E9%9D%A2%E4%BA%8B%E4%BB%B6"><span class="toc-number">1.4.1.</span> <span class="toc-text">谱面事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.4.2.</span> <span class="toc-text">控制条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E7%94%9F%E6%88%90%E7%9B%AE%E6%A0%87"><span class="toc-number">1.4.3.</span> <span class="toc-text">条件生成目标</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%9E%84%E5%BB%BA"><span class="toc-number">1.5.</span> <span class="toc-text">数据构建</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%83%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%B0%B1%E9%9D%A2%E8%A7%A3%E6%9E%90"><span class="toc-number">1.5.1.</span> <span class="toc-text">元数据与谱面解析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#song-disjoint-%E5%88%92%E5%88%86"><span class="toc-number">1.5.2.</span> <span class="toc-text">Song-disjoint 划分</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%AE%B5%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">1.5.3.</span> <span class="toc-text">分段与上下文</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%82%E6%8B%8D%E5%9D%90%E6%A0%87%E5%8C%96%E9%9F%B3%E9%A2%91%E8%A1%A8%E7%A4%BA"><span class="toc-number">1.6.</span> <span class="toc-text">节拍坐标化音频表示</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#piecewise-affine-tempo%20map"><span class="toc-number">1.6.1.</span> <span class="toc-text">Piecewise-affine tempo map</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E7%89%B9%E5%BE%81"><span class="toc-number">1.6.2.</span> <span class="toc-text">音频特征</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bargen-c2s"><span class="toc-number">1.7.</span> <span class="toc-text">BARGen-C2S</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E6%80%BB%E8%A7%88"><span class="toc-number">1.7.1.</span> <span class="toc-text">架构总览</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E6%9D%A1%E4%BB%B6%E5%B5%8C%E5%85%A5"><span class="toc-number">1.7.2.</span> <span class="toc-text">层级条件嵌入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%8F%E8%8A%82%E8%A7%84%E5%88%92%E5%99%A8"><span class="toc-number">1.7.3.</span> <span class="toc-text">小节规划器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E7%94%9F%E6%88%90%E5%99%A8"><span class="toc-number">1.7.4.</span> <span class="toc-text">事件生成器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#c2s-tokenization"><span class="toc-number">1.7.5.</span> <span class="toc-text">C2S tokenization</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%A2%E5%BC%8F%E8%AF%AD%E6%B3%95%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.8.</span> <span class="toc-text">形式语法约束</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E6%9C%BA%E5%AE%9A%E4%B9%89"><span class="toc-number">1.8.1.</span> <span class="toc-text">自动机定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#masked-decoding"><span class="toc-number">1.8.2.</span> <span class="toc-text">Masked decoding</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#tempo-aware-timing%20mask"><span class="toc-number">1.8.3.</span> <span class="toc-text">Tempo-aware timing mask</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E7%9B%AE%E6%A0%87"><span class="toc-number">1.9.</span> <span class="toc-text">优化目标</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E6%9D%83%E8%B4%9F%E5%AF%B9%E6%95%B0%E4%BC%BC%E7%84%B6"><span class="toc-number">1.9.1.</span> <span class="toc-text">加权负对数似然</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#timing-%E4%B8%8E%20opcode%20%E8%BE%85%E5%8A%A9%E7%9B%AE%E6%A0%87"><span class="toc-number">1.9.2.</span> <span class="toc-text">Timing 与 opcode 辅助目标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%84%E5%88%92%E6%8D%9F%E5%A4%B1"><span class="toc-number">1.9.3.</span> <span class="toc-text">规划损失</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9A%BE%E5%BA%A6%E5%8D%95%E8%B0%83%E6%80%A7"><span class="toc-number">1.9.4.</span> <span class="toc-text">难度单调性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E5%AF%B9%E6%AF%94%E7%9B%AE%E6%A0%87"><span class="toc-number">1.9.5.</span> <span class="toc-text">音频对比目标</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E7%AD%96%E7%95%A5"><span class="toc-number">1.10.</span> <span class="toc-text">训练策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%B1%E9%9D%A2%E8%AF%AD%E8%A8%80%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="toc-number">1.10.1.</span> <span class="toc-text">谱面语言预训练</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E6%9D%A1%E4%BB%B6%E6%8B%9F%E5%90%88"><span class="toc-number">1.10.2.</span> <span class="toc-text">音频条件拟合</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.11.</span> <span class="toc-text">实验协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E9%85%8D%E7%BD%AE"><span class="toc-number">1.11.1.</span> <span class="toc-text">模型配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E7%BA%BF"><span class="toc-number">1.11.2.</span> <span class="toc-text">基线</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87"><span class="toc-number">1.11.3.</span> <span class="toc-text">评价指标</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E6%AD%A5%E7%BB%93%E6%9E%9C"><span class="toc-number">1.12.</span> <span class="toc-text">初步结果</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="toc-number">1.12.1.</span> <span class="toc-text">预训练</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E6%8B%9F%E5%90%88"><span class="toc-number">1.12.2.</span> <span class="toc-text">音频拟合</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E6%8D%9F%E5%A4%B1"><span class="toc-number">1.12.3.</span> <span class="toc-text">音频损失</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E4%BE%9D%E8%B5%96%E7%9A%84%E5%8F%8D%E4%BA%8B%E5%AE%9E%E6%A3%80%E9%AA%8C"><span class="toc-number">1.13.</span> <span class="toc-text">音频依赖的反事实检验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.14.</span> <span class="toc-text">消融实验设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E8%B4%A5%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.15.</span> <span class="toc-text">失败模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E5%85%88%E9%AA%8C%E5%8E%8B%E8%BF%87%E9%9F%B3%E9%A2%91"><span class="toc-number">1.15.1.</span> <span class="toc-text">语言先验压过音频</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%80%E6%9C%89-opcode%20%E6%AC%A0%E6%8B%9F%E5%90%88%E6%88%96%E8%BF%87%E8%A1%A5%E5%81%BF"><span class="toc-number">1.15.2.</span> <span class="toc-text">稀有 opcode 欠拟合或过补偿</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%88%E6%B3%95%E4%BD%86%E4%B8%8D%E5%8F%AF%E7%8E%A9"><span class="toc-number">1.15.3.</span> <span class="toc-text">合法但不可玩</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%AE%B5%E8%BE%B9%E7%95%8C%E4%B8%8D%E8%BF%9E%E7%BB%AD"><span class="toc-number">1.15.4.</span> <span class="toc-text">分段边界不连续</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%80%E9%99%90%E6%80%A7%E4%B8%8E%E6%9C%89%E6%95%88%E6%80%A7%E5%A8%81%E8%83%81"><span class="toc-number">1.16.</span> <span class="toc-text">局限性与有效性威胁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">1.17.</span> <span class="toc-text">结论</span></a></li></ol></li></ol>
+</div>
+
+    <div class="e-content article-entry article-with-titlenum" itemprop="articleBody">
+      
+        <h2 id="bargen-c2s&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;节拍坐标与形式语法约束下的音频条件游戏谱面生成">BARGen-C2S<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>节拍坐标与形式语法约束下的音频条件游戏谱面生成</h2>
+<h3 id="摘要">摘要</h3>
+<p>音频条件游戏谱面生成要求模型同时解决音乐结构理解<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>难度控制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>长程动作组织与格式合法性四个问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>已有符号音乐生成方法通常假设输出序列本身即为音乐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而游戏谱面并不是音频的逐帧转写<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>同一首音乐可以对应多个难度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>多个版本乃至不同设计风格的合法谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该任务更适合建模为一个带有非唯一目标的条件结构预测问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是传统的音频事件检测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>本文提出 BARGen-C2S<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>一种面向 C2S 谱面的节拍对齐层级生成方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>系统首先在显式 tempo map 上建立离散节拍坐标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>将音乐表征<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>onset<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>能量和拍内相位对齐到小节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>随后由小节规划器预测密度与音符家族分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再由因果事件生成器输出时间增量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>opcode<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>轨道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>宽度和关联参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>版本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>难度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Level<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Level Decimal 与 gimmick 标志通过逐层条件调制注入网络<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>为避免模型生成不可解析序列<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们将 C2S 定义为确定性有限状态语法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并在解码时对非法 token 施加精确零概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是依赖生成后的启发式修复<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在按歌曲 ID 隔离的验证集上<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>small 配置在拟合第 13 epoch 达到 82.97% 的全 token accuracy<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>84.65% 的 timing accuracy 和 78.79% 的 opcode accuracy<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>验证损失由 3.00 下降至 1.82<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>与此同时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>音频对比损失在约 0.09 处提前进入平台<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>表明高 teacher-forcing accuracy 并不足以证明模型真正依赖音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>基于这一观察<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>本文进一步给出反事实音频替换评价<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>比较正确音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>跨歌曲错配音频和时间扰动音频下的条件似然<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以区分谱面语言建模能力与听音写谱能力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>当前结果支持节拍坐标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>分项监督和语法约束的有效性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但完整的音频因果性结论仍需基线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>消融和人工盲测验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>关键词<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 自动写谱<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>音乐信息检索<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>条件生成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>Transformer<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>形式语言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>节拍对齐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>C2S</p>
+<h3 id="引言">引言</h3>
+<p>节奏游戏谱面将音乐组织为一系列可操作事件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>一个事件不仅包含发生时间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还可能包含轨道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>宽度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>持续时间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>父子关系和视觉修饰参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>谱面设计者需要在音乐对应性与可玩性之间取舍<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>落点应反映节奏<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>音色和段落结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但不能把全部声学瞬态机械地映射为音符<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>高难度需要更高的信息密度和操作复杂度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但不能退化为随机加密<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>设音频为 <span class="markdown-them-math-inline">$x$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>tempo map 为 <span class="markdown-them-math-inline">$M$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>控制条件为 <span class="markdown-them-math-inline">$c$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>谱面为 <span class="markdown-them-math-inline">$Y$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>目标分布为</p>
+<div class="markdown-them-math-block">$$p(Y\mid x,M,c).
+$$</div><p>该分布通常是多峰的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对于相同的 <span class="markdown-them-math-inline">$(x,M,c)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>多个谱面都可能具有合理的节奏对应和可玩性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以逐事件完全还原为唯一目标会产生两个问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>第一<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>验证准确率惩罚与参考谱不同但仍合理的设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>第二<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型可能通过记忆常见谱面语言获得较高准确率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而没有真正利用音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>本文将任务拆为三个层次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ol>
+<li><strong>音乐坐标层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 在变 BPM 与变拍号条件下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>将音频帧映射到统一 bar/tick 坐标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>结构规划层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 根据音频和难度条件预测各小节的事件密度与音符家族分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>语法生成层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 在历史谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>音频 memory 和形式语法约束下生成完整 C2S 事件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ol>
+<p>本文的主要贡献如下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<ul>
+<li>提出一种保留完整 tempo map 的 C2S 规范化表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它使用相对时间 token 表达事件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时保留可逆的 96 tick/拍坐标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>提出规划器—生成器层级架构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>将宏观难度控制与微观事件生成分离<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并在每层注入版本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>难度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Level<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Decimal 与 gimmick 条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>将 C2S 字段约束实现为确定性有限状态自动机<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使非法轨道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>缺失字段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>无根 Slide 和非法关联在采样阶段即获得零概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>区分 token<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>timing 与 opcode accuracy<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并提出反事实音频替换指标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>避免以总体 teacher-forcing accuracy 代替音频依赖证据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<h3 id="相关工作">相关工作</h3>
+<h4 id="符号音乐生成">符号音乐生成</h4>
+<p>基于 Transformer 的符号音乐模型已经能够生成具有中长程结构的 MIDI 或事件序列<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>Music Transformer 使用相对注意力改善音乐重复结构建模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>Pop Music Transformer 以拍点为中心组织复合事件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>Compound Word Transformer 将同一时间位置的多字段属性组合建模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这些工作证明了离散事件语言适合自回归生成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但其输出通常描述音乐本身<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而非依赖音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>难度和可玩性共同决定的操作谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="音频到谱面生成">音频到谱面生成</h4>
+<p>早期音频到谱面方法多将问题分解为 onset 检测与规则映射<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>神经方法进一步使用卷积网络或序列模型预测离散落点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>只预测二值 onset 无法表达轨道几何<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>长条关系和复杂 opcode<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也无法保证目标文件满足形式语法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>本文不把谱面视为 onset 标签序列<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是将其视为带类型和参数的程序化事件语言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="受约束序列解码">受约束序列解码</h4>
+<p>在程序生成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>语义解析和结构化预测中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>grammar-constrained decoding 常用于保证输出满足上下文无关语法或类型系统<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>C2S 的大部分局部合法性可以由确定性状态机描述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>轨道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>宽度和关联关系还需要少量动态状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>相比生成后修复<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在线约束不会把概率质量浪费在必然被丢弃的候选上<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="可控生成与条件失效">可控生成与条件失效</h4>
+<p>条件生成模型可能忽略弱条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>尤其当自回归前文已经能够解释大部分目标时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>游戏谱面具有强语言先验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>常见节奏<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>事件字段顺序和局部动作模式均可由历史 token 推断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>即使模型接受音频 cross-attention<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也不能据此断言它使用了音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>本文通过错配音频和时间扰动音频构造反事实输入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以测量条件依赖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="任务定义">任务定义</h3>
+<h4 id="谱面事件">谱面事件</h4>
+<p>一张谱面由按绝对 tick 排序的事件组成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$Y=(e_1,e_2,\ldots,e_N),
+$$</div><div class="markdown-them-math-block">$$e_i=(t_i,o_i,l_i,w_i,\mathbf a_i,r_i).
+$$</div><p><span class="markdown-them-math-inline">$t_i\in\mathbb N$</span> 为时间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$o_i$</span> 为 opcode<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$l_i$</span> 为起始轨道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$w_i$</span> 为宽度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$\mathbf a_i$</span> 为持续时间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>方向等参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$r_i$</span> 表示可选的关联标识<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>普通轨道满足</p>
+<div class="markdown-them-math-block">$$0\le l_i&lt;16,\qquad 1\le w_i\le16-l_i.
+$$</div><p>Slide<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Hold 和 AIR-ACTION 等事件还受到父子关系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>持续时间和目标轨道约束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="控制条件">控制条件</h4>
+<p>控制向量为</p>
+<div class="markdown-them-math-block">$$c=(v_f,v,d,r,q,g),
+$$</div><p>其中 <span class="markdown-them-math-inline">$v_f$</span> 为版本族<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$v$</span> 为具体版本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$d$</span> 为难度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$r$</span> 为整数 Level<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$q\in\{0,10,\ldots,90\}$</span> 为 Decimal<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$g$</span> 为 gimmick 标志<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>将 <span class="markdown-them-math-inline">$r$</span> 与 <span class="markdown-them-math-inline">$q$</span> 分开建模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以在保持整数等级序关系的同时表达 <code>13.0</code> 与 <code>13.9</code> 的差异<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="条件生成目标">条件生成目标</h4>
+<p>将事件序列编码为 token 序列 <span class="markdown-them-math-inline">$\mathbf y=(y_1,\ldots,y_L)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型学习</p>
+<div class="markdown-them-math-block">$$p_\theta(\mathbf y\mid x,M,c)
+=\prod_{j=1}^{L}
+p_\theta(y_j\mid y_{&lt;j},x,M,c).
+$$</div><p>训练采用 teacher forcing<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>推理时模型以自身输出作为历史<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>两者之间的分布偏移意味着 token accuracy 只能衡量条件似然拟合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能直接等价为自由生成质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="数据构建">数据构建</h3>
+<h4 id="元数据与谱面解析">元数据与谱面解析</h4>
+<p>数据构建从 Music.xml 读取歌曲 ID<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>releaseTagName<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>难度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Level 和 Decimal<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并将其与 C2S 和音频关联<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>解析器完整读取 timing opcode<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>音符 opcode<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>轨道几何<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>持续时间和事件关联<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>歌曲 ID<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>谱师名和游戏统计字段不作为生成目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>在当前数据快照中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>共有 7,999 张可索引谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>容量审计会隔离单小节 token 数超过所选模型上限的谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>WORLD'S END 默认单独划分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不参与普通难度课程训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>所有训练目标必须通过同一解析器进行 encode—decode 回环<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="song-disjoint-划分">Song-disjoint 划分</h4>
+<p>划分单位为歌曲<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是谱面文件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>记歌曲集合为 <span class="markdown-them-math-inline">$\mathcal S$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>则</p>
+<div class="markdown-them-math-block">$$\mathcal S_{\mathrm{train}}
+\cap\mathcal S_{\mathrm{valid}}=\varnothing,
+\qquad
+\mathcal S_{\mathrm{train}}
+\cap\mathcal S_{\mathrm{test}}=\varnothing.
+$$</div><p>同一歌曲的 BASIC<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>ADVANCED<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>EXPERT<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>MASTER 和 ULTIMA 不得跨集合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该设计阻止模型在训练时见到同一音频的其他难度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而避免验证泄漏<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="分段与上下文">分段与上下文</h4>
+<p>目标窗口包含 8 个小节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>另取此前 2 小节作为只读上下文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>第 <span class="markdown-them-math-inline">$k$</span> 个样本为</p>
+<div class="markdown-them-math-block">$$(Y_{C_k},X_{C_k\cup B_k},Y_{B_k}),
+$$</div><p>其中 <span class="markdown-them-math-inline">$C_k$</span> 为历史区间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$B_k$</span> 为目标区间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>上下文不包含未来事件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>窗口按 epoch 旋转<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使训练在固定计算预算下逐步覆盖长谱面的不同位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="节拍坐标化音频表示">节拍坐标化音频表示</h3>
+<h4 id="piecewise-affine-tempo map">Piecewise-affine tempo map</h4>
+<p>tempo map 由变速点</p>
+<div class="markdown-them-math-block">$$M=\{(u_j,b_j,m_j)\}_{j=1}^{J}
+$$</div><p>组成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>其中 <span class="markdown-them-math-inline">$u_j$</span> 是起始 tick<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$b_j$</span> 是 BPM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$m_j$</span> 是拍号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>每拍使用 <span class="markdown-them-math-inline">$R=96$</span> tick<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>若 <span class="markdown-them-math-inline">$t\in[u_j,u_{j+1})$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>则 tick 到秒的映射为</p>
+<div class="markdown-them-math-block">$$s(t)=s(u_j)+\frac{60}{Rb_j}(t-u_j).
+$$</div><p>该映射是分段仿射的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此可精确积分变 BPM 音乐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是以全曲平均 BPM 近似<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>拍号决定小节长度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$L_j=R\cdot n_j\cdot\frac{4}{d_j},
+$$</div><p>其中 <span class="markdown-them-math-inline">$n_j/d_j$</span> 为当前 time signature<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="音频特征">音频特征</h4>
+<p>音频以 24 kHz 单声道输入冻结的 MERT-v1-95M<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>得到</p>
+<div class="markdown-them-math-block">$$H^{\mathrm{MERT}}\in\mathbb R^{F\times768}.
+$$</div><p>随后拼接 onset strength<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>RMS energy 以及节拍相位的正余弦编码<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>第 <span class="markdown-them-math-inline">$f$</span> 帧相对于当前拍的归一化位置为 <span class="markdown-them-math-inline">$\rho_f\in[0,1)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>相位表示为</p>
+<div class="markdown-them-math-block">$$(\sin2\pi\rho_f,\cos2\pi\rho_f).
+$$</div><p>相同方法用于小节相位<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>最终特征在 tempo map 上重采样到每小节固定帧数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使不同 BPM 下相同音乐位置具有相同张量坐标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="bargen-c2s">BARGen-C2S</h3>
+<h4 id="架构总览">架构总览</h4>
+<p>BARGen-C2S 不是一个直接把整首音频映射成整张谱面的黑盒网络<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是由音频前端<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>小节规划器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>事件生成器和约束解码器串联而成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="mermaid">flowchart TB
+    A["Audio waveform"] --> B["Frozen MERT-v1-95M"]
+    A --> C["Onset and RMS extraction"]
+    M["Tempo map and time signature"] --> D["Beat-coordinate alignment"]
+    B --> D
+    C --> D
+    D --> E["Beat-aligned audio frames"]
+    E --> P["Bar-level Transformer Planner"]
+    K["Version, difficulty, Level, decimal and gimmick"] --> P
+    P --> Q["Density distribution"]
+    P --> R["Event-family distribution"]
+    P --> S["Continuous plan states"]
+    E --> U["Audio and plan memory"]
+    S --> U
+    H["Previous C2S tokens"] --> V["Causal Event Decoder"]
+    U -->|"Cross-attention"| V
+    K -->|"Layer-wise FiLM"| V
+    V --> W["Token logits"]
+    G["C2S grammar automaton"] --> X["Grammar and timing mask"]
+    M --> X
+    W --> X
+    X --> Y["Valid C2S event sequence"]
+</div><p>冻结的 MERT 负责提取音色<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>和声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>节奏纹理等高层音乐表征<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>onset 与 RMS 提供更直接的瞬态和能量信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>tempo map 则负责把这些连续时间特征转换到离散谱面坐标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>三者的职责不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>MERT 回答<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>听起来是什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>onset 回答<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>哪里发生了瞬态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>tempo map 回答<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>这个瞬态位于第几小节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>第几拍和第几个 tick<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>小节规划器先观察完整的 8 小节目标片段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为每一小节预测事件密度和音符家族分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并产生连续 plan state<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它不决定某一个 TAP 应放在第几轨<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是建立段落轮廓<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>例如副歌是否应增密<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>空拍是否应留白<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>某一小节是否更适合长条或 AIR<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>事件生成器不必在每一步同时推断宏观结构和局部字段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>事件生成器随后进行自回归写谱<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它的一侧通过 causal self-attention 阅读此前的 C2S token<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此能够延续交替手序<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>重复型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Hold 和 Slide 路径<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>另一侧通过 cross-attention 阅读逐帧音频与 planner state<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此可以根据当前音乐片段调整落点和音符类型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>最后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>语法自动机和 tempo-aware timing mask 删除非法输出概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>模型负责在合法集合内判断<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>哪个选择更像目标谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>自动机负责判断<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>哪些选择根本不允许出现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>采用层级结构而非单一 Transformer 有三个原因<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>第一<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>音频帧数与谱面 token 数之间不存在一一对应<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>先按小节规划可缓解两种时间尺度不一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>第二<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>难度主要影响段落密度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>音符家族比例和操作复杂度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>显式 planner 比仅依赖 decoder 隐状态更容易监督和校准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>第三<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>C2S 的合法性是确定规则<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不应要求神经网络通过样本近似学习<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>将语法交给自动机可以把模型容量保留给音乐对应性和设计风格<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="层级条件嵌入">层级条件嵌入</h4>
+<p>条件嵌入为</p>
+<div class="markdown-them-math-block">$$e_c=e_{v_f}+e_v+e_d+e_r+e_q+e_g+
+\operatorname{MLP}
+\left[
+\frac d5,
+\frac r{31},
+\frac q{90},
+\frac{r+q/100}{31.9}
+\right].
+$$</div><p>每个 Transformer block 使用 FiLM 调制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\operatorname{FiLM}(h,e_c)
+=h\odot(1+\gamma(e_c))+\beta(e_c).
+$$</div><p>相比仅添加首 token<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>逐层调制能在长序列中持续保留控制条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="小节规划器">小节规划器</h4>
+<p>对第 <span class="markdown-them-math-inline">$b$</span> 个小节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>将其中音频帧池化为 <span class="markdown-them-math-inline">$\bar x_b$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>规划器输入为</p>
+<div class="markdown-them-math-block">$$z_b^{(0)}=W_x\bar x_b+W_m m_b+p_b,
+$$</div><p>其中 <span class="markdown-them-math-inline">$m_b$</span> 为节拍与拍号特征<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$p_b$</span> 为小节位置嵌入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>经过 Transformer Encoder 后得到 <span class="markdown-them-math-inline">$z_b$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并预测密度类别与音符家族分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$p(d_b\mid x,M,c)=\operatorname{softmax}(W_dz_b),
+$$</div><div class="markdown-them-math-block">$$p(f_b\mid x,M,c)=\operatorname{softmax}(W_fz_b).
+$$</div><p>规划器描述<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>这一小节应该多密<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>主要由什么组成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但不直接输出具体音符<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="事件生成器">事件生成器</h4>
+<p>事件生成器为因果 Transformer<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>音频帧和规划表示被投影后拼接为 memory<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$H^{\mathrm{mem}}=
+[W_aH^{\mathrm{audio}};W_pZ^{\mathrm{plan}}].
+$$</div><p>第 <span class="markdown-them-math-inline">$l$</span> 层进行</p>
+<div class="markdown-them-math-block">$$h' = h+\operatorname{SelfAttn}
+(\operatorname{FiLM}(\operatorname{LN}(h),e_c)),
+$$</div><div class="markdown-them-math-block">$$h'' = h'+\operatorname{CrossAttn}
+(\operatorname{FiLM}(\operatorname{LN}(h'),e_c),H^{\mathrm{mem}}),
+$$</div><div class="markdown-them-math-block">$$h^{(l+1)}=h''+\operatorname{FFN}
+(\operatorname{FiLM}(\operatorname{LN}(h''),e_c)).
+$$</div><p>small 配置包含 8 个 decoder block<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$d=384$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>6 个注意力头<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>FFN 维数 1536<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>每隔一层使用音频 cross-attention<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>从条件概率角度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>planner 引入隐变量 <span class="markdown-them-math-inline">$Z$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型可以近似写为</p>
+<div class="markdown-them-math-block">$$p(Y\mid x,M,c)
+\approx
+p_\psi(Z\mid x,M,c)
+p_\theta(Y\mid Z,x,M,c).
+$$</div><p><span class="markdown-them-math-inline">$Z$</span> 不是离散采样变量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是由 planner 产生的连续小节状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>第一项学习全局结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>第二项学习事件细节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>训练时两部分通过总损失联合优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>MERT 保持冻结<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但从 planner 和 decoder 到音频投影层的梯度仍然存在<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>decoder 的 memory 同时包含细粒度音频帧与低频 plan states<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>若只使用 plan state<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型可能丢失小节内部的瞬态位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>若只使用逐帧音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型又可能缺少跨小节密度轮廓<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>二者拼接使 cross-attention 可以在局部声学证据与宏观结构之间选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="c2s-tokenization">C2S tokenization</h4>
+<p>事件被拆为时间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>类型和参数字段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>例如<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code>&lt;event_start&gt; dt:48 op:TAP lane:7 width:2 &lt;event_end&gt;
+</code></pre></div>
+<p>时间使用</p>
+<div class="markdown-them-math-block">$$\Delta t_i=t_i-t_{i-1}
+$$</div><p>而非全局绝对小节号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>相对时间减少词表对歌曲长度的依赖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并使常见节奏间隔共享参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>96 tick/拍对应 4/4 小节内的 384 个离散位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="形式语法约束">形式语法约束</h3>
+<h4 id="自动机定义">自动机定义</h4>
+<p>令语法自动机为</p>
+<div class="markdown-them-math-block">$$\mathcal A=(Q,\Sigma,\delta,q_0,F),
+$$</div><p>其中 <span class="markdown-them-math-inline">$Q$</span> 为状态集合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$\Sigma$</span> 为 token 词表<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$\delta$</span> 为状态转移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$q_0$</span> 为初始状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$F$</span> 为可接受状态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>状态除字段位置外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还保存当前 opcode<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>轨道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>宽度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>Slide 根节点和待完成参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>当前状态 <span class="markdown-them-math-inline">$q_j$</span> 下允许集合为</p>
+<div class="markdown-them-math-block">$$V(q_j)=\{v\in\Sigma:\delta(q_j,v)\text{ 已定义}\}.
+$$</div><h4 id="masked-decoding">Masked decoding</h4>
+<p>设网络输出 logits 为 <span class="markdown-them-math-inline">$z_j$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>语法约束后的 logits 为</p>
+<div class="markdown-them-math-block">$$\tilde z_{j,v}=
+\begin{cases}
+z_{j,v},&amp;v\in V(q_j),\\
+-\infty,&amp;v\notin V(q_j).
+\end{cases}
+$$</div><p>因此</p>
+<div class="markdown-them-math-block">$$p(y_j=v\mid\cdot)=\operatorname{softmax}(\tilde z_j)_v
+$$</div><p>对所有非法 token 恒为零<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该约束排除字段乱序<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>越界轨道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>非法宽度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>缺少 Slide root<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>零持续时间 continuation 和不完整事件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="tempo-aware-timing mask">Tempo-aware timing mask</h4>
+<p>语法合法不等于节拍合法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>给定 tempo map 和用户选择的细分集合 <span class="markdown-them-math-inline">$G$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>允许时间位置为</p>
+<div class="markdown-them-math-block">$$\mathcal T(M,G)=
+\bigcup_b\left\{t_b+k\frac{L_b}{g}:g\in G,
+k\in\{0,\ldots,g-1\}\right\}.
+$$</div><p>时间 token 只有在累积位置属于 <span class="markdown-them-math-inline">$\mathcal T(M,G)$</span> 时才允许输出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>由此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>变 BPM 改变 tick 到秒的映射<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但不会破坏谱面在音乐拍点上的离散对齐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="优化目标">优化目标</h3>
+<h4 id="加权负对数似然">加权负对数似然</h4>
+<p>基础损失为</p>
+<div class="markdown-them-math-block">$$\mathcal L_{\mathrm{tok}}=
+-\frac{\sum_jw_{y_j}\log
+p_\theta(y_j\mid y_{&lt;j},x,M,c)}
+{\sum_jw_{y_j}}.
+$$</div><p>音符类型相对 TAP 的权重为</p>
+<div class="markdown-them-math-block">$$w_o=\operatorname{clip}
+\left(
+\left(\frac{n_{\mathrm{TAP}}}{n_o}\right)^{1/4},
+w_{\min},w_{\max}
+\right).
+$$</div><p>四次方根缩放弱于频率倒数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可提高稀有 opcode 的梯度占比<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时避免 FLK 等类别支配训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="timing-与 opcode 辅助目标">Timing 与 opcode 辅助目标</h4>
+<p>令 <span class="markdown-them-math-inline">$\Omega_t$</span> 和 <span class="markdown-them-math-inline">$\Omega_o$</span> 分别为 timing token 与 opcode token 的位置集合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\mathcal L_t=-\frac1{|\Omega_t|}
+\sum_{j\in\Omega_t}\log p_\theta(y_j),
+$$</div><div class="markdown-them-math-block">$$\mathcal L_o=-\frac1{|\Omega_o|}
+\sum_{j\in\Omega_o}\log p_\theta(y_j).
+$$</div><p>预训练阶段使用</p>
+<div class="markdown-them-math-block">$$\mathcal L_{\mathrm{pre}}=
+\mathcal L_{\mathrm{base}}+0.35\mathcal L_t+0.25\mathcal L_o.
+$$</div><p>这两个分项直接对应落点与音符类型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>防止大量简单参数 token 抬高总体准确率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="规划损失">规划损失</h4>
+<p>规划损失为</p>
+<div class="markdown-them-math-block">$$\mathcal L_{\mathrm{plan}}=
+\mathcal L_{\mathrm{density}}
++\lambda_r\mathcal L_{\mathrm{reg}}
++\lambda_f\mathcal L_{\mathrm{family}}.
+$$</div><p>其中密度使用分类交叉熵<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>回归项使用 Smooth-<span class="markdown-them-math-inline">$L_1$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>音符家族使用加权交叉熵<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="难度单调性">难度单调性</h4>
+<p>对同一音频构造较低难度条件 <span class="markdown-them-math-inline">$c^-$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>要求预测密度满足</p>
+<div class="markdown-them-math-block">$$D(x,c)\ge D(x,c^-)+m.
+$$</div><p>对应 hinge loss 为</p>
+<div class="markdown-them-math-block">$$\mathcal L_{\mathrm{mono}}=
+\max(0,m-D(x,c)+D(x,c^-)).
+$$</div><p>该目标约束统计复杂度的序关系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但不要求高难谱面在每个位置机械增密<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="音频对比目标">音频对比目标</h4>
+<p>对 batch 内随机置换 <span class="markdown-them-math-inline">$\pi$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>正确与错配音频的规划损失分别为 <span class="markdown-them-math-inline">$P_i^+$</span> 和 <span class="markdown-them-math-inline">$P_i^-$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\mathcal L_{\mathrm{audio}}=
+\frac1B\sum_i
+\max(0,\gamma+P_i^+-P_i^-),
+\qquad\gamma=0.20.
+$$</div><p>总损失为</p>
+<div class="markdown-them-math-block">$$\mathcal L=
+\mathcal L_{\mathrm{tok}}
++\lambda_p\mathcal L_{\mathrm{plan}}
++\lambda_m\mathcal L_{\mathrm{mono}}
++\lambda_g\mathcal L_{\mathrm{grammar}}
++\lambda_a\mathcal L_{\mathrm{audio}}.
+$$</div><h3 id="训练策略">训练策略</h3>
+<h4 id="谱面语言预训练">谱面语言预训练</h4>
+<p>预训练只学习规范化 C2S<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不使用音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>数据由 BASIC<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>ADVANCED 和约 15% EXPERT 构成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>每张 BASIC/ADVANCED 每 epoch 贡献一个旋转窗口<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>预训练最少 3 epoch<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>最多 8 epoch<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>从第 3 epoch 起<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>当</p>
+<div class="markdown-them-math-block">$$\min(A_t,A_o)\ge0.70
+$$</div><p>时可提前切换<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="markdown-them-math-inline">$A_t$</span> 和 <span class="markdown-them-math-inline">$A_o$</span> 只在 BASIC/ADVANCED 的 song-disjoint 验证集上计算<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="音频条件拟合">音频条件拟合</h4>
+<p>拟合阶段使用 EXPERT<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>MASTER 和 ULTIMA<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并继承预训练权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>优化器为 AdamW<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使用 BF16<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>梯度裁剪<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>EMA<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>5% warmup 和 cosine decay<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>small 配置峰值学习率为 <span class="markdown-them-math-inline">$2.75\times10^{-4}$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>最低学习率为峰值的 20%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="mermaid">flowchart LR
+    A["All parsed charts"] --> B{"Difficulty curriculum"}
+    B -->|"BASIC and ADVANCED + 15% EXPERT"| C["Chart-language pretraining"]
+    C --> D{"Epoch >= 3 and min timing/opcode acc >= 0.70?"}
+    D -->|"No, epoch < 8"| C
+    D -->|"Yes"| E["Select best foundation checkpoint"]
+    D -->|"No, epoch = 8"| E
+    B -->|"EXPERT, MASTER and ULTIMA"| F["Audio-conditioned dataset"]
+    E --> G["Initialize planner and decoder weights"]
+    F --> G
+    G --> H["15-epoch audio-conditioned fit"]
+    H --> I["Song-disjoint validation"]
+    I --> J["Best checkpoint by validation loss"]
+    J --> K["Constrained multi-candidate inference"]
+</div><h3 id="实验协议">实验协议</h3>
+<h4 id="模型配置">模型配置</h4>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th style="text-align:right">small 配置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MERT</td>
+<td style="text-align:right">95M<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>冻结</td>
+</tr>
+<tr>
+<td>Planner</td>
+<td style="text-align:right">4 层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$d=320$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>5 heads</td>
+</tr>
+<tr>
+<td>Decoder</td>
+<td style="text-align:right">8 层<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="markdown-them-math-inline">$d=384$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>6 heads</td>
+</tr>
+<tr>
+<td>Decoder FFN</td>
+<td style="text-align:right">1536</td>
+</tr>
+<tr>
+<td>目标窗口</td>
+<td style="text-align:right">8 小节</td>
+</tr>
+<tr>
+<td>历史上下文</td>
+<td style="text-align:right">2 小节</td>
+</tr>
+<tr>
+<td>时间分辨率</td>
+<td style="text-align:right">96 tick/拍</td>
+</tr>
+<tr>
+<td>Micro batch</td>
+<td style="text-align:right">4</td>
+</tr>
+<tr>
+<td>Gradient accumulation</td>
+<td style="text-align:right">2</td>
+</tr>
+</tbody>
+</table>
+<h4 id="基线">基线</h4>
+<p>一篇可投稿论文至少需要以下基线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>当前工程结果尚未完成全部基线实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此不得把未测结果写成优越性结论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<ul>
+<li><strong>BPM-grid Random<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 按目标密度在节拍网格随机落点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Chart LM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 只有谱面前文和控制条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不输入音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Audio-only Planner<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 音频预测密度后由规则映射事件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Flat Transformer<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 无规划器的单阶段音频条件 Transformer<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Unconstrained Decoder<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 关闭 grammar mask<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用生成后修复处理非法事件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Constant-BPM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 将完整 tempo map 替换为单一 BPM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<h4 id="评价指标">评价指标</h4>
+<p>除 token accuracy 外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>应报告<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$A_t=\frac{\#\text{correct timing tokens}}
+{\#\text{timing tokens}},
+$$</div><div class="markdown-them-math-block">$$A_o=\frac{\#\text{correct opcode tokens}}
+{\#\text{opcode tokens}}.
+$$</div><p>自由生成还应报告<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ul>
+<li><strong>Parse Rate<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 可被独立 C2S 解析器读取的候选比例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Rule Validity<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 通过轨道<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>持续时间和关联检查的比例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Onset Alignment<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 生成事件与局部 onset 峰值的加权距离<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Beat Deviation<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 事件到最近合法节拍细分的平均 tick 距离<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Density Error<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 生成 judgements/min 与目标等级校准均值之差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Opcode F1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 按 TAP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>HLD<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>SLD<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>AIR<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>FLK 分别计算 macro-F1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Audio Reliance<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 正确音频与反事实音频的似然差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>Human Preference<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong> 双盲成对比较的可玩性和音乐对应性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<h3 id="初步结果">初步结果</h3>
+<h4 id="预训练">预训练</h4>
+<p>8 epoch 后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>BASIC/ADVANCED 验证结果为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th style="text-align:right">数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Timing accuracy</td>
+<td style="text-align:right">70.27%</td>
+</tr>
+<tr>
+<td>Opcode accuracy</td>
+<td style="text-align:right">70.29%</td>
+</tr>
+<tr>
+<td>全 token accuracy</td>
+<td style="text-align:right">69.12%</td>
+</tr>
+</tbody>
+</table>
+<h4 id="音频拟合">音频拟合</h4>
+<p>当前可核验的拟合曲线如下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Epoch</th>
+<th style="text-align:right">Val loss</th>
+<th style="text-align:right">Token acc.</th>
+<th style="text-align:right">Timing acc.</th>
+<th style="text-align:right">Opcode acc.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">5</td>
+<td style="text-align:right">2.0733</td>
+<td style="text-align:right">76.82%</td>
+<td style="text-align:right">78.37%</td>
+<td style="text-align:right">72.38%</td>
+</tr>
+<tr>
+<td style="text-align:right">7</td>
+<td style="text-align:right">1.9713</td>
+<td style="text-align:right">79.71%</td>
+<td style="text-align:right">81.29%</td>
+<td style="text-align:right">75.52%</td>
+</tr>
+<tr>
+<td style="text-align:right">10</td>
+<td style="text-align:right">1.8722</td>
+<td style="text-align:right">81.81%</td>
+<td style="text-align:right">83.31%</td>
+<td style="text-align:right">77.61%</td>
+</tr>
+<tr>
+<td style="text-align:right">11</td>
+<td style="text-align:right">1.8507</td>
+<td style="text-align:right">82.30%</td>
+<td style="text-align:right">83.90%</td>
+<td style="text-align:right">78.14%</td>
+</tr>
+<tr>
+<td style="text-align:right">12</td>
+<td style="text-align:right">1.8367</td>
+<td style="text-align:right">82.64%</td>
+<td style="text-align:right">84.21%</td>
+<td style="text-align:right">78.52%</td>
+</tr>
+<tr>
+<td style="text-align:right">13</td>
+<td style="text-align:right">1.8227</td>
+<td style="text-align:right">82.97%</td>
+<td style="text-align:right">84.65%</td>
+<td style="text-align:right">78.79%</td>
+</tr>
+</tbody>
+</table>
+<p>验证损失和两项关键准确率均持续改善<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但第 10 epoch 后边际收益显著减小<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该趋势符合正常的后期收敛<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不支持<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>训练完全没有梯度下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的判断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="音频损失">音频损失</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Epoch</th>
+<th style="text-align:right">Val audio loss</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:right">0.1206</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:right">0.1034</td>
+</tr>
+<tr>
+<td style="text-align:right">7</td>
+<td style="text-align:right">0.1011</td>
+</tr>
+<tr>
+<td style="text-align:right">10</td>
+<td style="text-align:right">0.0933</td>
+</tr>
+<tr>
+<td style="text-align:right">11</td>
+<td style="text-align:right">0.0919</td>
+</tr>
+<tr>
+<td style="text-align:right">12</td>
+<td style="text-align:right">0.0922</td>
+</tr>
+<tr>
+<td style="text-align:right">13</td>
+<td style="text-align:right">0.0944</td>
+</tr>
+</tbody>
+</table>
+<p>音频损失前期下降约 24%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>随后进入平台<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>由于使用 hinge loss<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>满足 margin 的 batch 损失为零<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此单 batch 的 <code>audio=0</code> 不能解释为没有音频梯度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>平台本身说明当前规划器级对比目标不足以证明 decoder 强依赖音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="音频依赖的反事实检验">音频依赖的反事实检验</h3>
+<p>仅观察 <span class="markdown-them-math-inline">$\mathcal L_{\mathrm{audio}}$</span> 不足以回答模型是否<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>听歌<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对验证样本构造三种输入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>正确音频 <span class="markdown-them-math-inline">$x$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>跨歌曲错配音频 <span class="markdown-them-math-inline">$x'$</span> 和保留能量但打乱时间顺序的音频 <span class="markdown-them-math-inline">$\tilde x$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>定义</p>
+<div class="markdown-them-math-block">$$\Delta_{\mathrm{swap}}=
+\mathcal L_{\mathrm{tok}}(x')-
+\mathcal L_{\mathrm{tok}}(x),
+$$</div><div class="markdown-them-math-block">$$\Delta_{\mathrm{shuffle}}=
+\mathcal L_{\mathrm{tok}}(\tilde x)-
+\mathcal L_{\mathrm{tok}}(x).
+$$</div><p>若模型使用音频<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>则两者应显著大于零<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>统计检验以歌曲为单位进行 bootstrap<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而非以 token 为单位<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以避免长谱面获得不成比例的权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>报告 95% confidence interval<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\operatorname{CI}_{95\%}
+=\left[Q_{0.025}(\Delta^*),Q_{0.975}(\Delta^*)\right].
+$$</div><p>在完成该实验前<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>本文只能声称模型具备音频条件接口和规划器级对比学习<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能声称已经证明强音频依赖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="消融实验设计">消融实验设计</h3>
+<p>顶会级结论需要至少完成下列消融<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<table>
+<thead>
+<tr>
+<th>变体</th>
+<th>要回答的问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>去除 tempo map</td>
+<td>变 BPM 坐标是否必要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>去除 planner</td>
+<td>层级规划是否改善密度与长程结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>去除 grammar mask</td>
+<td>在线约束是否提高有效候选率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>去除 timing/opcode 辅助损失</td>
+<td>分项监督是否提高关键准确率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>去除历史上下文</td>
+<td>前 2 小节是否改善连续性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>去除音频</td>
+<td>模型是否主要退化为 chart LM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>错配音频训练</td>
+<td>当前 audio loss 是否识别音乐身份<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>条件仅放首 token</td>
+<td>逐层 FiLM 是否改善难度控制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></td>
+</tr>
+</tbody>
+</table>
+<p>每个变体至少使用三个随机种子<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对连续指标报告均值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>标准差和 paired bootstrap<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>对人工偏好使用 Bradley–Terry 模型或双侧 binomial test<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并校正多重比较<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="失败模式">失败模式</h3>
+<p>当前系统存在四类可预期失败<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="语言先验压过音频">语言先验压过音频</h4>
+<p>decoder 在 teacher forcing 下可以从真实前文预测常见模式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因而在不使用音频时仍能获得较高准确率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该问题必须通过音频消融识别<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不能由 cross-attention 的存在推断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="稀有-opcode 欠拟合或过补偿">稀有 opcode 欠拟合或过补偿</h4>
+<p>不加权时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>FLK 等事件召回率低<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>权重过高时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>生成谱面会出现异常密集的 FLK<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>四次方根权重和类别上限只是一种折中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>最终仍应按类别报告 precision<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>recall 与生成频率偏差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="合法但不可玩">合法但不可玩</h4>
+<p>grammar mask 保证的是句法合法性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>合法的密集纵连<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>手位冲突或无意义 Slide 仍可能不可玩<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>可玩性需要几何约束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>难度校准和人工偏好共同评价<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h4 id="分段边界不连续">分段边界不连续</h4>
+<p>2 小节历史能够传递局部动机<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但无法完整表示跨越十余小节的主题复现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>增加上下文会提高显存和解码成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>另一方向是使用低频全曲结构 token 或检索式段落 memory<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h3 id="局限性与有效性威胁">局限性与有效性威胁</h3>
+<ul>
+<li>当前结果来自单一模型规模和单一主要随机种子<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能估计训练方差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>尚未完成 BPM-grid<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>chart-only 和 flat Transformer 等必要基线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>teacher-forcing 指标不能替代自由生成质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>数据来自单一谱面生态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>谱师风格和版本分布可能形成隐藏混杂变量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>MERT 冻结降低过拟合与显存成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但限制了音频表示对谱面任务的适配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>WORLD'S END 被隔离<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此结论不适用于非常规轨道和极端 gimmick<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>当前音频对比仅作用于规划器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>无法直接约束 decoder 的 token 级音频敏感性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ul>
+<h3 id="结论">结论</h3>
+<p>BARGen-C2S 将自动写谱建模为节拍坐标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>层级规划<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>条件事件生成与形式语法共同约束的问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>现有实验显示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型能够稳定学习 C2S 事件语言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>timing accuracy 超过 84%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>opcode accuracy 接近 79%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并在完整 tempo map 上输出可被语法自动机约束的候选<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>更重要的结果并不是某个 accuracy 数值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是音频损失与 token 损失呈现不同的收敛行为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>模型较早掌握<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>怎样写得像谱面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>怎样针对这首音乐写谱<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>仍是主要瓶颈<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>因此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>后续工作的优先级不应是盲目扩大模型或延长 epoch<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而应是完成反事实音频评价<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>decoder 级困难负样本训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>严格基线和人工盲测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>只有当正确音频相对错配音频显著提高条件似然<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并在未见歌曲上提升音乐对应性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>才能把该系统从一个高质量谱面语言模型称为真正的音频条件写谱模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/AI/" rel="tag">AI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" rel="tag">中二节奏</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../../../09/11/llm-rnd/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          为什么不能用豆包抽随机数
+        
+      </div>
+    </a>
+  
+  
+    <a href="../../../06/18/chu-cam/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          日二节奏 Freecam Patch
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../../09/11/llm-rnd/">为什么不能用豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../../06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../../06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../../05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../../../js/clipboard.min.js"></script>
+
+
+<script src="../../../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>
