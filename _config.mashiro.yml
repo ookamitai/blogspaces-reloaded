@@ -8,6 +8,15 @@ menu:
 excerpt_link: Read More
 fancybox: true
 
+# Link previews for X/Twitter and other social platforms. Posts may override the
+# image with `thumbnail` (and optionally `thumbnail_alt`) in their front matter.
+# If omitted, the first image in the post is used automatically.
+social_card:
+  card: summary_large_image
+  # site: '@your_account'
+  # creator: '@your_account'
+  # default_image: /images/social-card.jpg
+
 # Sidebar
 sidebar: bottom
 widgets:
