@@ -34,4 +34,3 @@ i create things uwu
 ## 联系到我
 
 电子邮件: me@ookamitai.com
-X: @ookamitai
