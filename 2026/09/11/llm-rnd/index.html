@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>为什么不能拿豆包抽随机数 | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="LLM un-uniform dist">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/2026/09/11/llm-rnd/">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="为什么不能拿豆包抽随机数 | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/2026/09/11/llm-rnd/">
+  
+  <meta property="og:description" content="LLM un-uniform dist">
+  
+  
+  <meta property="og:image" content="http://blog.ookamitai.com/2026/09/11/llm-rnd/distributions.png">
+  <meta property="og:image:alt" content="为什么不能拿豆包抽随机数">
+  
+  
+  <meta property="article:published_time" content="2026-09-11T21:43:03.000Z">
+  
+  
+  <meta property="article:modified_time" content="2026-09-17T05:26:24.488Z">
+  
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="为什么不能拿豆包抽随机数 | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="LLM un-uniform dist">
+  
+  
+  <meta name="twitter:image" content="http://blog.ookamitai.com/2026/09/11/llm-rnd/distributions.png">
+  <meta name="twitter:image:alt" content="为什么不能拿豆包抽随机数">
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main"><article id="post-llm-rnd" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      为什么不能拿豆包抽随机数
+    </h1>
+  
+
+        <div class="article-subtitle">
+          <span class="article-subtitle-date">2026-09-11</span>
+          <span class="article-subtitle-sep">&middot;</span>
+          <span class="article-subtitle-reading">9 min read</span>
+          <span class="article-subtitle-sep">&middot;</span>
+          <span class="article-subtitle-words">3.4k words</span>
+          <span class="article-subtitle-line"></span>
+        </div>
+      </header>
+    
+    
+<div id="article-toc">
+    <h2 class="widget-title">Table Of Contents</h2>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.</span> <span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C"><span class="toc-number">4.</span> <span class="toc-text">结果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8B%AC%E7%AB%8B%E8%AF%B7%E6%B1%82%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%BE%93%E5%87%BA%E9%AB%98%E5%BA%A6%E9%9B%86%E4%B8%AD"><span class="toc-number">4.1.</span> <span class="toc-text">独立请求：输出高度集中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E7%94%9F%E6%88%90%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%BE%B9%E9%99%85%E5%9D%87%E5%8C%80%E4%BD%86%E5%AD%98%E5%9C%A8%E5%91%A8%E6%9C%9F%E7%BB%93%E6%9E%84"><span class="toc-number">4.2.</span> <span class="toc-text">批量生成：边际均匀但存在周期结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A8%E8%AE%BA"><span class="toc-number">5.</span> <span class="toc-text">讨论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E5%BB%BA%E8%AE%AE"><span class="toc-number">6.</span> <span class="toc-text">实际应用建议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%80%E9%99%90%E6%80%A7"><span class="toc-number">7.</span> <span class="toc-text">局限性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">8.</span> <span class="toc-text">结论</span></a></li></ol>
+</div>
+
+    <div class="e-content article-entry article-with-titlenum" itemprop="articleBody">
+      
+        <h2 id="摘要">摘要</h2>
+<p>大型语言模型基于概率采样生成文本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但这并不意味着其输出的数字服从均匀分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>本研究以本地部署的 4-bit 量化模型 Gemma 4 E4B 为对象<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>分别测试了两种生成方式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>一是逐次独立请求模型给出一个随机整数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>共 240 次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>二是要求模型一次性生成多个随机整数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>共 40 批<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>合计收集 1,841 个有效数值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>实验覆盖三种数值区间<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>0–9<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>1–10<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>1–100<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>和两种提示语言<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>英语<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>中文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>结果显示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>两种生成方式呈现出性质不同的问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>在独立请求条件下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型的输出高度集中于少数几个数字<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>英语 1–10 条件中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">数字 7 的出现比例达到 85%</span><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>均匀分布下理论比例为 10%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>1–100 条件中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">数字 73 的出现比例为 28.3%</span><span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>理论比例为 1%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>所有条件下的输出分布均显著偏离均匀分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>相反<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>批量生成条件下的边际分布几乎完全均匀<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但序列内部存在明显的周期性重复<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><span class="marker">十分类条件下相隔 10 项的自相关系数达到 0.6–0.77<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而连续重复的比例接近于零<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>远低于随机采样理论上应有的水平</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>边际分布均匀并不能作为随机性的证据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>本研究认为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>Gemma 4 E4B 在单次请求任务中表现为对&quot;典型随机数&quot;的语义选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在批量任务中表现为对序列结构的主动规划<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>均不具备可靠的随机性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不适合用于抽签<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>分组<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>模拟或其他要求随机性的场景<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="引言">引言</h2>
+<p>模型基于概率采样生成 token<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这一过程本身并不保证输出的数字服从目标区间上的均匀分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>温度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>核采样等参数控制的是 token 选择的方式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而数字在训练语料中的分布本身就是不均匀的——例如&quot;7&quot;在涉及&quot;随机数&quot;的语境中出现的频率可能天然高于其他数字<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型据此学到的是一种文本统计规律<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而非数学意义上的随机性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>已有研究报告了类似现象<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>有研究在多个模型和语言条件下发现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>1–10 区间内数字 7 普遍被过度选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>且该偏好会随提示语言和采样温度发生变化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>另有研究比较了 ChatGPT 生成的数字序列与人类手动生成的序列<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>发现前者的重复率异常偏低<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>提示&quot;刻意规避重复模式&quot;本身也是一种偏差来源<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>此外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也有研究指出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>应当将批量生成和逐次独立请求区分开来测试<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因为这两种调用方式可能暴露不同的问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>本研究试图在本地<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>参数可控的环境下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时考察这两种调用方式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并进一步比较提示语言和数值区间对结果的影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="方法">方法</h2>
+<p>测试对象为 4-bit 量化版本的 Gemma 4 E4B-it<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>MLX 格式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过 LM Studio 在本地运行<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>采样参数采用官方推荐配置<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>temperature=1.0<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>top_p=0.95<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>top_k=64<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>运行环境为 Apple Silicon Mac<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>18GB 统一内存<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型加载后占用约 6.4GB<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>测试时间为 2026-09-11<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>所有独立请求均在新对话中发起<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不携带此前的对话历史<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>实验设置了四个条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>数值区间</th>
+<th>提示语言</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>en_1_10</td>
+<td>1–10</td>
+<td>英语</td>
+</tr>
+<tr>
+<td>zh_1_10</td>
+<td>1–10</td>
+<td>中文</td>
+</tr>
+<tr>
+<td>en_0_9</td>
+<td>0–9</td>
+<td>英语</td>
+</tr>
+<tr>
+<td>en_1_100</td>
+<td>1–100</td>
+<td>英语</td>
+</tr>
+</tbody>
+</table>
+<p>每个条件包含两部分测试<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>独立请求部分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每个条件提问 60 次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>要求模型仅回复一个整数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>四组合计 240 次请求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>批量生成部分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每个条件运行 10 批<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每批要求模型&quot;生成 50 个独立均匀的整数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以逗号分隔返回&quot;<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>受输出长度限制影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>多数批次在生成 40 余项后被截断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>另有 5 批未产生有效输出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>分析仅使用各批次截断前的有效部分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>四个条件的批量有效样本量分别为 466<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>459<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>411<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>265<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>加上独立请求的 240 个<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>合计 1,841 个数值进入分析<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>对独立请求数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使用卡方检验判断其是否偏离均匀分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并记录出现过的数字种类数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>众数及其出现频率相对于均匀期望的倍数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对批量生成数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>除边际分布检验外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>另计算立即重复率<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>连续两项数值相同的比例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>与序列的自相关系数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用于判断序列内部是否存在周期性结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>在理想的独立均匀采样下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>十分类条件的立即重复率理论上应接近 10%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>各阶自相关系数应接近 0<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="结果">结果</h2>
+<h3 id="独立请求&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;输出高度集中">独立请求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>输出高度集中</h3>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th style="text-align:right">样本量</th>
+<th style="text-align:right">出现的数字种类数</th>
+<th style="text-align:right">众数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>出现次数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></th>
+<th style="text-align:right">众数频率相对均匀期望的倍数</th>
+<th style="text-align:right">p 值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>英语 1–10</td>
+<td style="text-align:right">60</td>
+<td style="text-align:right">5/10</td>
+<td style="text-align:right">7<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>51次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+<td style="text-align:right">8.5倍</td>
+<td style="text-align:right">&lt; 0.001</td>
+</tr>
+<tr>
+<td>中文 1–10</td>
+<td style="text-align:right">60</td>
+<td style="text-align:right">6/10</td>
+<td style="text-align:right">7<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>46次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+<td style="text-align:right">7.7倍</td>
+<td style="text-align:right">&lt; 0.001</td>
+</tr>
+<tr>
+<td>英语 0–9</td>
+<td style="text-align:right">60</td>
+<td style="text-align:right">5/10</td>
+<td style="text-align:right">7<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>23次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+<td style="text-align:right">3.8倍</td>
+<td style="text-align:right">&lt; 0.001</td>
+</tr>
+<tr>
+<td>英语 1–100</td>
+<td style="text-align:right">60</td>
+<td style="text-align:right">11/100</td>
+<td style="text-align:right">73<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>17次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+<td style="text-align:right">28.3倍</td>
+<td style="text-align:right">&lt; 0.001</td>
+</tr>
+</tbody>
+</table>
+<p>英语 1–10 条件中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">60 次请求中有 51 次给出数字 7<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>占比 85%</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>其余出现过的数字仅有 5<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>8<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>6<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>3<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>2<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>4<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>9<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>10 均未被选中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>中文提示下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>7 的占比降至 76.7%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>第二常见的数字为 5<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>占 15%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这一结果表明<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>提示语言能够在一定程度上调节偏好强度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但不能改变模型对&quot;7 是典型随机数&quot;这一倾向的选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>0–9 条件中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型仅在 7<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>5<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>3<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>4<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>0 五个数字间选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未曾选取 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>2<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>6<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>8<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>9<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>1–100 条件的偏差更为突出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">100 个可能取值中仅出现 11 种<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>出现频率最高的数字由 7 变为 73</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>出现次数是均匀期望的 28.3 倍<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这说明模型的偏好并非针对数字&quot;7&quot;本身<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是<span class="marker">对不同数值区间各自形成了一个&quot;典型随机数&quot;<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如 1–10 区间对应 7<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>1–100 区间对应 73</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>四个条件下模型输出偏离均匀分布的检验结果均达到统计显著水平<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/09/11/llm-rnd/distributions.png" alt="四种条件下独立请求与批量生成的边际分布"></p>
+<h3 id="批量生成&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;边际均匀但存在周期结构">批量生成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>边际均匀但存在周期结构</h3>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th style="text-align:right">有效样本数</th>
+<th style="text-align:right">覆盖类别数</th>
+<th style="text-align:right">立即重复率</th>
+<th style="text-align:right">最大自相关系数<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>滞后阶数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>英语 1–10</td>
+<td style="text-align:right">466</td>
+<td style="text-align:right">10/10</td>
+<td style="text-align:right">0.22%</td>
+<td style="text-align:right">0.715<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>滞后10<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>中文 1–10</td>
+<td style="text-align:right">459</td>
+<td style="text-align:right">10/10</td>
+<td style="text-align:right">0.00%</td>
+<td style="text-align:right">0.770<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>滞后10<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>英语 0–9</td>
+<td style="text-align:right">411</td>
+<td style="text-align:right">10/10</td>
+<td style="text-align:right">0.00%</td>
+<td style="text-align:right">0.616<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>滞后10<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+</tr>
+<tr>
+<td>英语 1–100</td>
+<td style="text-align:right">265</td>
+<td style="text-align:right">88/100</td>
+<td style="text-align:right">0.00%</td>
+<td style="text-align:right">0.414<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>滞后1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></td>
+</tr>
+</tbody>
+</table>
+<p>单从边际分布来看<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>四个批量条件均未表现出对均匀分布的显著偏离<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>各数字的出现频率相当接近理论水平<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>但这一结果掩盖了序列内部的结构性问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>真正的独立均匀采样下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>连续两项数值相同的概率理论上约为 10%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而各条件的立即重复率均低于 0.22%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>接近于零<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>检视原始序列后发现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">模型倾向于先生成一个覆盖全部数字的排列<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如 <code>4,10,5,2,8,3,9,6,1,7</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>随后以该排列为基础重复<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仅做少量调整</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而非逐项独立采样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>中文条件下同样观察到这一模式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>某批次以 <code>5,9,1,4,7,10,2,8,6,3</code> 开头<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>后续内容基本沿用该排列循环<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这也是三个十分类条件下相隔 10 项的自相关系数高达 0.6–0.77 的原因——序列大致每隔 10 项重复一次相同排列<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>构成了明确的周期结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>此外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>相邻数值相差为 1 的比例仅为 7.5%–8.7%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>低于随机序列理论上应有的 18%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>说明模型在生成过程中还主动规避了数值相邻的组合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>综合来看<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">批量生成条件下的边际均匀并非随机采样的结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是模型对序列结构进行主动规划的产物</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><img src="/2026/09/11/llm-rnd/autocorrelation.png" alt="批量序列的 1–20 阶自相关"></p>
+<h2 id="讨论">讨论</h2>
+<p>两种调用方式所反映的问题性质不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>且差异远大于提示语言带来的影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>独立请求条件下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型执行的更接近于一种语义补全任务——训练语料中大量文本将&quot;7&quot;与&quot;随机&quot;相关联<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型据此形成了默认选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>批量生成条件下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>任务实际上变为&quot;生成一份看起来均匀且不重复的列表&quot;<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型清楚这类列表应具备的统计特征<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此主动朝该方向调整输出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>结果反而引入了明显的周期规律<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>这一现象也说明<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仅依据单一协议下的评估结果可能得出片面甚至相反的结论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>若仅观察批量生成的边际分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>会得出模型随机性表现良好的结论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>若仅观察独立请求的结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>则会得出模型输出高度确定<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>几乎不具备随机性的结论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker">两种结论各自成立<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但都不完整——完整的评估需要同时考察两种调用方式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并且需要同时检验边际分布与序列内部结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<p>本研究结果与已有文献报告的方向基本一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>数字 7 在小区间内的主导地位<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>区间扩大后典型数字发生变化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>提示语言可调节但无法消除偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>均与既有研究的观察相符<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>批量生成中对重复的主动规避<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也与此前关于语言模型生成序列过度规整的研究结论相印证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>至于这种行为源于模型对&quot;随机外观&quot;文本模式的复现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还是源于模型在当前上下文中主动追踪已输出数字并进行去重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仅凭行为层面的观察结果难以区分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>本研究对此不作因果判断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="实际应用建议">实际应用建议</h2>
+<p>基于上述结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不建议将该模型用于抽签<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>随机分组<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>A/B 测试分配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>训练测试集划分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>随机模拟或密码学相关场景<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>即使在风险较低的应用中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>批量生成中出现的周期结构一旦被引入下游计算<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>如方差估计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>置换检验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>蒙特卡洛模拟<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也可能导致结果出现系统性偏差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对于确实需要随机性的场景<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>应使用操作系统提供的熵源或经过验证的伪随机数生成器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并记录相应的种子与版本信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>语言模型可用于编写调用相关代码或解释结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但不宜作为随机数来源本身<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="局限性">局限性</h2>
+<p>第一<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>本研究仅测试了单一模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>单一量化版本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>单一运行环境<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>结论不能直接推广至其他模型或量化配置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>第二<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每个独立请求条件仅有 60 个样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>尤其对 1–100 这类区间而言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>样本量难以精确估计每个数值的出现概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>但由于观察到的偏差幅度较大<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>众数出现频率为均匀期望的 28.3 倍<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>且仅覆盖 11 个类别<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这一结论受样本量限制的影响应当有限<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>第三<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>批量生成部分受输出长度限制影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>多数批次未能生成完整的 50 项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>另有 5 批完全未产生有效输出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>本研究仅使用了截断前的有效数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能低估了序列后段的规律性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>各条件间的有效样本量也不完全一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此协议间的比较更多依赖结构性指标而非单纯的样本量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>第四<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>多个请求为并发执行<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>理论上应相互独立<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但底层的随机种子管理机制未经过公开验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>无法完全排除并发请求之间存在关联的可能性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>第五<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>统计检验只能判断样本是否偏离某一原假设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>无法反过来证明未偏离即等同于真正的随机性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>即便某个序列通过了本研究采用的全部检验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也不代表其可用于对随机性有密码学级别要求的场景<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="结论">结论</h2>
+<p>本地部署的 Gemma 4 E4B 不能可靠地生成独立均匀的随机整数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>独立请求条件下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型的输出概率集中于少数&quot;典型随机数&quot;<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>批量生成条件下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型生成的序列边际分布均匀<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但存在明显的周期性重复<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这两种表现共同指向同一个问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>模型在执行的是语言模式的补全或规划任务<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而非可验证的目标分布采样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>对语言模型随机性的评估至少应包括以下几点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>同时测试独立请求与批量请求两种协议<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>同时检验边际分布与序列内部的依赖关系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>如实报告截断和失败样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>明确记录采样参数配置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>不将&quot;统计检验未显著&quot;简单等同于&quot;可以安全使用&quot;<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对于确实需要随机性的应用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>应交由专门的随机数生成器完成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而非依赖语言模型本身<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/AI/" rel="tag">AI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../../../tags/LLM/" rel="tag">LLM</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="../../../07/31/chu-aichart/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          中二节奏 AI 写谱
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../../07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../../06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../../06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../../05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../../../js/clipboard.min.js"></script>
+
+
+<script src="../../../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>
