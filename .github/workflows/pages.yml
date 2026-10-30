@@ -35,7 +35,7 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Build site
-        run: npm run build:clean
+        run: npm run check
 
       - name: Publish GitHub Pages branch
         if: github.event_name != 'pull_request'

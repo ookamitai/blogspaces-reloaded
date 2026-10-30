@@ -5,7 +5,8 @@
   "scripts": {
     "build": "hexo generate",
     "build:clean": "npm run clean && npm run build",
-    "check": "npm run build:clean",
+    "check": "npm run build:clean && npm run check:papers",
+    "check:papers": "node tools/check-papers.mjs",
     "clean": "hexo clean",
     "draft": "hexo new draft",
     "post": "hexo new post",

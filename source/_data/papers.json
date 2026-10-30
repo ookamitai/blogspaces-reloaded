@@ -1,0 +1,2806 @@
+{
+  "updated": "2026-10-30",
+  "raw_count": 148,
+  "source_document": "Paper Reserch.md",
+  "reading_order_note": "按前置知识和问题递进编排的建议阅读顺序；不代表权威难度排名。",
+  "stages": [
+    {
+      "name": "基础与评估",
+      "description": "先建立 DPO、RLHF、奖励模型和独立评估的共同语言。"
+    },
+    {
+      "name": "数据与偏好结构",
+      "description": "再看哪些比较有信息，以及评分、平局、排序分别提供什么监督。"
+    },
+    {
+      "name": "优化动力学",
+      "description": "理解概率如何变化，再比较梯度平衡、锚定和目标函数的假设。"
+    },
+    {
+      "name": "噪声与鲁棒性",
+      "description": "区分错标、分歧、分布偏移和奖励黑客，逐一学习对应的修正。"
+    },
+    {
+      "name": "多目标与推理时对齐",
+      "description": "从博弈与 Pareto 权衡走向个性化、在线适应和解码时控制。"
+    },
+    {
+      "name": "密度比基础",
+      "description": "为生成模型对齐补上 Bregman、flow、score 与密度比的连接。"
+    },
+    {
+      "name": "扩散、流匹配与应用",
+      "description": "在连续生成过程里重查假设，最后阅读多模态与具体任务应用。"
+    }
+  ],
+  "papers": [
+    {
+      "id": "p008",
+      "title": "A Survey of Direct Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2503.11701",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "偏好优化基础"
+      ],
+      "summary": "先建立DPO研究的四维地图，再决定一篇变体究竟改了数据、学习、约束还是模型属性。",
+      "year": 2025,
+      "slug": "a-survey-of-direct-preference-optimization",
+      "original_title": "A Survey of Direct Preference Optimization",
+      "source_refs": [
+        "研究想法 #8"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 1
+    },
+    {
+      "id": "p122",
+      "title": "A Survey on Progress in LLM Alignment from the Perspective of Reward Design",
+      "source_url": "https://arxiv.org/abs/2505.02666",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验2025年8月修订摘要；清单早期三维概括与首发版分类表述不同，学习时应固定版本。",
+      "topics": [
+        "奖励建模与评估",
+        "偏好优化基础"
+      ],
+      "summary": "对齐方法可以沿着“反馈怎样变成奖励、奖励怎样进入优化”这条线组织，先理解接口再记算法名。",
+      "year": 2025,
+      "slug": "a-survey-on-progress-in-llm-alignment-from-the-perspective-of-reward-design",
+      "original_title": "A Survey on Progress in LLM Alignment from the Perspective of Reward Design",
+      "source_refs": [
+        "对齐论文表 #40"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 2
+    },
+    {
+      "id": "p086",
+      "title": "Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study",
+      "source_url": "https://arxiv.org/abs/2404.10719",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "偏好优化基础",
+        "数据与主动学习"
+      ],
+      "summary": "比较DPO与PPO，要同时比较数据覆盖、在线采样和实现细节，算法名字本身不能决定胜负。",
+      "year": 2024,
+      "slug": "is-dpo-superior-to-ppo-for-llm-alignment-a-comprehensive-study",
+      "original_title": "Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study",
+      "source_refs": [
+        "对齐论文表 #1"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 3
+    },
+    {
+      "id": "p123",
+      "title": "Insights into Alignment: Evaluating DPO and its Variants Across Multiple Tasks",
+      "source_url": "https://arxiv.org/abs/2404.14723",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。原论文首发2024，另有后续正式版本；已补全原文副标题。",
+      "topics": [
+        "偏好优化基础",
+        "奖励建模与评估"
+      ],
+      "summary": "评价DPO变体时，基座是否已做指令训练、是否先SFT以及训练数据量，可能和损失选择同样重要。",
+      "year": 2024,
+      "slug": "insights-into-alignment-evaluating-dpo-and-its-variants",
+      "original_title": "Insights into Alignment: Evaluating DPO and its Variants",
+      "source_refs": [
+        "对齐论文表 #41"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 4
+    },
+    {
+      "id": "p093",
+      "title": "Rethinking reward modeling in preference-based large language model alignment",
+      "source_url": "https://arxiv.org/abs/2411.04991",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。ICLR 2025会议标题为清单所列标题；arXiv版本题为“Rethinking Bradley-Terry Models in Preference-Based Reward Modeling: Foundations, Theory, and Alternatives”。",
+      "topics": [
+        "奖励建模与评估",
+        "偏好优化基础"
+      ],
+      "summary": "奖励模型最需要保住的可能是正确排序，而不是把每次偏好都严格拟合成BT概率。",
+      "year": 2025,
+      "slug": "rethinking-reward-modeling-in-preference-based-large-language-model-alignment",
+      "original_title": "Rethinking reward modeling in preference-based large language model alignment",
+      "source_refs": [
+        "对齐论文表 #8"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 5
+    },
+    {
+      "id": "p130",
+      "title": "How to Evaluate Reward Models for RLHF",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/2e01083b381b4865919b4915ef32e3d2-Abstract-Conference.html",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。PPE是基准名；正式论文标题不带“PPE Benchmark”括注。",
+      "topics": [
+        "奖励建模与评估",
+        "偏好优化基础"
+      ],
+      "summary": "奖励模型的最终价值，是它能否训练出更受人类认可的助手；离线指标需要用下游结果校准。",
+      "year": 2025,
+      "slug": "how-to-evaluate-reward-models-for-rlhf-ppe-benchmark",
+      "original_title": "How to Evaluate Reward Models for RLHF (PPE Benchmark)",
+      "source_refs": [
+        "对齐论文表 #48"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 6
+    },
+    {
+      "id": "p092",
+      "title": "Learning LLM-as-a-Judge for Preference Alignment",
+      "source_url": "https://github.com/YeZiyi1998/Con-J",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验论文摘要检索记录，并用作者官方仓库交叉确认训练机制；OpenReview PDF直接访问需要浏览器验证。",
+      "topics": [
+        "奖励建模与评估",
+        "偏好优化基础"
+      ],
+      "summary": "把裁判的判断过程也当成可学习的生成任务，让模型比较“有依据的正确判断”和“错误判断”。",
+      "year": 2025,
+      "slug": "learning-llm-as-a-judge-for-preference-alignment",
+      "original_title": "Learning LLM-as-a-Judge for Preference Alignment",
+      "source_refs": [
+        "对齐论文表 #7"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 7
+    },
+    {
+      "id": "p080",
+      "title": "Post-hoc Alignment of LLM-judges to Human Judgment Distribution",
+      "source_url": "https://arxiv.org/abs/2609.01073",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "奖励建模与评估",
+        "多目标与个性化"
+      ],
+      "summary": "让模型裁判预测人类判断分布，而不仅仅命中多数人的最终标签。",
+      "year": 2026,
+      "slug": "post-hoc-alignment-of-llm-judges-to-human-judgment-distribution",
+      "original_title": "Post-hoc Alignment of LLM-judges to Human Judgment Distribution",
+      "source_refs": [
+        "研究想法 #84"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 8
+    },
+    {
+      "id": "p031",
+      "title": "Discretizing Reward Models",
+      "source_url": "https://arxiv.org/abs/2606.21795",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "奖励建模与评估",
+        "噪声与鲁棒性"
+      ],
+      "summary": "奖励模型既要区分好坏，也要知道哪些同样好的回答不应被硬分高下。",
+      "year": 2026,
+      "slug": "discretizing-reward-models",
+      "original_title": "Discretizing Reward Models",
+      "source_refs": [
+        "研究想法 #31"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 9
+    },
+    {
+      "id": "p021",
+      "title": "Representation-Aware Advantage Estimation: Your Reward Model Provides More Than A Scalar Output",
+      "source_url": "https://arxiv.org/abs/2606.10528",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "奖励建模与评估",
+        "优化动力学"
+      ],
+      "summary": "奖励模型的隐藏表征能提供样本之间的关系，让优势估计不只依赖一个嘈杂分数。",
+      "year": 2026,
+      "slug": "representation-aware-advantage-estimation-your-reward-model-provides-more-than-a-scalar-output",
+      "original_title": "Representation-Aware Advantage Estimation: Your Reward Model Provides More Than A Scalar Output",
+      "source_refs": [
+        "研究想法 #21"
+      ],
+      "stage": "基础与评估",
+      "reading_order": 10
+    },
+    {
+      "id": "p038",
+      "title": "What Matters in Data for DPO?",
+      "source_url": "https://arxiv.org/abs/2508.18312",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "数据与主动学习",
+        "偏好优化基础"
+      ],
+      "summary": "构建DPO数据时，先把chosen做好，可能比只追求更差的rejected更有效。",
+      "year": 2025,
+      "slug": "what-matters-in-data-for-dpo",
+      "original_title": "What Matters in Data for DPO?",
+      "source_refs": [
+        "研究想法 #38",
+        "研究想法 #62"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 11
+    },
+    {
+      "id": "p097",
+      "title": "Less is More: Improving LLM Alignment via Preference Data Selection",
+      "source_url": "https://arxiv.org/abs/2502.14560",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验2025预印本摘要；会议修订稿使用Bayesian Aggregation术语，方法细节应按所复现版本固定。",
+      "topics": [
+        "数据与主动学习",
+        "噪声与鲁棒性"
+      ],
+      "summary": "偏好对更多并不一定更好，关键是筛掉会相互抵消训练方向的噪声，并保留当前模型能学到的差异。",
+      "year": 2025,
+      "slug": "less-is-more-improving-llm-alignment-via-preference-data-selection",
+      "original_title": "Less is more: Improving llm alignment via preference data selection",
+      "source_refs": [
+        "对齐论文表 #12"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 12
+    },
+    {
+      "id": "p033",
+      "title": "Which Pairs to Compare for LLM Post-Training?",
+      "source_url": "https://arxiv.org/abs/2606.19607",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "数据与主动学习",
+        "偏好优化基础"
+      ],
+      "summary": "标注预算有限时，应挑能改善最终策略的信息方向，而非只挑看起来最难的比较。",
+      "year": 2026,
+      "slug": "which-pairs-to-compare-for-llm-post-training",
+      "original_title": "Which Pairs to Compare for LLM Post-Training?",
+      "source_refs": [
+        "研究想法 #33"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 13
+    },
+    {
+      "id": "p098",
+      "title": "Larger or Smaller Reward Margins to Select Preferences for LLM Alignment?",
+      "source_url": "https://proceedings.mlr.press/v267/huang25al.html",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "数据与主动学习",
+        "优化动力学"
+      ],
+      "summary": "最值得学的偏好对，是外部目标有明显差距、但当前模型还没拉开这个差距的样本。",
+      "year": 2025,
+      "slug": "larger-or-smaller-reward-margins-to-select-preferences-for-llm-alignment",
+      "original_title": "Larger or Smaller Reward Margins to Select Preferences for LLM Alignment?",
+      "source_refs": [
+        "对齐论文表 #13"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 14
+    },
+    {
+      "id": "p041",
+      "title": "Difficulty-Based Preference Data Selection by DPO Implicit Reward Gap",
+      "source_url": "https://arxiv.org/abs/2508.04149",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "数据与主动学习"
+      ],
+      "summary": "用模型仍难区分的偏好对集中训练，可提升数据效率，但要避免把难例等同于干净信息。",
+      "year": 2025,
+      "slug": "difficulty-based-preference-data-selection-by-dpo-implicit-reward-gap",
+      "original_title": "Difficulty-Based Preference Data Selection by DPO Implicit Reward Gap",
+      "source_refs": [
+        "研究想法 #41"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 15
+    },
+    {
+      "id": "p099",
+      "title": "On Preference Learning Based on Sequential Bayesian Optimization with Pairwise Comparison",
+      "source_url": "https://arxiv.org/abs/2103.13192",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。2021为预印本首发；期刊版发表于Artificial Intelligence 348（2025）。清单把预印本年份和期刊信息放在同一行，需区分。",
+      "topics": [
+        "数据与主动学习",
+        "多目标与个性化"
+      ],
+      "summary": "不要求用户给绝对分数，而是反复问最能减少未知偏好的二选一问题。",
+      "year": 2021,
+      "slug": "on-preference-learning-based-on-sequential-bayesian-optimization-with-pairwise-comparison",
+      "original_title": "On Preference Learning Based on Sequential Bayesian Optimization with Pairwise Comparison",
+      "source_refs": [
+        "对齐论文表 #14"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 16
+    },
+    {
+      "id": "p131",
+      "title": "Active Reward Modeling: Adaptive Preference Labeling for Large Language Model Alignment",
+      "source_url": "https://proceedings.mlr.press/v267/shen25c.html",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。正式标题使用Large Language Model而非LLM，已按ICML 2025记录更正。",
+      "topics": [
+        "数据与主动学习",
+        "奖励建模与评估"
+      ],
+      "summary": "有价值的比较既要覆盖新的表示方向，也要让两项差距足够有信息，Fisher信息可以连接这两点。",
+      "year": 2025,
+      "slug": "active-reward-modeling-adaptive-preference-labeling-for-llm-alignment",
+      "original_title": "Active Reward Modeling: Adaptive Preference Labeling for LLM Alignment",
+      "source_refs": [
+        "对齐论文表 #49"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 17
+    },
+    {
+      "id": "p115",
+      "title": "ActiveDPO: Active Direct Preference Optimization for Sample-Efficient Alignment",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2026/hash/24b4531f1ed8d6581530cfde9f47a80b-Abstract-Conference.html",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。预印本首发2025；这里采用已核验的ICLR 2026正式版本年份。",
+      "topics": [
+        "数据与主动学习",
+        "偏好优化基础"
+      ],
+      "summary": "要挑当前模型最需要人类比较的样本，让标注选择跟着正在对齐的模型状态一起变化。",
+      "year": 2026,
+      "slug": "activedpo-active-direct-preference-optimization-for-sample-efficient-alignment",
+      "original_title": "ActiveDPO: Active Direct Preference Optimization for Sample-Efficient Alignment",
+      "source_refs": [
+        "对齐论文表 #32"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 18
+    },
+    {
+      "id": "p121",
+      "title": "Online Preference Alignment for Language Models via Count-based Exploration",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/fd23a1f3bc89e042d70960b466dc20e8-Abstract-Conference.html",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "数据与主动学习",
+        "偏好优化基础"
+      ],
+      "summary": "除了偏爱高分回答，还要给没充分探索过的响应机会，避免在线训练反复采到同一小片区域。",
+      "year": 2025,
+      "slug": "online-preference-alignment-for-language-models-via-count-based-exploration-copo",
+      "original_title": "Online Preference Alignment for Language Models via Count-based Exploration (COPO)",
+      "source_refs": [
+        "对齐论文表 #39"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 19
+    },
+    {
+      "id": "p103",
+      "title": "Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment",
+      "source_url": "https://openreview.net/pdf?id=BPgK5XW1Nb",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。正式记录为ICLR 2025，清单中的2024对应早期预印本阶段。",
+      "topics": [
+        "数据与主动学习",
+        "噪声与鲁棒性"
+      ],
+      "summary": "用少量人工偏好启动模型，再让模型从自身logits中提取偏好来扩展训练数据。",
+      "year": 2025,
+      "slug": "spread-preference-annotation-direct-preference-judgment-for-efficient-llm-alignment",
+      "original_title": "Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment",
+      "source_refs": [
+        "对齐论文表 #19"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 20
+    },
+    {
+      "id": "p095",
+      "title": "Diverse AI Feedback For Large Language Model Alignment",
+      "source_url": "https://aclanthology.org/2025.tacl-1.19/",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。正式发表为TACL 2025；清单中的Underline是演讲平台，不能作为期刊名。",
+      "topics": [
+        "数据与主动学习",
+        "偏好优化基础"
+      ],
+      "summary": "“指出哪里错”“给出改写”和“比较谁更好”携带的信息不同，反馈应匹配任务的不确定性。",
+      "year": 2025,
+      "slug": "diverse-ai-feedback-for-large-language-model-alignment",
+      "original_title": "Diverse ai feedback for large language model alignment",
+      "source_refs": [
+        "对齐论文表 #10"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 21
+    },
+    {
+      "id": "p040",
+      "title": "Direct Preference Optimization with Rating Information: Practical Algorithms and Provable Gains",
+      "source_url": "https://arxiv.org/abs/2602.00603",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "偏好优化基础",
+        "奖励建模与评估"
+      ],
+      "summary": "“好多少”的评分差距，比只有“谁更好”提供更丰富的监督。",
+      "year": 2026,
+      "slug": "direct-preference-optimization-with-rating-information-practical-algorithms-and-provable-gains",
+      "original_title": "Direct Preference Optimization with Rating Information: Practical Algorithms and Provable Gains",
+      "source_refs": [
+        "研究想法 #40"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 22
+    },
+    {
+      "id": "p028",
+      "title": "TODO: Enhancing LLM Alignment with Ternary Preferences",
+      "source_url": "https://arxiv.org/abs/2411.02442",
+      "verification": "fulltext",
+      "verification_note": "DPO-RK与扩散迁移在原清单中混入本条；本笔记只把可对照TODO原文的TOBT机制归为论文结论。",
+      "topics": [
+        "偏好优化基础",
+        "噪声与鲁棒性"
+      ],
+      "summary": "平局告诉模型“别强行拉开差距”，它本身就是一种有效监督。",
+      "year": 2024,
+      "slug": "todo-enhancing-llm-alignment-with-ternary-preferences",
+      "original_title": "TODO: Enhancing LLM Alignment with Ternary Preferences",
+      "source_refs": [
+        "研究想法 #28"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 23
+    },
+    {
+      "id": "p025",
+      "title": "Direct Preference Optimization with Unobserved Preference Heterogeneity: The Necessity of Ternary Preferences",
+      "source_url": "https://arxiv.org/abs/2510.15716",
+      "verification": "fulltext",
+      "verification_note": "这里的ternary指三个候选项，不是胜/负/平标签。与旧版2405.15065同作者主题相关，但本条按题名完全匹配的2510.15716整理。",
+      "topics": [
+        "多目标与个性化",
+        "偏好优化基础"
+      ],
+      "summary": "想从没有群体标签的反馈中恢复不同人的偏好，三个候选项可能比两两比较提供本质不同的信息。",
+      "year": 2025,
+      "slug": "direct-preference-optimization-with-unobserved-preference-heterogeneity-the-necessity-of-ternary-pre",
+      "original_title": "Direct Preference Optimization with Unobserved Preference Heterogeneity: The Necessity of Ternary Preferences",
+      "source_refs": [
+        "研究想法 #25"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 24
+    },
+    {
+      "id": "p042",
+      "title": "Mind the Gap: Structure-Aware Consistency in Preference Learning",
+      "source_url": "https://arxiv.org/abs/2604.27733",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "好优化的代理损失，未必在受限模型类里就能保证好排序；语义距离可以进入一致性设计。",
+      "year": 2026,
+      "slug": "mind-the-gap-structure-aware-consistency-in-preference-learning",
+      "original_title": "Mind the Gap: Structure-Aware Consistency in Preference Learning",
+      "source_refs": [
+        "研究想法 #41（第二个同号条目）"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 25
+    },
+    {
+      "id": "p100",
+      "title": "Preference Ranking Optimization for Human Alignment",
+      "source_url": "https://arxiv.org/abs/2306.17492",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。预印本首发2023；这里采用AAAI 2024会议年份。",
+      "topics": [
+        "偏好优化基础",
+        "数据与主动学习"
+      ],
+      "summary": "一次采样得到多个排好序的回答，就把整份排序用起来，而不只抽取一对胜负。",
+      "year": 2024,
+      "slug": "preference-ranking-optimization-for-human-alignment",
+      "original_title": "Preference ranking optimization for human alignment",
+      "source_refs": [
+        "对齐论文表 #15"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 26
+    },
+    {
+      "id": "p049",
+      "title": "Beyond Pairwise: Empowering LLM Alignment With Ranked Choice Modeling",
+      "source_url": "https://arxiv.org/abs/2510.23631",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "偏好优化基础",
+        "多目标与个性化"
+      ],
+      "summary": "把多候选选择与前 k 名排序作为整体反馈建模，避免先拆成许多胜负对。",
+      "year": 2025,
+      "slug": "beyond-pairwise-empowering-llm-alignment-with-ranked-choice-modeling",
+      "original_title": "Beyond Pairwise: Empowering LLM Alignment With Ranked Choice Modeling",
+      "source_refs": [
+        "研究想法 #48"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 27
+    },
+    {
+      "id": "p018",
+      "title": "Mult-DPO: Multinomial Direct Preference Optimization for Recommender Systems",
+      "source_url": "https://arxiv.org/abs/2606.10078",
+      "verification": "fulltext",
+      "verification_note": "纠正原清单：Mult-DPO使用集合事件的multinomial surrogate，并非直接建模完整PL排序。",
+      "topics": [
+        "偏好优化基础",
+        "安全与应用"
+      ],
+      "summary": "一次推荐反馈常给出“多个正项胜过负项”，无需强行给正项内部排次序。",
+      "year": 2026,
+      "slug": "mult-dpo-multinomial-direct-preference-optimization-for-recommender-systems",
+      "original_title": "Mult-DPO: Multinomial Direct Preference Optimization for Recommender Systems",
+      "source_refs": [
+        "研究想法 #18"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 28
+    },
+    {
+      "id": "p047",
+      "title": "GroupDPO: Memory efficient Group-wise Direct Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2604.15602",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "同一提示的多个候选一起提供监督，同时通过解耦反向传播控制显存。",
+      "year": 2026,
+      "slug": "groupdpo-memory-efficient-group-wise-direct-preference-optimization",
+      "original_title": "GroupDPO: Memory efficient Group-wise Direct Preference Optimization",
+      "source_refs": [
+        "研究想法 #46"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 29
+    },
+    {
+      "id": "p127",
+      "title": "Multi-Preference Optimization: Generalizing DPO via Set-Level Contrasts",
+      "source_url": "https://arxiv.org/abs/2412.04628",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验arXiv 2412.04628（2024首发、2025修订）；清单的ICLR 2026录用信息未据此确认，故不沿用。",
+      "topics": [
+        "偏好优化基础",
+        "数据与主动学习"
+      ],
+      "summary": "一次生成多份候选时，可以比较“好回答集合”和“差回答集合”，避免只抽一对而浪费监督。",
+      "year": 2024,
+      "slug": "multi-preference-optimization-mpo-generalizing-dpo-via-set-level-contrasts",
+      "original_title": "Multi-Preference Optimization (MPO): Generalizing DPO via Set-Level Contrasts",
+      "source_refs": [
+        "对齐论文表 #45"
+      ],
+      "stage": "数据与偏好结构",
+      "reading_order": 30
+    },
+    {
+      "id": "p002",
+      "title": "Gradient-Gated DPO: Stabilizing Preference Optimization in Language Models",
+      "source_url": "https://arxiv.org/abs/2605.02626",
+      "verification": "fulltext",
+      "verification_note": "核对全文第3—4节与第6节的评价协议，未独立复现实验。",
+      "topics": [
+        "优化动力学"
+      ],
+      "summary": "对已经很低概率的坏回答少施加一点负梯度，保护整体概率分布。",
+      "year": 2026,
+      "slug": "gradient-gated-dpo-stabilizing-preference-optimization-in-language-models",
+      "original_title": "Gradient-Gated DPO: Stabilizing Preference Optimization in Language Models",
+      "source_refs": [
+        "研究想法 #2"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 31
+    },
+    {
+      "id": "p024",
+      "title": "AdaDPO: Self-Adaptive Direct Preference Optimization with Balanced Gradient Updates",
+      "source_url": "https://arxiv.org/abs/2605.28440",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "优化动力学"
+      ],
+      "summary": "按每个偏好对的当前概率平衡正负更新，避免模型只学会压低坏答案。",
+      "year": 2026,
+      "slug": "adadpo-self-adaptive-direct-preference-optimization-with-balanced-gradient-updates",
+      "original_title": "AdaDPO: Self-Adaptive Direct Preference Optimization with Balanced Gradient Updates",
+      "source_refs": [
+        "研究想法 #24"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 32
+    },
+    {
+      "id": "p027",
+      "title": "Small-Margin Preferences Still Matter-If You Train Them Right",
+      "source_url": "https://arxiv.org/abs/2602.00954",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "数据与主动学习",
+        "优化动力学"
+      ],
+      "summary": "困难偏好对未必应该丢弃，但它们可能更适合提供正样本SFT信号。",
+      "year": 2026,
+      "slug": "small-margin-preferences-still-matter-if-you-train-them-right",
+      "original_title": "Small-Margin Preferences Still Matter-If You Train Them Right",
+      "source_refs": [
+        "研究想法 #27"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 33
+    },
+    {
+      "id": "p057",
+      "title": "Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement",
+      "source_url": "https://arxiv.org/abs/2604.18239",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "优化动力学",
+        "偏好优化基础"
+      ],
+      "summary": "用激励分数分解分析 chosen/rejected 的共同更新，再校准权重以减少似然位移。",
+      "year": 2026,
+      "slug": "towards-disentangled-preference-optimization-dynamics-beyond-likelihood-displacement",
+      "original_title": "Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement",
+      "source_refs": [
+        "研究想法 #56"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 34
+    },
+    {
+      "id": "p058",
+      "title": "SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2602.02383",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "优化动力学",
+        "偏好优化基础"
+      ],
+      "summary": "无参考目标同时锚定好答案、限制对坏答案的过度压低，并塑造双边际。",
+      "year": 2026,
+      "slug": "slime-stabilized-likelihood-implicit-margin-enforcement-for-preference-optimization",
+      "original_title": "SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization",
+      "source_refs": [
+        "研究想法 #57"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 35
+    },
+    {
+      "id": "p059",
+      "title": "Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization",
+      "source_url": "https://arxiv.org/abs/2508.14947",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "优化动力学",
+        "偏好优化基础"
+      ],
+      "summary": "用绝对差目标与梯度分离，把保持 chosen 和抑制 rejected 的力度拆开调。",
+      "year": 2025,
+      "slug": "linear-preference-optimization-decoupled-gradient-control-via-absolute-regularization",
+      "original_title": "Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization",
+      "source_refs": [
+        "研究想法 #58"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 36
+    },
+    {
+      "id": "p114",
+      "title": "BPO: Revisiting Preference Modeling in Direct Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2506.03557",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "优化动力学",
+        "偏好优化基础"
+      ],
+      "summary": "只确保赢家比输家更高还不够，还要防止赢家本身一起退化；优化力度应在两侧动态平衡。",
+      "year": 2025,
+      "slug": "bpo-revisiting-preference-modeling-in-direct-preference-optimization",
+      "original_title": "BPO: Revisiting Preference Modeling in Direct Preference Optimization",
+      "source_refs": [
+        "对齐论文表 #31"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 37
+    },
+    {
+      "id": "p043",
+      "title": "A Stable and Principled Loss Function for Direct Language Model Alignment",
+      "source_url": "https://arxiv.org/abs/2508.07137",
+      "verification": "abstract",
+      "verification_note": "核验到的正式题名含A Stable and Principled，原清单省略Stable and。关于理论一致性及防止奖励黑客的表述为作者主张，不能泛化成所有场景的保证。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "把“无限拉大差距”换成“匹配有依据的有限差距”，可以改变过度优化的动力学。",
+      "year": 2025,
+      "slug": "a-principled-loss-function-for-direct-language-model-alignment",
+      "original_title": "A Principled Loss Function for Direct Language Model Alignment",
+      "source_refs": [
+        "研究想法 #42"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 38
+    },
+    {
+      "id": "p125",
+      "title": "SPO: Self Preference Optimization with Self Regularization",
+      "source_url": "https://aclanthology.org/2025.findings-emnlp.300.pdf",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "优化动力学",
+        "偏好优化基础"
+      ],
+      "summary": "让损失在有限间隔处达到最优，可以减少模型为了继续降损失而无限拉大偏好比率的冲动。",
+      "year": 2025,
+      "slug": "spo-self-preference-optimization-with-self-regularization",
+      "original_title": "SPO: Self Preference Optimization with Self Regularization",
+      "source_refs": [
+        "对齐论文表 #43"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 39
+    },
+    {
+      "id": "p044",
+      "title": "Boosting Direct Preference Optimization with Penalization",
+      "source_url": "https://arxiv.org/abs/2606.12505",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "固定偏好对之外，参考模型自己会生成什么，也能提供一个有条件使用的训练信号。",
+      "year": 2026,
+      "slug": "boosting-direct-preference-optimization-with-penalization",
+      "original_title": "Boosting Direct Preference Optimization with Penalization",
+      "source_refs": [
+        "研究想法 #43"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 40
+    },
+    {
+      "id": "p126",
+      "title": "Anchored Preference Optimization and Contrastive Revisions: Addressing Underspecification in Alignment",
+      "source_url": "https://arxiv.org/abs/2408.06266",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。预印本首发2024，正式为TACL 2025；已补全副标题。",
+      "topics": [
+        "数据与主动学习",
+        "优化动力学"
+      ],
+      "summary": "偏好对如果只改关键缺点，监督更清楚；优化目标也应明确决定赢家和输家各自怎样移动。",
+      "year": 2025,
+      "slug": "anchored-preference-optimization-and-contrastive-revisions-clair",
+      "original_title": "Anchored Preference Optimization and Contrastive Revisions (CLAIR)",
+      "source_refs": [
+        "对齐论文表 #44"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 41
+    },
+    {
+      "id": "p128",
+      "title": "Explicit Preference Optimization: No Need for an Implicit Reward Model",
+      "source_url": "https://arxiv.org/abs/2506.07492",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验原题为Explicit Preference Optimization: No Need for an Implicit Reward Model。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "不一定要先把奖励藏进策略比率里；可以直接设计透明的偏好优化与正则化规则。",
+      "year": 2025,
+      "slug": "explicit-preference-optimization-expo-no-need-for-an-implicit-reward-model",
+      "original_title": "Explicit Preference Optimization (EXPO): No Need for an Implicit Reward Model",
+      "source_refs": [
+        "对齐论文表 #46"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 42
+    },
+    {
+      "id": "p012",
+      "title": "WHY DPO IS A MISSPECIFIED ESTIMATOR AND HOW TO FIX IT",
+      "source_url": "https://arxiv.org/abs/2510.20413",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "DPO能够表达的隐式奖励受策略模型族限制，真实奖励不在其中时，优化得更充分也可能学错。",
+      "year": 2025,
+      "slug": "why-dpo-is-a-misspecified-estimator-and-how-to-fix-it",
+      "original_title": "WHY DPO IS A MISSPECIFIED ESTIMATOR AND HOW TO FIX IT",
+      "source_refs": [
+        "研究想法 #12"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 43
+    },
+    {
+      "id": "p048",
+      "title": "Conditional Equivalence of DPO and RLHF: Implicit Assumption, Failure Modes, and Provable Alignment",
+      "source_url": "https://arxiv.org/abs/2605.20834",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "DPO 改善的是相对参考策略的优势，是否得到人类偏好的绝对排序还依赖条件。",
+      "year": 2026,
+      "slug": "conditional-equivalence-of-dpo-and-rlhf-implicit-assumption-failure-modes-and-provable-alignment",
+      "original_title": "Conditional Equivalence of DPO and RLHF: Implicit Assumption, Failure Modes, and Provable Alignment",
+      "source_refs": [
+        "研究想法 #47"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 44
+    },
+    {
+      "id": "p085",
+      "title": "Proximalized Preference Optimization for Diverse Feedback Types: A Decomposed Perspective on DPO",
+      "source_url": "https://arxiv.org/abs/2505.23316",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "从 DPO 损失分解解释似然欠确定性，并恢复完整正则以适配多种反馈。",
+      "year": 2025,
+      "slug": "proximalized-preference-optimization-for-diverse-feedback-types-a-decomposed-perspective-on-dpo",
+      "original_title": "Proximalized Preference Optimization for Diverse Feedback Types: A Decomposed Perspective on DPO",
+      "source_refs": [
+        "研究想法 #89"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 45
+    },
+    {
+      "id": "p004",
+      "title": "Sharpness-Aware Minimization in Logit Space Efficiently Enhances Direct Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2603.18258",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "优化动力学"
+      ],
+      "summary": "把抗尖锐度的扰动放到logit空间，用较低成本抑制偏好训练的高曲率失稳。",
+      "year": 2026,
+      "slug": "sharpness-aware-minimization-in-logit-space-efficiently-enhances-direct-preference-optimization",
+      "original_title": "Sharpness-Aware Minimization in Logit Space Efficiently Enhances Direct Preference Optimization",
+      "source_refs": [
+        "研究想法 #4"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 46
+    },
+    {
+      "id": "p006",
+      "title": "Convex Optimization for Alignment and Preference Learning on a Single GPU",
+      "source_url": "https://arxiv.org/abs/2605.23244",
+      "verification": "abstract",
+      "verification_note": "正文机制同时核对作者代码仓库 https://github.com/pilancilab/COALA ；不把对受限模块的凸保证推广到完整LLM。",
+      "topics": [
+        "偏好优化基础",
+        "推理时对齐"
+      ],
+      "summary": "冻结大模型，把可训练部分限制成有凸结构的偏好模块，换取便宜而可分析的优化。",
+      "year": 2026,
+      "slug": "convex-optimization-for-alignment-and-preference-learning-on-a-single-gpu",
+      "original_title": "Convex Optimization for Alignment and Preference Learning on a Single GPU",
+      "source_refs": [
+        "研究想法 #6"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 47
+    },
+    {
+      "id": "p060",
+      "title": "InSPO: Unlocking Intrinsic Self-Reflection for LLM Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2512.23126",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "偏好优化基础",
+        "多目标与个性化"
+      ],
+      "summary": "将备选响应纳入策略条件，让模型利用“与另一个答案比较”的信息来学习。",
+      "year": 2025,
+      "slug": "inspo-unlocking-intrinsic-self-reflection-for-llm-preference-optimization",
+      "original_title": "InSPO: Unlocking Intrinsic Self-Reflection for LLM Preference Optimization",
+      "source_refs": [
+        "研究想法 #59"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 48
+    },
+    {
+      "id": "p054",
+      "title": "Learning from Failures: Understanding LLM Alignment through Failure-Aware Inverse RL",
+      "source_url": "https://arxiv.org/abs/2510.06092",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "奖励建模与评估",
+        "数据与主动学习"
+      ],
+      "summary": "用奖励提取模型分错或分不清的偏好对，审计 RLHF 学到的潜在激励。",
+      "year": 2025,
+      "slug": "learning-from-failures-understanding-llm-alignment-through-failure-aware-inverse-rl",
+      "original_title": "Learning from Failures: Understanding LLM Alignment through Failure-Aware Inverse RL",
+      "source_refs": [
+        "研究想法 #53"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 49
+    },
+    {
+      "id": "p106",
+      "title": "Negating Negatives: Alignment with Human Negative Samples via Distributional Dispreference Optimization",
+      "source_url": "https://aclanthology.org/2024.findings-emnlp.56/",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已根据正式ACL记录补全标题，D²O应译为分布层面的不偏好优化。",
+      "topics": [
+        "偏好优化基础",
+        "噪声与鲁棒性"
+      ],
+      "summary": "如果“什么是坏回答”比“什么是好回答”更可靠，就先学习避开坏分布，再用自身生成维持能力。",
+      "year": 2024,
+      "slug": "negating-negatives-alignment-with-human-dispreference",
+      "original_title": "Negating Negatives: Alignment with Human Dispreference",
+      "source_refs": [
+        "对齐论文表 #22"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 50
+    },
+    {
+      "id": "p053",
+      "title": "DEFT: Distribution-guided Efficient Fine-Tuning for Human Alignment",
+      "source_url": "https://aclanthology.org/2024.findings-emnlp.898/",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "数据与主动学习",
+        "偏好优化基础"
+      ],
+      "summary": "从偏好数据构造差异分布，用它同时筛选训练样本和引导模型输出。",
+      "year": 2024,
+      "slug": "deft-distribution-guided-efficient-fine-tuning-for-human-alignment",
+      "original_title": "DEFT: Distribution-guided Efficient Fine-Tuning for Human Alignment",
+      "source_refs": [
+        "研究想法 #52"
+      ],
+      "stage": "优化动力学",
+      "reading_order": 51
+    },
+    {
+      "id": "p014",
+      "title": "When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming",
+      "source_url": "https://arxiv.org/abs/2606.03238",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "奖励建模与评估",
+        "噪声与鲁棒性"
+      ],
+      "summary": "奖励黑客应作为训练中局部发生的转变来监测，而不只看最终模型的平均分。",
+      "year": 2026,
+      "slug": "when-rlhf-fails-a-mechanistic-taxonomy-of-reward-hacking-collapse-and-evaluator-gaming",
+      "original_title": "When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming",
+      "source_refs": [
+        "研究想法 #14"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 52
+    },
+    {
+      "id": "p011",
+      "title": "Alignment Tampering: How Reinforcement Learning from Human Feedback Is Exploited to Optimize Misaligned Biases",
+      "source_url": "https://arxiv.org/abs/2605.27355",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "安全与应用",
+        "奖励建模与评估"
+      ],
+      "summary": "如果好质量与偏见在候选回答里绑定，偏好学习可能把二者一起放大。",
+      "year": 2026,
+      "slug": "alignment-tampering-how-reinforcement-learning-from-human-feedback-is-exploited-to-optimize-misalign",
+      "original_title": "Alignment Tampering: How Reinforcement Learning from Human Feedback Is Exploited to Optimize Misaligned Biases",
+      "source_refs": [
+        "研究想法 #11"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 53
+    },
+    {
+      "id": "p032",
+      "title": "Uncertainty-Aware Reward Modeling for Stable RLHF",
+      "source_url": "https://arxiv.org/abs/2606.19818",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "奖励建模与评估",
+        "噪声与鲁棒性"
+      ],
+      "summary": "奖励不仅要给分，还应告诉优化器这个分数有多不可靠。",
+      "year": 2026,
+      "slug": "uncertainty-aware-reward-modeling-for-stable-rlhf",
+      "original_title": "Uncertainty-Aware Reward Modeling for Stable RLHF",
+      "source_refs": [
+        "研究想法 #32"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 54
+    },
+    {
+      "id": "p037",
+      "title": "PEBS: Per-rater Empirical-Bayes Shrinkage for RLHF Reward-Model Calibration",
+      "source_url": "https://arxiv.org/abs/2606.27578",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "奖励建模与评估",
+        "多目标与个性化"
+      ],
+      "summary": "每个人打分尺度不同，少量个人数据应适度向群体平均收缩，而非完全混成一个平均评分者。",
+      "year": 2026,
+      "slug": "pebs-per-rater-empirical-bayes-shrinkage-for-rlhf-reward-model-calibration",
+      "original_title": "PEBS: Per-rater Empirical-Bayes Shrinkage for RLHF Reward-Model Calibration",
+      "source_refs": [
+        "研究想法 #37"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 55
+    },
+    {
+      "id": "p072",
+      "title": "Unbiased Alignment for Large Language Models with Noisy Preferences",
+      "source_url": "https://arxiv.org/abs/2607.03248",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "噪声与鲁棒性",
+        "偏好优化基础"
+      ],
+      "summary": "通过修正含噪偏好引起的损失偏差，分别得到无偏奖励建模与无偏 DPO 目标。",
+      "year": 2026,
+      "slug": "unbiased-alignment-for-large-language-models-with-noisy-preferences",
+      "original_title": "Unbiased Alignment for Large Language Models with Noisy Preferences",
+      "source_refs": [
+        "研究想法 #73",
+        "研究想法 #75"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 56
+    },
+    {
+      "id": "p120",
+      "title": "When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/view/41143",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "噪声与鲁棒性",
+        "偏好优化基础"
+      ],
+      "summary": "偏好被标反的概率往往取决于样本有多难，不能假设每个标签都以同样概率出错。",
+      "year": 2026,
+      "slug": "when-human-preferences-flip-an-instance-dependent-robust-loss-for-rlhf",
+      "original_title": "When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF",
+      "source_refs": [
+        "对齐论文表 #38"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 57
+    },
+    {
+      "id": "p083",
+      "title": "PLC-DPO: Posterior Label Correction in Noisy and Ambiguous Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2608.30597",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "噪声与鲁棒性",
+        "偏好优化基础"
+      ],
+      "summary": "将偏好对路由为保持、翻转或平局三类，主动修正监督方向与强度。",
+      "year": 2026,
+      "slug": "plc-dpo-posterior-label-correction-in-noisy-and-ambiguous-preference-optimization",
+      "original_title": "PLC-DPO: Posterior Label Correction in Noisy and Ambiguous Preference Optimization",
+      "source_refs": [
+        "研究想法 #87"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 58
+    },
+    {
+      "id": "p074",
+      "title": "Metadata-Free Meta-Reweighted Direct Preference Optimization under Noisy Preference Labels",
+      "source_url": "https://arxiv.org/abs/2607.09796",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "噪声与鲁棒性",
+        "优化动力学"
+      ],
+      "summary": "用双层优化学习偏好样本权重，并用提示增强一致性替代难获得的元数据。",
+      "year": 2026,
+      "slug": "metadata-free-meta-reweighted-direct-preference-optimization-under-noisy-preference-labels",
+      "original_title": "Metadata-Free Meta-Reweighted Direct Preference Optimization under Noisy Preference Labels",
+      "source_refs": [
+        "研究想法 #76"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 59
+    },
+    {
+      "id": "p046",
+      "title": "RE-PO: Robust Enhanced Policy Optimization as a General Framework for LLM Alignment",
+      "source_url": "https://arxiv.org/abs/2509.24159",
+      "verification": "abstract",
+      "verification_note": "已核验 arXiv 2509.24159 v4 摘要。原清单及早期版本名称为 LCPO；v4（2026-02-27）改为 RE-PO。",
+      "topics": [
+        "噪声与鲁棒性",
+        "偏好优化基础"
+      ],
+      "summary": "把“这条偏好标签可能出错”变成可推断的隐变量，再据此调节训练权重。",
+      "year": 2025,
+      "slug": "latent-collective-preference-optimization-a-general-framework-for-robust-llm-alignment",
+      "original_title": "Latent Collective Preference Optimization: A General Framework for Robust LLM Alignment",
+      "source_refs": [
+        "研究想法 #45",
+        "对齐论文表 #17"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 60
+    },
+    {
+      "id": "p045",
+      "title": "wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment",
+      "source_url": "https://arxiv.org/abs/2603.07211",
+      "verification": "abstract",
+      "verification_note": "纠正原清单：wDPO正式展开为Winsorized Direct Preference Optimization；不是Weighted，也不同于Wasserstein DPO（WDPO）。",
+      "topics": [
+        "噪声与鲁棒性",
+        "优化动力学"
+      ],
+      "summary": "错误方向的标签与模糊标签不是同一种噪声，应分别校正方向和限制影响。",
+      "year": 2026,
+      "slug": "wdpo-winsorized-direct-preference-optimization-for-robust-llm-alignment",
+      "original_title": "wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment",
+      "source_refs": [
+        "研究想法 #44"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 61
+    },
+    {
+      "id": "p029",
+      "title": "Robust LLM Alignment via Distributionally Robust Direct Preference Optimization",
+      "source_url": "https://openreview.net/pdf?id=D19hc2XPeZ",
+      "verification": "abstract",
+      "verification_note": "primary来源为NeurIPS 2025论文页面PDF；核对题名、摘要及方法名称WDPO/KLDPO。原清单称DR-DPO，仅视为描述性简称。",
+      "topics": [
+        "噪声与鲁棒性",
+        "偏好优化基础"
+      ],
+      "summary": "把训练偏好分布附近最不利的变化也纳入优化，减轻静态数据与真实用户的分布错配。",
+      "year": 2025,
+      "slug": "robust-llm-alignment-via-distributionally-robust-direct-preference-optimization",
+      "original_title": "Robust LLM Alignment via Distributionally Robust Direct Preference Optimization",
+      "source_refs": [
+        "研究想法 #29",
+        "对齐论文表 #36"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 62
+    },
+    {
+      "id": "p065",
+      "title": "Distributionally Robust Listwise Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2607.01715",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "噪声与鲁棒性",
+        "偏好优化基础"
+      ],
+      "summary": "直接对候选列表的排名标签做鲁棒优化，并利用排序结构避免枚举全部排列。",
+      "year": 2026,
+      "slug": "distributionally-robust-listwise-preference-optimization",
+      "original_title": "Distributionally Robust Listwise Preference Optimization",
+      "source_refs": [
+        "研究想法 #65"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 63
+    },
+    {
+      "id": "p039",
+      "title": "Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment",
+      "source_url": "https://arxiv.org/abs/2602.04909",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "噪声与鲁棒性",
+        "优化动力学"
+      ],
+      "summary": "用当前策略附近的悲观锚点评估一对偏好有多脆弱，再决定该给它多大权重。",
+      "year": 2026,
+      "slug": "learning-where-it-matters-geometric-anchoring-for-robust-preference-alignment",
+      "original_title": "Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment",
+      "source_refs": [
+        "研究想法 #39"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 64
+    },
+    {
+      "id": "p030",
+      "title": "GEOALIGN: Geometric Rollout Curation for Robust LLM Reinforcement Learning",
+      "source_url": "https://arxiv.org/abs/2606.26917",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "数据与主动学习",
+        "噪声与鲁棒性"
+      ],
+      "summary": "高奖励rollout若推动的偏好方向与多数样本强烈冲突，先检查它是否是不可靠的更新来源。",
+      "year": 2026,
+      "slug": "geoalign-geometric-rollout-curation-for-robust-llm-reinforcement-learning",
+      "original_title": "GEOALIGN: Geometric Rollout Curation for Robust LLM Reinforcement Learning",
+      "source_refs": [
+        "研究想法 #30"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 65
+    },
+    {
+      "id": "p010",
+      "title": "Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models",
+      "source_url": "https://arxiv.org/abs/2605.25189",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "优化动力学",
+        "噪声与鲁棒性"
+      ],
+      "summary": "奖励黑客可能表现为更新方向偏离可信轨迹，因此约束方向可以补充标量KL约束。",
+      "year": 2026,
+      "slug": "directional-alignment-mitigates-reward-hacking-in-reinforcement-learning-for-language-models",
+      "original_title": "Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models",
+      "source_refs": [
+        "研究想法 #10",
+        "研究想法 #68",
+        "对齐论文表 #51"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 66
+    },
+    {
+      "id": "p061",
+      "title": "Robust Preference Alignment via Directional Neighborhood Consensus",
+      "source_url": "https://arxiv.org/abs/2510.20498",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "推理时对齐",
+        "多目标与个性化"
+      ],
+      "summary": "从目标偏好的邻域生成多样候选，再按原始意图选择，弥补偏好覆盖不足。",
+      "year": 2025,
+      "slug": "robust-preference-alignment-via-directional-neighborhood-consensus",
+      "original_title": "Robust Preference Alignment via Directional Neighborhood Consensus",
+      "source_refs": [
+        "研究想法 #60"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 67
+    },
+    {
+      "id": "p068",
+      "title": "Gradient Regularization Prevents Reward Hacking in Reinforcement Learning from Human Feedback and Verifiable Rewards",
+      "source_url": "https://arxiv.org/abs/2602.18037",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "优化动力学",
+        "奖励建模与评估"
+      ],
+      "summary": "通过梯度正则把训练偏向奖励更可靠的区域，补充仅靠参考策略 KL 的控制方式。",
+      "year": 2026,
+      "slug": "gradient-regularization-prevents-reward-hacking-in-reinforcement-learning-from-human-feedback-and-ve",
+      "original_title": "Gradient Regularization Prevents Reward Hacking in Reinforcement Learning from Human Feedback and Verifiable Rewards",
+      "source_refs": [
+        "研究想法 #69"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 68
+    },
+    {
+      "id": "p069",
+      "title": "Information-Theoretic Reward Modeling for Stable RLHF: Detecting and Mitigating Reward Hacking",
+      "source_url": "https://arxiv.org/abs/2510.13694",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "奖励建模与评估",
+        "噪声与鲁棒性"
+      ],
+      "summary": "先用信息瓶颈学偏好相关表示，再在该表示空间检测并惩罚奖励黑客的异常偏移。",
+      "year": 2025,
+      "slug": "information-theoretic-reward-modeling-for-stable-rlhf-detecting-and-mitigating-reward-hacking",
+      "original_title": "Information-Theoretic Reward Modeling for Stable RLHF: Detecting and Mitigating Reward Hacking",
+      "source_refs": [
+        "研究想法 #70"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 69
+    },
+    {
+      "id": "p070",
+      "title": "Eliminating Inductive Bias in Reward Models with Information-Theoretic Guidance",
+      "source_url": "https://arxiv.org/abs/2512.23461",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "奖励建模与评估",
+        "噪声与鲁棒性"
+      ],
+      "summary": "同时保留奖励与偏好相关的信息、减少奖励与偏置属性相关的信息，处理非线性捷径。",
+      "year": 2025,
+      "slug": "eliminating-inductive-bias-in-reward-models-with-information-theoretic-guidance",
+      "original_title": "Eliminating Inductive Bias in Reward Models with Information-Theoretic Guidance",
+      "source_refs": [
+        "研究想法 #71"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 70
+    },
+    {
+      "id": "p071",
+      "title": "Mitigating Reward Hacking in RLHF via Bayesian Non-negative Reward Modeling",
+      "source_url": "https://arxiv.org/abs/2602.10623",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "奖励建模与评估",
+        "噪声与鲁棒性"
+      ],
+      "summary": "用稀疏非负潜在因子分解奖励，并以贝叶斯推断表达不确定性。",
+      "year": 2026,
+      "slug": "mitigating-reward-hacking-in-rlhf-via-bayesian-non-negative-reward-modeling",
+      "original_title": "Mitigating Reward Hacking in RLHF via Bayesian Non-negative Reward Modeling",
+      "source_refs": [
+        "研究想法 #72"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 71
+    },
+    {
+      "id": "p067",
+      "title": "Wasserstein Distributionally Robust Regret Optimization for Reinforcement Learning from Human Feedback",
+      "source_url": "https://arxiv.org/abs/2605.00155",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "噪声与鲁棒性",
+        "奖励建模与评估"
+      ],
+      "summary": "面对奖励误设，控制同一扰动下相对最佳策略的后悔值，而不只追求最坏绝对收益。",
+      "year": 2026,
+      "slug": "wasserstein-distributionally-robust-regret-optimization-for-reinforcement-learning-from-human-feedba",
+      "original_title": "Wasserstein Distributionally Robust Regret Optimization for Reinforcement Learning from Human Feedback",
+      "source_refs": [
+        "研究想法 #67"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 72
+    },
+    {
+      "id": "p073",
+      "title": "Primal-Dual Direct Preference Optimization for Constrained LLM Alignment",
+      "source_url": "https://arxiv.org/abs/2510.05703",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "安全与应用",
+        "偏好优化基础"
+      ],
+      "summary": "把奖励最大化与安全成本约束分开，用两阶段原始—对偶偏好优化协调。",
+      "year": 2025,
+      "slug": "primal-dual-direct-preference-optimization-for-constrained-llm-alignment",
+      "original_title": "Primal-Dual Direct Preference Optimization for Constrained LLM Alignment",
+      "source_refs": [
+        "研究想法 #74",
+        "对齐论文表 #33"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 73,
+      "aliases": [
+        "Provably Convergent Primal-Dual DPO for Constrained LLM Alignment"
+      ]
+    },
+    {
+      "id": "p108",
+      "title": "Adversarial Preference Optimization: Enhancing Your Alignment via RM-LLM Game",
+      "source_url": "https://arxiv.org/abs/2311.08045",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。预印本首发2023，正式为ACL 2024 Findings；已按原文补全标题。",
+      "topics": [
+        "偏好优化基础",
+        "奖励建模与评估"
+      ],
+      "summary": "策略更新后会生成新的回答分布，奖励模型也应跟着适应，而不一直停留在旧标注数据上。",
+      "year": 2024,
+      "slug": "adversarial-preference-optimization-enhancing-large-language-model-alignment",
+      "original_title": "Adversarial Preference Optimization: Enhancing Large Language Model Alignment",
+      "source_refs": [
+        "对齐论文表 #25"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 74
+    },
+    {
+      "id": "p119",
+      "title": "Adversarial Preference Learning for Robust LLM Alignment",
+      "source_url": "https://arxiv.org/abs/2505.24369",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。正式发表于ACL 2025 Findings；笔记省略未逐表复核的具体数值。",
+      "topics": [
+        "安全与应用",
+        "数据与主动学习"
+      ],
+      "summary": "防御模型要持续接触针对自身弱点的新变化，训练可以围绕“发现漏洞—反馈—修补”构成闭环。",
+      "year": 2025,
+      "slug": "adversarial-preference-learning-for-robust-llm-alignment",
+      "original_title": "Adversarial Preference Learning for Robust LLM Alignment",
+      "source_refs": [
+        "对齐论文表 #37"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 75
+    },
+    {
+      "id": "p091",
+      "title": "Improving LLM Safety Alignment with Dual-Objective Optimization",
+      "source_url": "https://arxiv.org/abs/2503.03710",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "安全与应用",
+        "优化动力学"
+      ],
+      "summary": "安全对齐要分别教模型“怎样拒绝”和“不要继续有害内容”，不能只扩大安全与有害回答的相对差距。",
+      "year": 2025,
+      "slug": "improving-llm-safety-alignment-with-dual-objective-optimization",
+      "original_title": "Improving LLM Safety Alignment with Dual-Objective Optimization",
+      "source_refs": [
+        "对齐论文表 #6"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 76
+    },
+    {
+      "id": "p017",
+      "title": "DOG-DPO:Dynamic Optimization in Geometry for Safety Alignment",
+      "source_url": "https://arxiv.org/abs/2606.07678",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "数据与主动学习",
+        "安全与应用"
+      ],
+      "summary": "筛安全偏好数据时，覆盖不同的改变方向比收集许多相似高分样本更重要。",
+      "year": 2026,
+      "slug": "dog-dpo-dynamic-optimization-in-geometry-for-safety-alignment",
+      "original_title": "DOG-DPO:Dynamic Optimization in Geometry for Safety Alignment",
+      "source_refs": [
+        "研究想法 #17"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 77
+    },
+    {
+      "id": "p113",
+      "title": "Causal Direct Preference Optimization for Language Model Alignment",
+      "source_url": "https://aclanthology.org/2026.findings-eacl.58/",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。清单的潜在环境与具体数值尚未逐项核验；本文按EACL 2026正式摘要介绍可确认的核心。",
+      "topics": [
+        "噪声与鲁棒性",
+        "数据与主动学习"
+      ],
+      "summary": "偏好标签可能混入主题、风格或用户目标的影响，因果调整试图把真正的偏好信号分离出来。",
+      "year": 2026,
+      "slug": "causal-direct-preference-optimization-for-language-model-alignment",
+      "original_title": "Causal Direct Preference Optimization for Language Model Alignment",
+      "source_refs": [
+        "对齐论文表 #30"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 78
+    },
+    {
+      "id": "p129",
+      "title": "Robust Preference Optimization through Reward Model Distillation",
+      "source_url": "https://arxiv.org/abs/2405.19316",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。2024为预印本首发；清单后续期刊信息未在本次摘要核验中逐项复核。",
+      "topics": [
+        "噪声与鲁棒性",
+        "奖励建模与评估"
+      ],
+      "summary": "一张硬胜负标签可能只是一次有噪声的投票，让策略学习有不确定性的偏好分布会更稳健。",
+      "year": 2024,
+      "slug": "robust-preference-optimization-through-reward-model-distillation",
+      "original_title": "Robust Preference Optimization through Reward Model Distillation",
+      "source_refs": [
+        "对齐论文表 #47"
+      ],
+      "stage": "噪声与鲁棒性",
+      "reading_order": 79
+    },
+    {
+      "id": "p090",
+      "title": "Nash Learning from Human Feedback",
+      "source_url": "https://arxiv.org/abs/2312.00886",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。预印本首发于2023年；此处年份采用2024会议版本。",
+      "topics": [
+        "偏好优化基础",
+        "多目标与个性化"
+      ],
+      "summary": "当偏好无法压缩成每个回答的一个固定分数时，可以直接寻找在成对比较博弈中稳健的策略。",
+      "year": 2024,
+      "slug": "nash-learning-from-human-feedback",
+      "original_title": "Nash Learning from Human Feedback",
+      "source_refs": [
+        "对齐论文表 #5"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 80
+    },
+    {
+      "id": "p110",
+      "title": "Improving LLM General Preference Alignment via Optimistic Online Mirror Descent",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/eab6ea376caf12d786adbb0a090fb842-Abstract-Conference.html",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "偏好优化基础",
+        "优化动力学"
+      ],
+      "summary": "把一般偏好对齐当作两人博弈后，可以用带预测的镜像下降减少策略来回追逐。",
+      "year": 2025,
+      "slug": "improving-llm-general-preference-alignment-via-optimistic-online-mirror-descent",
+      "original_title": "Improving LLM General Preference Alignment via Optimistic Online Mirror Descent",
+      "source_refs": [
+        "对齐论文表 #27"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 81
+    },
+    {
+      "id": "p015",
+      "title": "Efficient Exploration for Iterative Nash Preference Optimization",
+      "source_url": "https://arxiv.org/abs/2606.01382",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "偏好优化基础",
+        "数据与主动学习"
+      ],
+      "summary": "当偏好可能循环时，用博弈目标学习还不够，还要显式探索未覆盖的回答。",
+      "year": 2026,
+      "slug": "efficient-exploration-for-iterative-nash-preference-optimization",
+      "original_title": "Efficient Exploration for Iterative Nash Preference Optimization",
+      "source_refs": [
+        "研究想法 #15"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 82
+    },
+    {
+      "id": "p034",
+      "title": "Panacea: Pareto Alignment via Preference Adaptation for LLMs",
+      "source_url": "https://arxiv.org/abs/2402.02030",
+      "verification": "abstract",
+      "verification_note": "NeurIPS 2024正式题名为Panacea: Pareto Alignment via Preference Adaptation for LLMs，原清单的Multi-Dimensional LLM Optimization为非正式题名改写。",
+      "topics": [
+        "多目标与个性化"
+      ],
+      "summary": "训练一个可调的Pareto模型，把偏好权重作为输入，而不是为每组权重重新微调。",
+      "year": 2024,
+      "slug": "panacea-pareto-alignment-for-multi-dimensional-llm-optimization",
+      "original_title": "Panacea: Pareto Alignment for Multi-Dimensional LLM Optimization",
+      "source_refs": [
+        "研究想法 #34",
+        "对齐论文表 #24"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 83
+    },
+    {
+      "id": "p016",
+      "title": "PolyAlign: Conditional Human-Distribution Alignment",
+      "source_url": "https://arxiv.org/abs/2606.13227",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "多目标与个性化"
+      ],
+      "summary": "自然回答风格应随语言和交互场景变化，不能把所有人对齐到同一种助手口吻。",
+      "year": 2026,
+      "slug": "polyalign-conditional-human-distribution-alignment",
+      "original_title": "PolyAlign: Conditional Human-Distribution Alignment",
+      "source_refs": [
+        "研究想法 #16"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 84
+    },
+    {
+      "id": "p013",
+      "title": "Interpretability Is Not Just a Tax: Sparsity and Diversity Yield Legible and Composable Reward Experts for Personalization",
+      "source_url": "https://arxiv.org/abs/2606.04284",
+      "verification": "abstract",
+      "verification_note": "原清单题名为 Sparse Mixture-of-Experts Reward Models Learn Interpretable and Specialized Experts for Personalized Preference Modeling。arXiv于2026-10-27更新v2并改题；本笔记按核验到的v2摘要整理，保留旧题作检索。",
+      "topics": [
+        "奖励建模与评估",
+        "多目标与个性化"
+      ],
+      "summary": "奖励专家只有在训练中学会分工，个性化时调整专家权重才容易解释和组合。",
+      "year": 2026,
+      "slug": "sparse-mixture-of-experts-reward-models-learn-interpretable-and-specialized-experts-for-personalized",
+      "original_title": "Sparse Mixture-of-Experts Reward Models Learn Interpretable and Specialized Experts for Personalized Preference Modeling",
+      "source_refs": [
+        "研究想法 #13"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 85
+    },
+    {
+      "id": "p035",
+      "title": "MaPPO: Maximum a Posteriori Preference Optimization with Prior Knowledge",
+      "source_url": "https://arxiv.org/abs/2507.21183",
+      "verification": "abstract",
+      "verification_note": "正式题名是Maximum a Posteriori，原清单a Posterior有拼写缺漏；方法不应与多智能体PPO混淆。",
+      "topics": [
+        "偏好优化基础",
+        "奖励建模与评估"
+      ],
+      "summary": "把先验奖励知识加到偏好学习里，让二元标签之外的质量信息参与校准。",
+      "year": 2025,
+      "slug": "mappo-maximum-a-posterior-preference-optimization-with-prior-knowledge",
+      "original_title": "MaPPO: Maximum a Posterior Preference Optimization with Prior Knowledge",
+      "source_refs": [
+        "研究想法 #35"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 86
+    },
+    {
+      "id": "p096",
+      "title": "Robust Multi-Objective Preference Alignment with Online DPO",
+      "source_url": "https://arxiv.org/abs/2503.00295",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "多目标与个性化",
+        "数据与主动学习"
+      ],
+      "summary": "训练一个“知道当前偏好权重”的策略，再用在线数据教它在多个目标之间切换。",
+      "year": 2025,
+      "slug": "robust-multi-objective-preference-alignment-with-online-dpo",
+      "original_title": "Robust Multi-Objective Preference Alignment with Online DPO",
+      "source_refs": [
+        "对齐论文表 #11"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 87
+    },
+    {
+      "id": "p104",
+      "title": "Beyond Compromise: Pareto-Lenient Consensus for Efficient Multi-Preference LLM Alignment",
+      "source_url": "https://arxiv.org/abs/2604.05965",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验2026预印本摘要；正式收录还可参见ACL 2026 Findings记录。",
+      "topics": [
+        "多目标与个性化",
+        "优化动力学"
+      ],
+      "summary": "多目标优化若不允许任何目标暂时退步，可能把模型困在保守折中点；适度让步可以帮助探索更好的整体前沿。",
+      "year": 2026,
+      "slug": "beyond-compromise-pareto-lenient-consensus-for-efficient-multi-preference-llm-alignment",
+      "original_title": "Beyond Compromise: Pareto-Lenient Consensus for Efficient Multi-Preference LLM Alignment",
+      "source_refs": [
+        "对齐论文表 #20"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 88
+    },
+    {
+      "id": "p117",
+      "title": "Listwise Direct Preference Optimization with Multi-Dimensional Preference Mixing",
+      "source_url": "https://arxiv.org/abs/2506.19780",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "多目标与个性化",
+        "偏好优化基础"
+      ],
+      "summary": "先保留每个偏好维度的候选分布，再按权重混合它们，比过早压成唯一总排名保留更多信息。",
+      "year": 2025,
+      "slug": "listwise-direct-preference-optimization-with-multi-dimensional-preference-mixing-dpo",
+      "original_title": "Listwise Direct Preference Optimization with Multi-Dimensional Preference Mixing (λ-DPO)",
+      "source_refs": [
+        "对齐论文表 #34"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 89
+    },
+    {
+      "id": "p075",
+      "title": "Multi-Objective Exploration and Preference Optimization via Mutual Information",
+      "source_url": "https://arxiv.org/abs/2607.01392",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "多目标与个性化",
+        "数据与主动学习"
+      ],
+      "summary": "用联合条件互信息同时组织多目标对齐与偏好感知探索，让不同偏好条件产生可区分行为。",
+      "year": 2026,
+      "slug": "mi-epo-multi-objective-exploration-and-preference-optimization-via-mutual-information",
+      "original_title": "MI-EPO: Multi-Objective Exploration and Preference Optimization via Mutual Information",
+      "source_refs": [
+        "研究想法 #77"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 90
+    },
+    {
+      "id": "p064",
+      "title": "PAPA: Online Personalized Active Preference Alignment",
+      "source_url": "https://arxiv.org/abs/2607.00486",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "多目标与个性化",
+        "数据与主动学习",
+        "扩散与流匹配"
+      ],
+      "summary": "直接使用交互偏好更新扩散模型，减少个性化场景对大规模奖励数据的依赖。",
+      "year": 2026,
+      "slug": "papa-online-personalized-active-preference-alignment",
+      "original_title": "PAPA: Online Personalized Active Preference Alignment",
+      "source_refs": [
+        "研究想法 #64"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 91
+    },
+    {
+      "id": "p102",
+      "title": "NextQuill: Causal Preference Modeling for Enhancing LLM Personalization",
+      "source_url": "https://arxiv.org/abs/2506.02368",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。2025为预印本首发；另有ICLR 2026正式版本。",
+      "topics": [
+        "多目标与个性化",
+        "数据与主动学习"
+      ],
+      "summary": "个性化应学习用户历史真正改变了哪些预测，而不只是模仿带有用户标签的整段文本。",
+      "year": 2025,
+      "slug": "nextquill-causal-preference-modeling-for-enhancing-llm-personalization",
+      "original_title": "Nextquill: Causal preference modeling for enhancing llm personalization",
+      "source_refs": [
+        "对齐论文表 #18"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 92
+    },
+    {
+      "id": "p109",
+      "title": "LifeAlign: Lifelong Alignment for Large Language Models with Memory-Augmented Focalized Preference Optimization",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/view/40428",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。清单使用早期简写标题；已按AAAI 2026正式记录更正。",
+      "topics": [
+        "多目标与个性化",
+        "优化动力学"
+      ],
+      "summary": "连续学习新偏好时，要把新经验转成稳定记忆，避免每次对齐都覆盖旧准则。",
+      "year": 2026,
+      "slug": "lifealign-lifelong-preference-alignment-for-large-language-models",
+      "original_title": "LifeAlign: Lifelong Preference Alignment for Large Language Models",
+      "source_refs": [
+        "对齐论文表 #26"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 93
+    },
+    {
+      "id": "p132",
+      "title": "MATO: Multi-objective Personalized Alignment with Test-time Optimization for Large Language Models",
+      "source_url": "https://arxiv.org/abs/2605.25342",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "推理时对齐",
+        "多目标与个性化"
+      ],
+      "summary": "多个用户偏好可以在解码时动态协商权重，让尚未生成的token补足当前回答忽略的目标。",
+      "year": 2026,
+      "slug": "mato-multi-objective-personalized-alignment-with-test-time-optimization-for-large-language-models",
+      "original_title": "MATO: Multi-objective Personalized Alignment with Test-time Optimization for Large Language Models",
+      "source_refs": [
+        "对齐论文表 #50"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 94
+    },
+    {
+      "id": "p087",
+      "title": "Aligner: Efficient Alignment by Learning to Correct",
+      "source_url": "https://arxiv.org/abs/2402.02416",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "推理时对齐",
+        "安全与应用"
+      ],
+      "summary": "让一个小模型学习“怎样改好现有回答”，可以把纠错能力复用于多个上游模型。",
+      "year": 2024,
+      "slug": "aligner-efficient-alignment-by-learning-to-correct",
+      "original_title": "Aligner: Efficient alignment by learning to correct",
+      "source_refs": [
+        "对齐论文表 #2"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 95
+    },
+    {
+      "id": "p094",
+      "title": "Align-Pro: A Principled Approach to Prompt Optimization for LLM Alignment",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/view/34979",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "推理时对齐",
+        "偏好优化基础"
+      ],
+      "summary": "当不能改模型参数时，把提示生成器看作可优化策略，研究它能把冻结模型推到多好的输出分布。",
+      "year": 2025,
+      "slug": "align-pro-a-principled-approach-to-prompt-optimization-for-llm-alignment",
+      "original_title": "Align-Pro: A Principled Approach to Prompt Optimization for LLM Alignment",
+      "source_refs": [
+        "对齐论文表 #9"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 96
+    },
+    {
+      "id": "p101",
+      "title": "PITA: Preference-Guided Inference-Time Alignment for LLM Post-Training",
+      "source_url": "https://arxiv.org/abs/2507.20067",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "推理时对齐",
+        "多目标与个性化"
+      ],
+      "summary": "冻结大模型，用一个较小的偏好指导策略在生成时调整token概率。",
+      "year": 2025,
+      "slug": "pita-preference-guided-inference-time-alignment-for-llm-post-training",
+      "original_title": "PITA: Preference-Guided Inference-Time Alignment for LLM Post-Training",
+      "source_refs": [
+        "对齐论文表 #16"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 97
+    },
+    {
+      "id": "p089",
+      "title": "Transfer Q Star: Principled Decoding for LLM Alignment",
+      "source_url": "https://arxiv.org/abs/2405.20495",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "推理时对齐",
+        "偏好优化基础"
+      ],
+      "summary": "解码不只看当前token好不好，还要估计这一步会把后续整段回答带向哪里。",
+      "year": 2024,
+      "slug": "transfer-q-star-principled-decoding-for-llm-alignment",
+      "original_title": "Transfer q-star: Principled decoding for llm alignment",
+      "source_refs": [
+        "对齐论文表 #4"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 98
+    },
+    {
+      "id": "p056",
+      "title": "Alignment-Aware Decoding",
+      "source_url": "https://arxiv.org/abs/2509.26169",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "推理时对齐",
+        "偏好优化基础"
+      ],
+      "summary": "在标准 DPO 所提供的模型信息上改变解码规则，推理时继续强化偏好。",
+      "year": 2025,
+      "slug": "alignment-aware-decoding",
+      "original_title": "Alignment-Aware Decoding",
+      "source_refs": [
+        "研究想法 #55"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 99
+    },
+    {
+      "id": "p020",
+      "title": "Gradient-Guided Reward Optimization for Inference-time Alignment",
+      "source_url": "https://arxiv.org/abs/2606.09635",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "推理时对齐",
+        "奖励建模与评估"
+      ],
+      "summary": "发现生成轨迹可能偏离时，用奖励梯度给一点局部引导，而不只是生成很多答案再重排。",
+      "year": 2026,
+      "slug": "gradient-guided-reward-optimization-for-inference-time-alignment",
+      "original_title": "Gradient-Guided Reward Optimization for Inference-time Alignment",
+      "source_refs": [
+        "研究想法 #20"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 100
+    },
+    {
+      "id": "p051",
+      "title": "REAR: Test-time Preference Realignment through Reward Decomposition",
+      "source_url": "https://arxiv.org/abs/2606.30339",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "推理时对齐",
+        "多目标与个性化"
+      ],
+      "summary": "从问题信息和偏好信息的奖励分解出发，用 token 对数概率构造测试时重对齐信号。",
+      "year": 2026,
+      "slug": "rear-test-time-preference-realignment-through-reward-decomposition",
+      "original_title": "REAR: Test-time Preference Realignment through Reward Decomposition",
+      "source_refs": [
+        "研究想法 #50"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 101
+    },
+    {
+      "id": "p055",
+      "title": "DARC: Disagreement-Aware Alignment via Risk-Constrained Decoding",
+      "source_url": "https://arxiv.org/abs/2603.08145",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "推理时对齐",
+        "多目标与个性化",
+        "噪声与鲁棒性"
+      ],
+      "summary": "在候选重排序时显式约束分歧和尾部风险，让平均高分不再遮住少数人的差体验。",
+      "year": 2026,
+      "slug": "darc-disagreement-aware-alignment-via-risk-constrained-decoding",
+      "original_title": "DARC: Disagreement-Aware Alignment via Risk-Constrained Decoding",
+      "source_refs": [
+        "研究想法 #54"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 102
+    },
+    {
+      "id": "p088",
+      "title": "Spectral Editing of Activations for Large Language Model Alignment",
+      "source_url": "https://arxiv.org/abs/2405.09719",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "推理时对齐",
+        "优化动力学"
+      ],
+      "summary": "从正负示例的激活协方差中找方向，再把推理时表示投影到更符合目标行为的子空间。",
+      "year": 2024,
+      "slug": "spectral-editing-of-activations-for-large-language-model-alignment",
+      "original_title": "Spectral editing of activations for large language model alignment",
+      "source_refs": [
+        "对齐论文表 #3"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 103
+    },
+    {
+      "id": "p111",
+      "title": "Aligning Large Language Models with Human Preferences through Representation Engineering",
+      "source_url": "https://aclanthology.org/2024.acl-long.572.pdf",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。预印本首发2023，正式发表为ACL 2024。",
+      "topics": [
+        "推理时对齐",
+        "多目标与个性化"
+      ],
+      "summary": "人类偏好会体现在模型内部活动差异中，控制这些表示是一条区别于复杂强化学习的对齐路径。",
+      "year": 2024,
+      "slug": "aligning-large-language-models-with-human-preferences-through-representation-engineering",
+      "original_title": "Aligning Large Language Models with Human Preferences through Representation Engineering",
+      "source_refs": [
+        "对齐论文表 #28"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 104
+    },
+    {
+      "id": "p062",
+      "title": "D-STEER - Preference Alignment Techniques Learn to Behave, not to Believe - Beneath the Surface, DPO as Steering Vector Perturbation in Activation Space",
+      "source_url": "https://arxiv.org/abs/2512.11838",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "优化动力学",
+        "推理时对齐"
+      ],
+      "summary": "用激活引导向量与谱分析研究 DPO 行为变化的低秩结构，同时谨慎解释“信念”。",
+      "year": 2025,
+      "slug": "d-steer-preference-alignment-techniques-learn-to-behave-not-to-believe-beneath-the-surface-dpo-as-st",
+      "original_title": "D-STEER - Preference Alignment Techniques Learn to Behave, not to Believe - Beneath the Surface, DPO as Steering Vector Perturbation in Activation Space",
+      "source_refs": [
+        "研究想法 #61"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 105
+    },
+    {
+      "id": "p076",
+      "title": "On the Limits of Steering Vectors for Preference-Aligned Generation",
+      "source_url": "https://arxiv.org/abs/2607.01802",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "推理时对齐",
+        "多目标与个性化"
+      ],
+      "summary": "从属性表达、任务迁移与多属性组合三条轴检查 steering vector 的能力边界。",
+      "year": 2026,
+      "slug": "on-the-limits-of-steering-vectors-for-preference-aligned-generation",
+      "original_title": "On the Limits of Steering Vectors for Preference-Aligned Generation",
+      "source_refs": [
+        "研究想法 #79"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 106
+    },
+    {
+      "id": "p081",
+      "title": "When Metropolis and Hastings Meet Bradley and Terry: Exact MCMC From Preference Voting",
+      "source_url": "https://arxiv.org/abs/2609.00905",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "推理时对齐",
+        "密度比估计"
+      ],
+      "summary": "只用随机成对偏好反馈构造有效的 MCMC 接受规则，连接选择概率与目标密度比。",
+      "year": 2026,
+      "slug": "when-metropolis-and-hastings-meet-bradley-and-terry-exact-mcmc-from-preference-voting",
+      "original_title": "When Metropolis and Hastings Meet Bradley and Terry: Exact MCMC From Preference Voting",
+      "source_refs": [
+        "研究想法 #85"
+      ],
+      "stage": "多目标与推理时对齐",
+      "reading_order": 107
+    },
+    {
+      "id": "p133",
+      "title": "Density-ratio matching under the Bregman divergence: a unified framework of density-ratio estimation",
+      "source_url": "https://www.ism.ac.jp/editsec/aism/64/1009.pdf",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。期刊卷年为2012，在线发表于2011。该期刊官方链接目前提供摘要页，故标摘要核验，不标全文精读。",
+      "topics": [
+        "密度比估计",
+        "偏好优化基础"
+      ],
+      "summary": "如果最终只需要两个分布的比值，就直接估计这个比值，避免先分别学习两个更难的密度。",
+      "year": 2012,
+      "slug": "density-ratio-matching-under-the-bregman-divergence-a-unified-framework-of-density-ratio-estimation",
+      "original_title": "Density-ratio matching under the bregman divergence: a unified framework of density-ratio estimation",
+      "source_refs": [
+        "密度比论文表 #1"
+      ],
+      "stage": "密度比基础",
+      "reading_order": 108
+    },
+    {
+      "id": "p138",
+      "title": "Generative Modeling with Flow-Guided Density Ratio Learning",
+      "source_url": "https://arxiv.org/abs/2303.03714",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。预印本首发2023，作者官方项目页标注ECML PKDD 2024；此处采用2024会议年份。",
+      "topics": [
+        "密度比估计",
+        "扩散与流匹配"
+      ],
+      "summary": "当源分布离目标很远时，一次训练好的比率估计器不够用，需要让它跟着逐渐改善的样本一起学习。",
+      "year": 2024,
+      "slug": "generative-modeling-with-flow-guided-density-ratio-learning",
+      "original_title": "Generative Modeling with Flow-Guided Density Ratio Learning",
+      "source_refs": [
+        "密度比论文表 #6"
+      ],
+      "stage": "密度比基础",
+      "reading_order": 109
+    },
+    {
+      "id": "p139",
+      "title": "Don't Forget Its Variance! The Minimum Path Variance Principle for Accurate and Stable Score-Based Density Ratio Estimation",
+      "source_url": "https://arxiv.org/abs/2602.00834",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验2026预印本摘要；本笔记不据清单直接确认ICLR录用状态。",
+      "topics": [
+        "密度比估计",
+        "优化动力学"
+      ],
+      "summary": "理论上路径无关的密度比积分，在有限模型和有限样本下仍会受路径方差影响，路径也值得学习。",
+      "year": 2026,
+      "slug": "don-t-forget-its-variance-the-minimum-path-variance-principle-for-accurate-and-stable-score-based-de",
+      "original_title": "Don't Forget Its Variance! The Minimum Path Variance Principle for Accurate and Stable Score-Based Density Ratio Estimation",
+      "source_refs": [
+        "密度比论文表 #7"
+      ],
+      "stage": "密度比基础",
+      "reading_order": 110
+    },
+    {
+      "id": "p137",
+      "title": "Preference Optimization by Estimating the Ratio of the Data Distribution",
+      "source_url": "https://arxiv.org/abs/2505.19601",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验原文摘要与NeurIPS 2025正式记录；不与Balanced BPO混淆。",
+      "topics": [
+        "密度比估计",
+        "偏好优化基础"
+      ],
+      "summary": "偏好对齐可以看作目标策略比率的匹配；换一种Bregman目标，仍可能保留同一个理想策略。",
+      "year": 2025,
+      "slug": "preference-optimization-by-estimating-the-ratio-of-the-data-distribution",
+      "original_title": "Preference Optimization by Estimating the Ratio of the Data Distribution",
+      "source_refs": [
+        "密度比论文表 #5"
+      ],
+      "stage": "密度比基础",
+      "reading_order": 111
+    },
+    {
+      "id": "p136",
+      "title": "Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models",
+      "source_url": "https://proceedings.mlr.press/v202/kim23i.html",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。清单年份2022对应预印本2211.17091；正式会议为ICML 2023，此处采用会议年份。",
+      "topics": [
+        "密度比估计",
+        "扩散与流匹配"
+      ],
+      "summary": "冻结已有扩散模型，再训练判别器估计生成分布与真实分布的差距，用这个差距修正采样score。",
+      "year": 2023,
+      "slug": "refining-generative-process-with-discriminator-guidance-in-score-based-diffusion-models",
+      "original_title": "Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models",
+      "source_refs": [
+        "密度比论文表 #4"
+      ],
+      "stage": "密度比基础",
+      "reading_order": 112
+    },
+    {
+      "id": "p063",
+      "title": "Beyond Optimal Transport: Model-Aligned Coupling for Flow Matching",
+      "source_url": "https://arxiv.org/abs/2505.23346",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "扩散与流匹配",
+        "数据与主动学习"
+      ],
+      "summary": "耦合不仅要几何短，还应当是当前模型容易学习的运输方向。",
+      "year": 2025,
+      "slug": "beyond-optimal-transport-model-aligned-coupling-for-flow-matching",
+      "original_title": "Beyond Optimal Transport: Model-Aligned Coupling for Flow Matching",
+      "source_refs": [
+        "研究想法 #63"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 113
+    },
+    {
+      "id": "p001",
+      "title": "Distributional Preference Alignment of LLMs via Optimal Transport",
+      "source_url": "https://arxiv.org/abs/2406.05882",
+      "verification": "fulltext",
+      "verification_note": "核对全文第2—3节（FSD定义、成对/非成对版本、排序算法），未独立复现实验。",
+      "topics": [
+        "偏好优化基础",
+        "多目标与个性化"
+      ],
+      "summary": "把“逐对分出胜负”提升为“好回答的奖励分布在各分位点都占优”。",
+      "year": 2024,
+      "slug": "distributional-preference-alignment-of-llms-via-optimal-transport",
+      "original_title": "Distributional Preference Alignment of LLMs via Optimal Transport",
+      "source_refs": [
+        "研究想法 #1"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 114
+    },
+    {
+      "id": "p009",
+      "title": "Direct Distributional Optimization for Provable Alignment of Diffusion Models",
+      "source_url": "https://arxiv.org/abs/2502.02954",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "扩散与流匹配",
+        "密度比估计"
+      ],
+      "summary": "先在概率分布空间求想要的分布，再研究如何用扩散过程从中采样。",
+      "year": 2025,
+      "slug": "direct-distributional-optimization-for-provable-alignment-of-diffusion-models",
+      "original_title": "Direct Distributional Optimization for Provable Alignment of Diffusion Models",
+      "source_refs": [
+        "研究想法 #9"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 115
+    },
+    {
+      "id": "p022",
+      "title": "Diffusion Policy Optimization without Drifting Apart",
+      "source_url": "https://arxiv.org/abs/2606.13795",
+      "verification": "abstract",
+      "verification_note": "纠正原清单：本文处理ELBO代理与策略梯度的双漂移；不能由摘要推出算法不需要任何奖励信号。",
+      "topics": [
+        "扩散与流匹配",
+        "优化动力学"
+      ],
+      "summary": "扩散策略优化的代理似然若越学越松，策略梯度也会跟着偏；要同步维持代理的紧致性。",
+      "year": 2026,
+      "slug": "diffusion-policy-optimization-without-drifting-apart",
+      "original_title": "Diffusion Policy Optimization without Drifting Apart",
+      "source_refs": [
+        "研究想法 #22"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 116
+    },
+    {
+      "id": "p003",
+      "title": "Beyond Reward Margin: Rethinking and Resolving Likelihood Displacement in Diffusion Models via Video Generation",
+      "source_url": "https://arxiv.org/abs/2511.19049",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "优化动力学",
+        "扩散与流匹配"
+      ],
+      "summary": "小间隔时避免负样本误伤，大间隔时继续给好样本学习信号。",
+      "year": 2025,
+      "slug": "beyond-reward-margin-rethinking-and-resolving-likelihood-displacement-in-diffusion-models-via-video",
+      "original_title": "Beyond Reward Margin: Rethinking and Resolving Likelihood Displacement in Diffusion Models via Video Generation",
+      "source_refs": [
+        "研究想法 #3"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 117
+    },
+    {
+      "id": "p005",
+      "title": "Stitched Value Model for Diffusion Alignment",
+      "source_url": "https://arxiv.org/abs/2605.19804",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "扩散与流匹配",
+        "奖励建模与评估"
+      ],
+      "summary": "让干净图像奖励模型借用扩散主干的表征，直接给带噪中间状态估值。",
+      "year": 2026,
+      "slug": "stitched-value-model-for-diffusion-alignment",
+      "original_title": "Stitched Value Model for Diffusion Alignment",
+      "source_refs": [
+        "研究想法 #5"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 118
+    },
+    {
+      "id": "p052",
+      "title": "DiffRGD: An Inference-Time Diffusion Guidance Through Riemannian Gradient Descent",
+      "source_url": "https://arxiv.org/abs/2606.28417",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "推理时对齐",
+        "扩散与流匹配"
+      ],
+      "summary": "把 latent 的引导更新限制在高斯结构诱导的球面几何上，减少采样分布漂移。",
+      "year": 2026,
+      "slug": "diffrgd-an-inference-time-diffusion-guidance-through-riemannian-gradient-descent",
+      "original_title": "DiffRGD: An Inference-Time Diffusion Guidance Through Riemannian Gradient Descent",
+      "source_refs": [
+        "研究想法 #51",
+        "研究想法 #80"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 119
+    },
+    {
+      "id": "p050",
+      "title": "PG-MAP: Joint MAP Optimization for Inference-Time Alignment of Diffusion and Flow-Matching Models",
+      "source_url": "https://arxiv.org/abs/2606.22958",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "推理时对齐",
+        "扩散与流匹配"
+      ],
+      "summary": "把条件文本与生成潜变量放进同一个轨迹优化问题，协调两种控制入口。",
+      "year": 2026,
+      "slug": "pg-map-joint-inference-time-alignment-of-diffusion-and-flow-models",
+      "original_title": "PG-MAP: Joint Inference-Time Alignment of Diffusion and Flow Models",
+      "source_refs": [
+        "研究想法 #49"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 120
+    },
+    {
+      "id": "p026",
+      "title": "Threshold-Guided Optimization for Visual Generative Models",
+      "source_url": "https://arxiv.org/abs/2605.04653",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "扩散与流匹配",
+        "偏好优化基础"
+      ],
+      "summary": "只有独立标量评分，也可以通过阈值构造对齐信号，不必先凑成成对标签。",
+      "year": 2026,
+      "slug": "threshold-guided-optimization-for-visual-generative-models",
+      "original_title": "Threshold-Guided Optimization for Visual Generative Models",
+      "source_refs": [
+        "研究想法 #26"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 121
+    },
+    {
+      "id": "p023",
+      "title": "STAR: SpatioTemporal Adaptive Reward Allocation for Text-to-Image RL Post-Training",
+      "source_url": "https://arxiv.org/abs/2606.17979",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "扩散与流匹配",
+        "优化动力学"
+      ],
+      "summary": "同一张图的奖励，不应不分时间和位置地平均施加到所有生成变量。",
+      "year": 2026,
+      "slug": "star-spatiotemporal-adaptive-reward-allocation-for-text-to-image-rl-post-training",
+      "original_title": "STAR: SpatioTemporal Adaptive Reward Allocation for Text-to-Image RL Post-Training",
+      "source_refs": [
+        "研究想法 #23"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 122
+    },
+    {
+      "id": "p036",
+      "title": "NormGuard: Reward-Preserving Norm Constraints in Flow-Matching Reinforcement Learning",
+      "source_url": "https://arxiv.org/abs/2606.27771",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "扩散与流匹配",
+        "优化动力学"
+      ],
+      "summary": "流匹配奖励训练可能把速度范数越推越大，训练时约束这种膨胀可保护感知质量。",
+      "year": 2026,
+      "slug": "normguard-reward-preserving-norm-constraints-in-flow-matching-reinforcement-learning",
+      "original_title": "NormGuard: Reward-Preserving Norm Constraints in Flow-Matching Reinforcement Learning",
+      "source_refs": [
+        "研究想法 #36"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 123
+    },
+    {
+      "id": "p066",
+      "title": "Optimizing Visual Generative Models via Distribution-wise Rewards",
+      "source_url": "https://arxiv.org/abs/2607.02291",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "扩散与流匹配",
+        "奖励建模与评估"
+      ],
+      "summary": "以整组生成样本的分布质量构造奖励，减少逐样本冲同一高分模式造成的坍缩。",
+      "year": 2026,
+      "slug": "optimizing-visual-generative-models-via-distribution-wise-rewards",
+      "original_title": "Optimizing Visual Generative Models via Distribution-wise Rewards",
+      "source_refs": [
+        "研究想法 #66",
+        "研究想法 #78"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 124
+    },
+    {
+      "id": "p077",
+      "title": "Manifold Drift in Flow Preference Optimization: A Root Cause of Reward Hacking",
+      "source_url": "https://arxiv.org/abs/2608.20011",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "扩散与流匹配",
+        "优化动力学"
+      ],
+      "summary": "将 flow 偏好更新离开预训练数据流形的现象形式化，并用温控锚定缓解。",
+      "year": 2026,
+      "slug": "manifold-drift-in-flow-preference-optimization-a-root-cause-of-reward-hacking",
+      "original_title": "Manifold Drift in Flow Preference Optimization: A Root Cause of Reward Hacking",
+      "source_refs": [
+        "研究想法 #81"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 125
+    },
+    {
+      "id": "p082",
+      "title": "ReNFT: Repairing Mode Collapse in Reward Post-Training via Internal Probability-Mass Recalibration",
+      "source_url": "https://arxiv.org/abs/2609.00061",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "扩散与流匹配",
+        "优化动力学"
+      ],
+      "summary": "把坍缩理解为已有模式被压低概率，并通过内部反事实路径重新分配质量。",
+      "year": 2026,
+      "slug": "renft-repairing-mode-collapse-in-reward-post-training-via-internal-probability-mass-recalibration",
+      "original_title": "ReNFT: Repairing Mode Collapse in Reward Post-Training via Internal Probability-Mass Recalibration",
+      "source_refs": [
+        "研究想法 #86"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 126
+    },
+    {
+      "id": "p084",
+      "title": "Reward-guided Fine-Tuning of One-Step Generative Models via Wasserstein Gradient Flow",
+      "source_url": "https://arxiv.org/abs/2608.29647",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "扩散与流匹配",
+        "奖励建模与评估"
+      ],
+      "summary": "从概率空间的 Wasserstein 梯度流出发，平滑地更新一步生成器且不依赖奖励导数。",
+      "year": 2026,
+      "slug": "reward-guided-fine-tuning-of-one-step-generative-models-via-wasserstein-gradient-flow",
+      "original_title": "Reward-guided Fine-Tuning of One-Step Generative Models via Wasserstein Gradient Flow",
+      "source_refs": [
+        "研究想法 #88"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 127
+    },
+    {
+      "id": "p134",
+      "title": "One-step Diffusion Models with Bregman Density Ratio Matching",
+      "source_url": "https://arxiv.org/abs/2510.16983",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "密度比估计",
+        "扩散与流匹配"
+      ],
+      "summary": "一步生成蒸馏可以从“匹配教师与学生的密度比”理解，不同Bregman几何给出不同训练目标。",
+      "year": 2025,
+      "slug": "one-step-diffusion-models-with-bregman-density-ratio-matching",
+      "original_title": "One-step Diffusion Models with Bregman Density Ratio Matching",
+      "source_refs": [
+        "密度比论文表 #2"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 128
+    },
+    {
+      "id": "p135",
+      "title": "Target Concrete Score Matching: A Holistic Framework for Discrete Diffusion",
+      "source_url": "https://arxiv.org/abs/2504.16431",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已核验2025原文摘要及作者机构的ICML 2025记录。",
+      "topics": [
+        "密度比估计",
+        "扩散与流匹配"
+      ],
+      "summary": "把离散扩散需要估计的统计量放回干净目标空间，可以更自然地接上奖励、偏好和自回归教师。",
+      "year": 2025,
+      "slug": "target-concrete-score-matching-a-holistic-framework-for-discrete-diffusion",
+      "original_title": "Target Concrete Score Matching: A Holistic Framework for Discrete Diffusion",
+      "source_refs": [
+        "密度比论文表 #3"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 129
+    },
+    {
+      "id": "p079",
+      "title": "Self-OPD: On-Policy Distillation for Flow Matching Models without Teacher",
+      "source_url": "https://arxiv.org/abs/2608.26872",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "扩散与流匹配",
+        "多目标与个性化"
+      ],
+      "summary": "用学生自身随机分支的奖励差生成逐步监督，不再依赖任务专用教师。",
+      "year": 2026,
+      "slug": "self-opd-on-policy-distillation-for-flow-matching-models-without-teacher",
+      "original_title": "Self-OPD: On-Policy Distillation for Flow Matching Models without Teacher",
+      "source_refs": [
+        "研究想法 #83"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 130
+    },
+    {
+      "id": "p112",
+      "title": "Distributional Vision-Language Alignment by Cauchy-Schwarz Divergence",
+      "source_url": "https://arxiv.org/abs/2502.17028",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。2025为预印本首发，正式会议为ICLR 2026。",
+      "topics": [
+        "多目标与个性化",
+        "安全与应用"
+      ],
+      "summary": "跨模态配对正确不代表两种模态的整体表示分布也贴合，需要同时对齐局部语义与全局分布。",
+      "year": 2025,
+      "slug": "distributional-vision-language-alignment-by-cauchy-schwarz-divergence",
+      "original_title": "Distributional Vision-Language Alignment by Cauchy-Schwarz Divergence",
+      "source_refs": [
+        "对齐论文表 #29"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 131
+    },
+    {
+      "id": "p078",
+      "title": "PEA-DPO: Perception-Enhanced Alignment Direct Preference Optimization for MLLMs Alignment",
+      "source_url": "https://arxiv.org/abs/2608.19598",
+      "verification": "abstract",
+      "verification_note": "已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。",
+      "topics": [
+        "安全与应用",
+        "偏好优化基础"
+      ],
+      "summary": "为多模态偏好训练加入视觉信号，避免只按语言先验判断而忽略关键图像内容。",
+      "year": 2026,
+      "slug": "pea-dpo-perception-enhanced-alignment-direct-preference-optimization-for-mllms-alignment",
+      "original_title": "PEA-DPO: Perception-Enhanced Alignment Direct Preference Optimization for MLLMs Alignment",
+      "source_refs": [
+        "研究想法 #82"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 132
+    },
+    {
+      "id": "p107",
+      "title": "LeanPO: Lean Preference Optimization for Likelihood Alignment in Video-LLMs",
+      "source_url": "https://arxiv.org/abs/2506.05260",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。正式标题不同于清单的“Reliable Video-LLM Alignment”，已按原文更正。",
+      "topics": [
+        "优化动力学",
+        "安全与应用"
+      ],
+      "summary": "视频偏好优化不能只看赢家比输家高多少，还要检查两个回答的生成可能性是否一起下降。",
+      "year": 2025,
+      "slug": "leanpo-lean-preference-optimization-for-reliable-video-llm-alignment",
+      "original_title": "LEANPO: Lean Preference Optimization for Reliable Video-LLM Alignment",
+      "source_refs": [
+        "对齐论文表 #23"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 133
+    },
+    {
+      "id": "p105",
+      "title": "Step-DPO: Step-wise Preference Optimization for Long-chain Reasoning of LLMs",
+      "source_url": "https://arxiv.org/abs/2406.18629",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。清单列2025，但原论文首发为2024。",
+      "topics": [
+        "偏好优化基础",
+        "安全与应用"
+      ],
+      "summary": "推理题的第一处错误比整段答案的总胜负更能告诉模型该修改哪一步。",
+      "year": 2024,
+      "slug": "step-dpo-step-wise-preference-optimization-for-long-chain-reasoning-of-llms",
+      "original_title": "Step-DPO: Step-wise Preference Optimization for Long-chain Reasoning of LLMs",
+      "source_refs": [
+        "对齐论文表 #21"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 134
+    },
+    {
+      "id": "p118",
+      "title": "Enhancing LLM Reasoning with Iterative DPO: A Comprehensive Empirical Investigation",
+      "source_url": "https://arxiv.org/abs/2503.12854",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。已按COLM 2025正式标题补全副标题。",
+      "topics": [
+        "偏好优化基础",
+        "数据与主动学习"
+      ],
+      "summary": "DPO也可以通过“生成—验证—再训练”的循环持续改善推理，关键在于反馈与新数据是否可靠。",
+      "year": 2025,
+      "slug": "enhancing-llm-reasoning-with-iterative-dpo",
+      "original_title": "Enhancing LLM Reasoning with Iterative DPO",
+      "source_refs": [
+        "对齐论文表 #35"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 135
+    },
+    {
+      "id": "p007",
+      "title": "DynamicPO: Dynamic Preference Optimization for Recommendation",
+      "source_url": "https://arxiv.org/abs/2605.00327",
+      "verification": "abstract",
+      "verification_note": "核对primary来源题名、摘要；尚未逐项复核全文公式与实验。",
+      "topics": [
+        "数据与主动学习",
+        "安全与应用"
+      ],
+      "summary": "推荐任务里更多负样本未必更好，关键是让边界附近的负样本真正产生梯度。",
+      "year": 2026,
+      "slug": "dynamicpo-dynamic-preference-optimization-for-recommendation",
+      "original_title": "DynamicPO: Dynamic Preference Optimization for Recommendation",
+      "source_refs": [
+        "研究想法 #7"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 136
+    },
+    {
+      "id": "p124",
+      "title": "Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38651/42613",
+      "verification": "abstract",
+      "verification_note": "已核验原始摘要或官方论文记录；非全文精读。",
+      "topics": [
+        "安全与应用",
+        "多目标与个性化"
+      ],
+      "summary": "让语言模型做推荐，首先要读懂物品和用户行为，再用偏好训练调整推荐，而不是只在最后加DPO。",
+      "year": 2026,
+      "slug": "align-gr-unified-multi-level-alignment-for-llm-based-generative-recommendation",
+      "original_title": "Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation",
+      "source_refs": [
+        "对齐论文表 #42"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 137
+    },
+    {
+      "id": "p019",
+      "title": "MARD: Mirror-Augmented Reasoning Distillation for Mechanism-Level Drug-Drug Interaction Prediction",
+      "source_url": "https://arxiv.org/abs/2606.12578",
+      "verification": "abstract",
+      "verification_note": "正式题名含Mechanism-Level，原清单题名省略；原文为预印本。",
+      "topics": [
+        "安全与应用",
+        "奖励建模与评估"
+      ],
+      "summary": "把药物相互作用的方向与机制拆开验证，再用可检验的过程信号训练推理。",
+      "year": 2026,
+      "slug": "mard-mirror-augmented-reasoning-distillation-for-drug-drug-interaction-prediction",
+      "original_title": "MARD: Mirror-Augmented Reasoning Distillation for Drug-Drug Interaction Prediction",
+      "source_refs": [
+        "研究想法 #19"
+      ],
+      "stage": "扩散、流匹配与应用",
+      "reading_order": 138
+    }
+  ]
+}

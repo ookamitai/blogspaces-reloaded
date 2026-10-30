@@ -1,0 +1,51 @@
+<%
+const library = site.data.papers || { papers: [], raw_count: 148 };
+const papers = library.papers;
+const topics = [...new Set(papers.flatMap(paper => paper.topics))];
+%>
+<div class="papers-shell" data-paper-library>
+  <header class="papers-intro">
+    <h1 class="article-title">论文</h1>
+    <p class="papers-inventory"><%= papers.length %> 篇 · 按建议阅读顺序排列 · <a href="<%- url_for('/papers/guide/') %>">自学路线</a></p>
+  </header>
+
+  <section class="papers-controls" aria-label="查找论文">
+    <div class="papers-search-wrap">
+      <label for="paper-search">搜索论文</label>
+      <input id="paper-search" type="search" placeholder="标题、关键词、原清单编号" autocomplete="off">
+    </div>
+    <details class="papers-filter-disclosure"><summary>筛选</summary>
+    <div class="papers-filters">
+      <label>研究主题
+        <select id="paper-topic" aria-label="研究主题"><option value="">全部主题</option><% topics.forEach(topic => { %><option value="<%= topic %>"><%= topic %>（<%= papers.filter(p => p.topics.includes(topic)).length %>）</option><% }); %></select>
+      </label>
+      <label>核验程度
+        <select id="paper-verification" aria-label="核验程度"><option value="">全部程度</option><option value="fulltext">已查阅全文</option><option value="abstract">已核验摘要</option><option value="excerpt">原文待核验</option></select>
+      </label>
+      <label>阅读进度
+        <select id="paper-progress" aria-label="阅读进度"><option value="">全部笔记</option><option value="unread">未读</option><option value="read">已读</option></select>
+      </label>
+      <button id="paper-reset" type="button">重置筛选</button>
+    </div>
+    </details>
+  </section>
+
+  <div class="papers-list-heading">
+    <p id="paper-result-count" role="status" aria-live="polite">共 <%= papers.length %> 篇</p>
+  </div>
+  <noscript><p class="papers-notice">以下是完整论文目录。启用 JavaScript 后可搜索、筛选并保存阅读进度。</p></noscript>
+  <ol class="papers-list" id="paper-list">
+    <% let lastStage; papers.forEach(paper => { if (paper.stage !== lastStage) { lastStage = paper.stage; %>
+    <li class="paper-stage-heading archive-year-wrap" data-paper-stage="<%= paper.stage %>"><h2 class="archive-year"><%= paper.stage %></h2></li>
+    <% } %>
+    <li class="paper-row" data-paper-id="<%= paper.id %>" data-paper-stage="<%= paper.stage %>" data-topics="<%= JSON.stringify(paper.topics) %>" data-verification="<%= paper.verification %>" data-search="<%= [paper.id, paper.title, paper.original_title, ...(paper.aliases || []), paper.summary, paper.stage, ...paper.topics, ...paper.source_refs].filter(Boolean).join(' ') %>">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="<%- url_for('/papers/' + paper.slug + '/') %>"><%= paper.title %></a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 <%= paper.reading_order %>"><%= String(paper.reading_order).padStart(3, '0') %></span></header>
+        <div class="paper-meta"><span class="paper-topics"><%= paper.topics.join(' / ') %></span><span class="paper-verification paper-verification--<%= paper.verification %>"><%= paper_verification_label(paper.verification) %></span><% if (paper.year) { %><span><%= paper.year %></span><% } %></div>
+      </div>
+    </li>
+    <% }); %>
+  </ol>
+  <div class="papers-empty" id="paper-empty" hidden><h2>没有匹配的论文</h2><p>试试更短的关键词，或重置筛选条件。</p></div>
+  <footer class="papers-library-footer"><p><%= library.raw_count %> 条原始记录已合并去重。核验范围见各篇笔记。</p><p id="paper-storage-note">阅读进度仅保存在当前浏览器。</p></footer>
+</div>

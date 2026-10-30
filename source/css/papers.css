@@ -1,0 +1,62 @@
+/* Keep the paper section in the existing mashiro archive/article typography. */
+.papers-shell { margin: 50px 0; color: inherit; }
+.papers-shell [hidden] { display: none !important; }
+.papers-shell a { color: #999; text-decoration: none; }
+.papers-shell a:hover { text-decoration: underline; }
+.papers-intro { margin: 0 0 28px; }
+.papers-inventory { margin-top: 18px; color: #999; font-size: 13px; line-height: 1.8; }
+.papers-controls { font-size: 13px; color: #999; }
+.papers-controls label { display: block; }
+.papers-controls input, .papers-controls select { font: inherit; color: inherit; background: transparent; border: 1px solid #ddd; padding: 7px 9px; border-radius: 0; box-sizing: border-box; }
+.papers-controls input { display: block; width: 100%; margin-top: 8px; color: #555; }
+.papers-filter-disclosure { margin-top: 12px; }
+.papers-shell summary { cursor: pointer; }
+.papers-filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; padding: 12px 0; }
+.papers-filters label { flex: 1 1 130px; }
+.papers-filters select { display: block; width: 100%; margin-top: 5px; }
+.papers-controls button, .paper-note-actions button { font: inherit; color: #999; background: none; border: 0; padding: 7px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.papers-shell :is(a, input, select, button, summary):focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+.papers-list-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px; color: #999; font-size: 12px; margin: 25px 0; }
+.papers-list { list-style: none; margin: 0; padding: 0; }
+.paper-stage-heading { margin: 35px 0 15px; }
+.paper-row { margin: 0; }
+.paper-row h2 { font-size: inherit; line-height: 1.6; margin: 0; min-width: 0; }
+.papers-shell .archive-article-title { color: #555; overflow-wrap: anywhere; }
+.paper-number { color: #999; font: 12px 'LM-Mono-10', monospace; flex: 0 0 auto; }
+.paper-row .archive-article-line { min-width: 15px; }
+.paper-meta { font-size: 11px; line-height: 1.7; color: #999; margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.paper-read-indicator { font-size: 11px; font-weight: normal; color: #999; margin-left: 8px; white-space: nowrap; }
+.papers-empty { padding: 30px 10px; color: #999; font-size: 14px; }
+.papers-empty h2 { font-size: 18px; margin-bottom: 10px; }
+.papers-library-footer, .papers-notice { font-size: 12px; color: #999; line-height: 1.8; margin-top: 35px; }
+.paper-breadcrumb { display: flex; gap: 20px; margin-bottom: 20px; font-size: 13px; }
+.paper-note-header h1 { overflow-wrap: anywhere; }
+.paper-original-title { margin-top: 12px; color: #999; font-size: 12px; line-height: 1.8; }
+.paper-note-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 15px; font-size: 13px; }
+#paper-save-status { color: #999; font-size: 12px; }
+.paper-evidence, .paper-toc { margin: 14px 0; font-size: 13px; color: #999; line-height: 1.8; }
+.paper-evidence p { margin-top: 8px; }
+.paper-source-refs { font-size: 12px; }
+.paper-toc ol { list-style: none; padding-left: 15px; }
+.paper-note-body .katex-display { overflow-x: auto; overflow-y: hidden; padding-block: 6px; }
+.paper-note-body :is(pre, .highlight) { max-width: 100%; overflow-x: auto; }
+.paper-note-body table { display: block; overflow-x: auto; }
+.paper-note-body :is(td, th) { min-width: 100px; }
+.paper-note-body a { overflow-wrap: anywhere; }
+.paper-source-excerpt { margin-top: 30px; font-size: 13px; line-height: 1.8; }
+.paper-source-excerpt figure { margin: 18px 0; }
+.paper-source-excerpt figcaption { font-size: 11px; color: #999; }
+.paper-related { margin-top: 35px; font-size: 13px; line-height: 1.8; }
+.paper-related h2 { font-size: 16px; font-weight: normal; margin-bottom: 8px; }
+.paper-related li { margin-top: 7px; }
+.paper-pagination { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 30px; font-size: 12px; }
+.paper-pagination span { display: block; color: #999; font-size: 11px; line-height: 1.6; margin-top: 6px; overflow-wrap: anywhere; }
+html.dark .papers-shell .archive-article-title { color: #bbb; }
+html.dark .papers-controls :is(input, select), html.dark .paper-pagination { border-color: #444; }
+html.dark .papers-controls input { color: #bbb; }
+html.dark .papers-controls select option { background: #222; }
+@media (max-width: 810px) { [data-paper-library] { margin-inline: 20px; } }
+@media (max-width: 470px) {
+  #logo { font-size: clamp(20px, 6.2vw, 28px); line-height: 1.3; }
+  .paper-note .article-title { font-size: 1.7em; }
+}
