@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Primal-Dual Direct Preference Optimization for Constrained LLM Alignment | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="把奖励最大化与安全成本约束分开，用两阶段原始—对偶偏好优化协调。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/primal-dual-direct-preference-optimization-for-constrained-llm-alignment/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Primal-Dual Direct Preference Optimization for Constrained LLM Alignment | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/primal-dual-direct-preference-optimization-for-constrained-llm-alignment/">
+  
+  <meta property="og:description" content="把奖励最大化与安全成本约束分开，用两阶段原始—对偶偏好优化协调。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Primal-Dual Direct Preference Optimization for Constrained LLM Alignment | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="把奖励最大化与安全成本约束分开，用两阶段原始—对偶偏好优化协调。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p073">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Primal-Dual Direct Preference Optimization for Constrained LLM Alignment</h1>
+      <p class="article-subtitle">阅读顺序 073 · 噪声与鲁棒性 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2510.05703" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。</p><p class="paper-source-refs">原清单位置：研究想法 #74；对齐论文表 #33 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E4%B8%8E%E6%9C%BA%E5%88%B6"><span class="toc-text">问题与机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E7%9B%B4%E8%A7%89%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%95%99%E5%AD%A6%E7%A4%BA%E6%84%8F%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">数学直觉（教学示意）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E5%9B%BA%E5%AE%9A%E6%9D%83%E9%87%8D%E5%A4%9A%E7%9B%AE%E6%A0%87%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">与固定权重多目标的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B"><span class="toc-text">自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E5%AE%9E%E9%AA%8C%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%87%AA%E5%AD%A6%E8%AE%BE%E8%AE%A1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">小实验（自学设计）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90"><span class="toc-text">来源</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>尽量有帮助<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时风险不能超过预算<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>比<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>把帮助和风险随便加权求和<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>更贴近一些部署目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="问题与机制">问题与机制</h2>
+<p>该方法先在奖励偏好数据上用标准 DPO 训练模型以提供奖励信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再用重排的拉格朗日 DPO 目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在成本偏好数据上微调<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>原始变量是输出策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>对偶变量控制成本约束的压力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker">成本阈值是目标的一部分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是训练后再随意观察的指标</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>论文同时分析次优性与约束违反<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并用探索奖励扩展到在线数据设置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="数学直觉&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;教学示意&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">数学直觉<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>教学示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>典型约束写作 <span class="markdown-them-math-inline">$\max_\pi\mathbb{E}_\pi[r]$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>满足 <span class="markdown-them-math-inline">$\mathbb{E}_\pi[c]\leq\kappa$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对应拉格朗日形式可写成 <span class="markdown-them-math-inline">$\mathbb{E}_\pi[r]-\lambda(\mathbb{E}_\pi[c]-\kappa)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>其中 <span class="markdown-them-math-inline">$\lambda\geq0$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这用于理解奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>预算与对偶变量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>具体 DPO 重排目标应查原文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="与固定权重多目标的区别">与固定权重多目标的区别</h2>
+<p>固定惩罚权重需要人为猜测风险价格<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>原始—对偶方法让约束反馈参与调整<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker">满足训练分布的期望成本不等于逐条回答都安全</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也不保证部署分布发生变化后仍达标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>理论保证依赖数据覆盖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>偏好模型和优化条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>在线探索缓解覆盖限制也有额外查询成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>成本偏好本身可能有噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能因框架包含约束就视其为真实风险量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该 arXiv 编号可用于识别清单中相近标题版本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>避免重复统计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测">自测</h2>
+<ol>
+<li>约束预算与固定惩罚系数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>分别代表什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>为什么平均成本低仍可能存在少量严重失败<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<h2 id="小实验&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;自学设计&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>用奖励与成本可控的小离散策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>扫描多个成本阈值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>记录实际成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>奖励和对偶变量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>比较固定惩罚与动态对偶更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再在成本数据错标或测试分布偏移时复测约束违反<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>检查保证边界<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源">来源</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2510.05703">论文原文与摘要</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>笔记中的自测与小实验为自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #74</strong></p>
+<p>大型语言模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>LLMs<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的广泛应用对安全性提出了越来越高的要求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>例如减少有害内容和虚假信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>避免因规则和法律限制而出现某些禁用token<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>尽管近期已有多项研究关注LLMs的安全对齐问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但这些工作要么需要训练奖励模型和成本模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>导致较高的内存和计算开销<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>要么需要关于最优解的先验知识<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>基于此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们**研究了LLMs中的约束对齐问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>即在限制潜在不安全内容导致的成本低于阈值的前提下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>最大化输出的奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><strong>针对该问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们提出了</strong>一种新颖的原始-对偶DPO方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>首先利用标准DPO在奖励偏好数据上训练模型以提供奖励信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>然后采用重新排列的拉格朗日DPO目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>利用所提供的奖励信息在成本偏好数据上微调LLMs<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>**该方法显著降低了内存和计算成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>且不依赖额外的先验知识<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>此外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们对输出策略的次优性和约束违规性建立了严格的理论保证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>我们还将该方法扩展至在线数据环境<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过引入探索奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使方法能够探索未覆盖的提示-响应空间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并给出消除对偏好数据覆盖依赖的理论结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>在广泛使用的偏好数据集PKU-SafeRLHF上的实验结果验证了我们方法的有效性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<p><strong>对齐论文表 #33</strong></p>
+<p>提出可证明收敛的原始-对偶DPO方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>解决带安全约束的LLM对齐问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>两阶段流程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>(1)第一阶段——用标准DPO在奖励偏好数据上训练模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为第二阶段提供奖励信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>(2)第二阶段——采用重排的拉格朗日DPO目标进行约束微调<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>交替更新LLM策略<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>拉格朗日最大化奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>和对偶变量<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>对偶下降满足成本约束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>显著优势<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>只需训练两个模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>vs此前三个<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>无需先验最优解知识<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并提供严格的次优性和约束违反理论界限<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可扩展支持在线探索<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/mult-dpo-multinomial-direct-preference-optimization-for-recommender-systems/">Mult-DPO: Multinomial Direct Preference Optimization for Recommender Systems</a></li><li><a href="../../papers/pea-dpo-perception-enhanced-alignment-direct-preference-optimization-for-mllms-alignment/">PEA-DPO: Perception-Enhanced Alignment Direct Preference Optimization for MLLMs Alignment</a></li><li><a href="../../papers/step-dpo-step-wise-preference-optimization-for-long-chain-reasoning-of-llms/">Step-DPO: Step-wise Preference Optimization for Long-chain Reasoning of LLMs</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/wasserstein-distributionally-robust-regret-optimization-for-reinforcement-learning-from-human-feedba/">← 上一篇 <span>Wasserstein Distributionally Robust Regret Optimization for Reinforcement Learning from Human Feedback</span></a><a href="../../papers/adversarial-preference-optimization-enhancing-large-language-model-alignment/">下一篇 → <span>Adversarial Preference Optimization: Enhancing Your Alignment via RM-LLM Game</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

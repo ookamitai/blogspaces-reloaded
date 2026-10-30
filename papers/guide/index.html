@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>论文自学路线 | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="从 DPO、奖励模型和偏好数据出发，逐步学习优化动力学、鲁棒对齐、密度比估计与扩散模型对齐。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/guide/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="论文自学路线 | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/guide/">
+  
+  <meta property="og:description" content="从 DPO、奖励模型和偏好数据出发，逐步学习优化动力学、鲁棒对齐、密度比估计与扩散模型对齐。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="论文自学路线 | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="从 DPO、奖励模型和偏好数据出发，逐步学习优化动力学、鲁棒对齐、密度比估计与扩散模型对齐。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main"><article class="papers-shell paper-note article" data-paper-guide>
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a></nav>
+    <header class="paper-note-header article-header"><h1 class="article-title">论文自学路线</h1></header>
+    <details class="paper-toc"><summary>学习路线目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%86%B3%E5%AE%9A%E6%80%8E%E6%A0%B7%E8%AF%BB"><span class="toc-text">先决定怎样读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B1%E7%94%A8%E7%AC%A6%E5%8F%B7%E4%B8%8E-dpo%20%E8%B5%B7%E7%82%B9"><span class="toc-text">共用符号与 DPO 起点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E5%9F%BA%E7%A1%80%E4%B8%8E%E8%AF%84%E4%BC%B0"><span class="toc-text">第一阶段：基础与评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%95%B0%E6%8D%AE%E4%B8%8E%E5%81%8F%E5%A5%BD%E7%BB%93%E6%9E%84"><span class="toc-text">第二阶段：数据与偏好结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E4%BC%98%E5%8C%96%E5%8A%A8%E5%8A%9B%E5%AD%A6"><span class="toc-text">第三阶段：优化动力学</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E5%99%AA%E5%A3%B0%E4%B8%8E%E9%B2%81%E6%A3%92%E6%80%A7"><span class="toc-text">第四阶段：噪声与鲁棒性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E5%A4%9A%E7%9B%AE%E6%A0%87%E4%B8%8E%E6%8E%A8%E7%90%86%E6%97%B6%E5%AF%B9%E9%BD%90"><span class="toc-text">第五阶段：多目标与推理时对齐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E9%98%B6%E6%AE%B5%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E5%AF%86%E5%BA%A6%E6%AF%94%E5%9F%BA%E7%A1%80"><span class="toc-text">第六阶段：密度比基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E9%98%B6%E6%AE%B5%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%9A%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%89%A9%E6%95%A3%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%E3%80%81%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%B5%81%E5%8C%B9%E9%85%8D%E4%B8%8E%E5%BA%94%E7%94%A8"><span class="toc-text">第七阶段：扩散、流匹配与应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AF%8F%E8%AF%BB%E5%AE%8C%E4%B8%80%E7%AF%87%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%8C%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E7%95%99%E4%B8%8B%E5%85%AD%E5%8F%A5%E8%AF%9D"><span class="toc-text">每读完一篇，留下六句话</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="先决定怎样读">先决定怎样读</h2>
+<p>这份路线围绕一个问题组织<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><strong>怎样让生成模型学到真实偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时保住质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>多样性和可控性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></strong> 论文目录按下面七个阶段排列<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每篇页面的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>上一篇 / 下一篇<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>也遵循这个顺序<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这是根据前置知识和研究问题编排的自学建议<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不是论文之间的权威难度排名<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">先解释清楚一个失败现象<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再读针对它的改进<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> 不必一次读完全部论文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>每个阶段先选两三篇建立直觉<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再扩展到同组方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>目录里的序号表示建议阅读顺序<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>原清单位置另行保留在每篇笔记中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>每篇可以分三轮读<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ol>
+<li><strong>定位问题</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>读摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>引言和图 1<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用一句自己的话说明<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>基线在什么情况下失败<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>拆开方法</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>找到输入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>目标函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>更新规则和额外开销<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>把新东西与基线逐项对照<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li><strong>核对证据</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>检查对照组<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>数据规模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>算力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>评估器和消融<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>完成笔记里的自测题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再做一个小实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+</ol>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>已核验摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>表示笔记核对了作者摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能替代全文中的假设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>证明和实验设置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>已查阅全文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>也不代表代码已复现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>笔记中的自测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>小实验和迁移建议是学习设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>原清单摘录及附图保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="共用符号与-dpo 起点">共用符号与 DPO 起点</h2>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>含义</th>
+<th>阅读时注意</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="markdown-them-math-inline">$x$</span></td>
+<td>提示或条件</td>
+<td>不同任务对<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>同一个条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的定义可能不同</td>
+</tr>
+<tr>
+<td><span class="markdown-them-math-inline">$y_w, y_l$</span></td>
+<td>被偏好和不被偏好的回答</td>
+<td>是相对判断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不等于绝对正确和错误</td>
+</tr>
+<tr>
+<td><span class="markdown-them-math-inline">$\pi_\theta(y\mid x)$</span></td>
+<td>待训练策略</td>
+<td>文本序列概率通常由 token 条件概率连乘得到</td>
+</tr>
+<tr>
+<td><span class="markdown-them-math-inline">$\pi_{\rm ref}(y\mid x)$</span></td>
+<td>参考策略</td>
+<td>比较概率比时必须说明参考模型</td>
+</tr>
+<tr>
+<td><span class="markdown-them-math-inline">$r(x,y)$</span></td>
+<td>奖励函数</td>
+<td>代理奖励与真实任务质量应分别评估</td>
+</tr>
+<tr>
+<td><span class="markdown-them-math-inline">$\beta$</span></td>
+<td>DPO 中的尺度参数</td>
+<td>不同论文的参数化可能不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能只按数值比较</td>
+</tr>
+<tr>
+<td><span class="markdown-them-math-inline">$\sigma(z)$</span></td>
+<td><span class="markdown-them-math-inline">$1/(1+e^{-z})$</span></td>
+<td>把实数间隔映射到 <span class="markdown-them-math-inline">$(0,1)$</span></td>
+</tr>
+</tbody>
+</table>
+<p>DPO 在 Bradley–Terry 偏好模型下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>把奖励与策略对数概率比联系起来<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>可先记住它的成对损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\mathcal L_{\rm DPO}
+=-\mathbb E_{(x,y_w,y_l)\sim\mathcal D}
+\log\sigma\!\left(\beta\left[
+\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\rm ref}(y_w\mid x)}
+-\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\rm ref}(y_l\mid x)}
+\right]\right).
+$$</div><p>这里优化的是相对于参考策略的<strong>成对间隔</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这个表达式说明为什么后续论文会分别研究数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>偏好模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>梯度以及参考约束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>有关推导和假设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>先读 <a target="_blank" rel="noopener" href="https://arxiv.org/html/2305.18290v2">DPO 原文第 3–5 节与附录 A</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">成对损失下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能单独证明 chosen 回答的绝对概率上升<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> 下面的三选项玩具例子只用于建立直觉<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<table>
+<thead>
+<tr>
+<th>分布</th>
+<th>chosen</th>
+<th>rejected</th>
+<th>其他回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参考策略与更新前策略</td>
+<td>0.4</td>
+<td>0.4</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>一次假想更新后的策略</td>
+<td>0.3</td>
+<td>0.1</td>
+<td>0.6</td>
+</tr>
+</tbody>
+</table>
+<p>两行都归一化了<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>chosen 概率下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但 chosen/rejected 比值从 <span class="markdown-them-math-inline">$1$</span> 升到 <span class="markdown-them-math-inline">$3$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>取 <span class="markdown-them-math-inline">$\beta=1$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>对应的单对 DPO 损失从 <span class="markdown-them-math-inline">$\log 2$</span> 降到 <span class="markdown-them-math-inline">$\log(4/3)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这是损失函数的数值示例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不是对任何特定训练轨迹的断言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<div class="highlight"><pre class="code"><code><span class="hljs-keyword">import</span> math
+
+reference = (<span class="hljs-number">0.4</span>, <span class="hljs-number">0.4</span>, <span class="hljs-number">0.2</span>)
+before = reference
+after = (<span class="hljs-number">0.3</span>, <span class="hljs-number">0.1</span>, <span class="hljs-number">0.6</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">pair_loss</span>(<span class="hljs-params">policy, beta=<span class="hljs-number">1.0</span></span>):</span>
+    margin = beta * (
+        math.log(policy[<span class="hljs-number">0</span>] / reference[<span class="hljs-number">0</span>])
+        - math.log(policy[<span class="hljs-number">1</span>] / reference[<span class="hljs-number">1</span>])
+    )
+    <span class="hljs-keyword">return</span> math.log1p(math.exp(-margin))
+
+<span class="hljs-keyword">assert</span> math.isclose(<span class="hljs-built_in">sum</span>(after), <span class="hljs-number">1.0</span>)
+<span class="hljs-keyword">assert</span> pair_loss(after) &lt; pair_loss(before)
+<span class="hljs-keyword">assert</span> after[<span class="hljs-number">0</span>] &lt; before[<span class="hljs-number">0</span>]
+<span class="hljs-built_in">print</span>(pair_loss(before), pair_loss(after))
+<span class="hljs-comment"># 0.693147... 0.287682...</span>
+</code></pre></div>
+<h2 id="第一阶段&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;基础与评估">第一阶段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>基础与评估</h2>
+<p>先读 <a href="/papers/a-survey-of-direct-preference-optimization/">DPO 综述</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再读 <a href="/papers/is-dpo-superior-to-ppo-for-llm-alignment-a-comprehensive-study/">DPO 与 PPO 的系统比较</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这一组的任务是分清策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>奖励模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>偏好评估器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以及离线和在线数据的差异<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>过关标准</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>能画出 SFT → 偏好数据 → 奖励学习 / 直接优化 → 评估的流程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>能解释为什么奖励模型在静态测试集上准确<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不保证后训练后仍可靠<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>建议做一张评估表<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>任务正确性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>偏好胜率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>回答长度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>多样性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>参考偏离<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>计算开销<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>此后的每篇论文都填同一张表<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>缺少的指标标为<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>未报告<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不要自行补全<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="第二阶段&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;数据与偏好结构">第二阶段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>数据与偏好结构</h2>
+<p>从 <a href="/papers/what-matters-in-data-for-dpo/">What Matters in Data for DPO?</a> 开始<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再看数据选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>主动学习<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>评分信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>平局和列表偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>先问<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>标签到底表示什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再看损失函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">三个候选项的选择<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>与胜 / 负 / 平三种结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>是两种不同的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>三元<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> 前者扩大一次比较的候选集合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>后者允许<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>不分胜负<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>读到 ternary 时必须先确认论文的定义<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>过关标准</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>能解释为什么小间隔既可能代表有价值的困难样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也可能代表噪声或歧义<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>知道如何控制样本量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>标注预算和训练步数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>避免把更多数据的收益误判为更好方法的收益<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>最小实验</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>构造同样大小的偏好集<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>分别加入随机翻转<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>真实平局和少数群体的相反偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>观察数据选择规则会丢弃哪一类样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="第三阶段&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;优化动力学">第三阶段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>优化动力学</h2>
+<p>从 <a href="/papers/gradient-gated-dpo-stabilizing-preference-optimization-in-language-models/">Gradient-Gated DPO</a> 及概率偏移现象切入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再读梯度平衡<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>绝对锚定<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>目标函数与估计器假设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>把一篇方法拆成三部分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>样本权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>chosen/rejected 的更新方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>以及参考或绝对概率约束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>论文公式写法不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这三个问题仍可以逐项比较<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>过关标准</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>能区分奖励间隔<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>序列概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>任务质量三个量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>知道<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>一个小模块的凸性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>和<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>整个 LLM 的全局凸优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>需要不同的结论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>最小实验</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>用三分类 softmax 模型记录 loss<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>chosen 概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>rejected 概率与未参与比较的概率质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>画出它们随更新步数的变化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="第四阶段&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;噪声与鲁棒性">第四阶段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>噪声与鲁棒性</h2>
+<p>先建立 <a href="/papers/when-rlhf-fails-a-mechanistic-taxonomy-of-reward-hacking-collapse-and-evaluator-gaming/">RLHF 失效模式分类</a> 的问题地图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再按标签修正<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>重加权<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>分布鲁棒优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>奖励不确定性和几何约束逐组读<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">标注错误<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>合理的人群分歧<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>分布偏移与奖励黑客<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>需要不同的诊断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> 把它们都当作噪声过滤<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能会一起删掉少数群体的真实偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>过关标准</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>能指出每个方法保护的对象<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>依赖的干净信息和新增超参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>能说明它的保证是在什么噪声模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>支持集或约束条件下成立<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>最小实验</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>逐渐加大优化预算<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时记录代理奖励与独立质量指标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>寻找两者开始分离的位置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>不要仅凭奖励继续升高判断训练成功<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="第五阶段&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;多目标与推理时对齐">第五阶段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>多目标与推理时对齐</h2>
+<p>先读 <a href="/papers/nash-learning-from-human-feedback/">Nash Learning from Human Feedback</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再读 Pareto 对齐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>个性化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>在线反馈和解码 / 表征干预<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这一阶段比较<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>谁的偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>何时施加控制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>是否修改模型参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>不要把不同用户的冲突偏好平均后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>直接称为一个理想的人类偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>也不要用训练阶段零开销<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>替代总推理成本的比较<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>过关标准</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>能给一个双目标例子画出候选解与 Pareto 前沿<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>能区分参数更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>提示优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>候选重排<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>token 引导和激活编辑<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>最小实验</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>对同一组候选回答同时评估正确性和简洁性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>扫描偏好权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>检查权重变化是否真的覆盖不同折中点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是反复输出同一个模板<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="第六阶段&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;密度比基础">第六阶段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>密度比基础</h2>
+<p>从 <a href="/papers/density-ratio-matching-under-the-bregman-divergence-a-unified-framework-of-density-ratio-estimation/">Bregman 密度比匹配</a> 开始<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再看 flow / score 估计以及密度比与偏好优化的联系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>阅读前先熟悉一个归一化恒等式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>若 <span class="markdown-them-math-inline">$p$</span> 在 <span class="markdown-them-math-inline">$q$</span> 的支持集内<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>且 <span class="markdown-them-math-inline">$r(x)=p(x)/q(x)$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>那么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<div class="markdown-them-math-block">$$\mathbb E_{x\sim q}[r(x)]
+=\int q(x)\frac{p(x)}{q(x)}\,dx=1.
+$$</div><p><strong>过关标准</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>能说明为什么<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>先分别估计两个密度再相除<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>可能不稳定<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>知道估计均值准确与估计方差小是不同的问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>不会忽略 <span class="markdown-them-math-inline">$q(x)$</span> 很小的区域<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>最小实验</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在两个一维高斯分布上比较解析密度比与分类器估计的比值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>按尾部区域分别报告误差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>改变两个分布的重叠程度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再看估计方差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="第七阶段&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;：&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;扩散&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;、&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;流匹配与应用">第七阶段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>扩散<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>流匹配与应用</h2>
+<p>先理解生成轨迹与终端分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再读 <a href="/papers/direct-distributional-optimization-for-provable-alignment-of-diffusion-models/">分布级扩散对齐</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>之后按训练时偏好优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>推理时引导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>流形漂移与多样性修复展开<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>最后读视觉语言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>推荐和药物任务等应用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><span class="marker">把文本 DPO 的结论迁移到扩散模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>需要重新检查似然代理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>时间步采样和轨迹分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span> 迁移想法是待验证的研究假设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能凭损失形式相似就认为理论结论成立<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>过关标准</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>能分清一步 / 多步生成<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>SDE / ODE 采样<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>逐样本 / 分布级奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>能解释提高单一奖励时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>条件一致性与多样性为什么要分开检查<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>最小实验</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在二维多峰分布上比较逐样本奖励和覆盖多个模式的分布奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>同步记录奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>模式覆盖率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>参考分布偏离和采样成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这里的实验是自学建议<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不代表任何论文已采用同一设置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="每读完一篇&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;，&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;留下六句话">每读完一篇<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>留下六句话</h2>
+<ol>
+<li>它在什么具体情境下发现了问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>最接近的基线是什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>失败在哪里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>方法到底改了数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>梯度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>奖励还是解码<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>哪个假设一旦不满足<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>结论就需要重新检查<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>哪一个消融最能区分作者的解释和替代解释<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>我能用什么最小实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>让自己的理解有机会被证伪<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<p>回到 <a href="/papers/">论文目录</a> 选择下一篇<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>阅读进度可以在每篇笔记中标记<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>记录只保存在当前浏览器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</div>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

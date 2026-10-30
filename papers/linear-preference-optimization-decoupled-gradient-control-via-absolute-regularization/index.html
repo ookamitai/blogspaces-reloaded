@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="用绝对差目标与梯度分离，把保持 chosen 和抑制 rejected 的力度拆开调。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/linear-preference-optimization-decoupled-gradient-control-via-absolute-regularization/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/linear-preference-optimization-decoupled-gradient-control-via-absolute-regularization/">
+  
+  <meta property="og:description" content="用绝对差目标与梯度分离，把保持 chosen 和抑制 rejected 的力度拆开调。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="用绝对差目标与梯度分离，把保持 chosen 和抑制 rejected 的力度拆开调。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p059">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization</h1>
+      <p class="article-subtitle">阅读顺序 036 · 优化动力学 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2508.14947" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。</p><p class="paper-source-refs">原清单位置：研究想法 #58 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E4%B8%8E%E6%9C%BA%E5%88%B6"><span class="toc-text">问题与机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E7%9B%B4%E8%A7%89%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%95%99%E5%AD%A6%E7%A4%BA%E6%84%8F%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">数学直觉（教学示意）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E5%85%B6%E4%BB%96%E4%BF%9D%E4%BC%BC%E7%84%B6%E6%96%B9%E6%B3%95%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">与其他保似然方法的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B"><span class="toc-text">自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E5%AE%9E%E9%AA%8C%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%87%AA%E5%AD%A6%E8%AE%BE%E8%AE%A1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">小实验（自学设计）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90"><span class="toc-text">来源</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p>胜者要提升多少<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>败者要压低多少<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以是两个独立旋钮<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不必始终被同一个 log-sigmoid 权重绑在一起<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="问题与机制">问题与机制</h2>
+<p>Linear Preference Optimization<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>LPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>针对 DPO 的过拟合与坍缩<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>结合三项设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>以绝对差损失替代 log-sigmoid<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>解耦优化动态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>通过偏移约束与正则项维护 chosen 质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>通过梯度分离控制 rejected 抑制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使下降力度可以线性调节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker">重点是梯度控制的分工<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是把全部对齐任务变成线性模型</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="数学直觉&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;教学示意&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">数学直觉<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>教学示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>对标量残差 <span class="markdown-them-math-inline">$d$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>绝对值损失 <span class="markdown-them-math-inline">$|d|$</span> 在非零处的导数只有符号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而光滑 logistic 损失的权重随间隔变化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这只是理解目标形状的示例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并非论文 LPO 的完整公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>真正的目标还包括偏移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>正则化和梯度操作<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能只写一个绝对值就声称复现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="与其他保似然方法的关系">与其他保似然方法的关系</h2>
+<p>SLIME 用多个目标项约束概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>RC 调整通用偏好目标的系数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>LPO 则通过损失形状与梯度分离暴露更多控制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker">同样缓解似然下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>背后的干预位置可能不同</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>应将 chosen 保持<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>rejected 抑制和最终生成质量分别记录<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>可调旋钮增加灵活性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也增加调参空间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>跨文本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>数学和 TTS 的摘要结果不意味着同一系数普适<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>绝对值在零点不光滑<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现需要核对使用的次梯度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>平滑方式或框架约定<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测">自测</h2>
+<ol>
+<li>损失被称作 Linear<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为什么不能推断语言模型训练是凸问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>为什么需要同时报告 chosen 似然和 rejected 抑制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能只看二者差值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<h2 id="小实验&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;自学设计&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>固定正则与数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>扫描 rejected 抑制系数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>绘制 chosen 似然<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>rejected 似然及生成胜率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>另用共享 token 较多和较少的偏好对分组<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>观察解耦是否在冲突更强的数据上更有用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源">来源</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2508.14947">论文原文与摘要</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>笔记中的自测与小实验为自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #58</strong></p>
+<p>DPO<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Direct Preference Optimization<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>因其简便性和训练稳定性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>已成为广泛使用的离线偏好优化算法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>DPO易出现过拟合和崩溃现象<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>为解决这些问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们提出了线性偏好优化<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>LPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这是一种具有三项关键创新的全新对齐框架<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>首先<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们通过<strong>用绝对差损失替代log-sigmoid函数</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现了梯度解耦<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而隔离了优化动态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>其次<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们<strong>通过偏移约束结合正则化项提升了稳定性</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以保持所选响应的质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>第三<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们<strong>采用梯度分离实现了可控的拒绝抑制</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>配合简便的估计方法和可调节系数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>线性调控拒绝概率的下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/mind-the-gap-structure-aware-consistency-in-preference-learning/">Mind the Gap: Structure-Aware Consistency in Preference Learning</a></li><li><a href="../../papers/groupdpo-memory-efficient-group-wise-direct-preference-optimization/">GroupDPO: Memory efficient Group-wise Direct Preference Optimization</a></li><li><a href="../../papers/towards-disentangled-preference-optimization-dynamics-beyond-likelihood-displacement/">Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/slime-stabilized-likelihood-implicit-margin-enforcement-for-preference-optimization/">← 上一篇 <span>SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization</span></a><a href="../../papers/bpo-revisiting-preference-modeling-in-direct-preference-optimization/">下一篇 → <span>BPO: Revisiting Preference Modeling in Direct Preference Optimization</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

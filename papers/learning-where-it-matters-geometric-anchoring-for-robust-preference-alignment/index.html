@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="用当前策略附近的悲观锚点评估一对偏好有多脆弱，再决定该给它多大权重。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/learning-where-it-matters-geometric-anchoring-for-robust-preference-alignment/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/learning-where-it-matters-geometric-anchoring-for-robust-preference-alignment/">
+  
+  <meta property="og:description" content="用当前策略附近的悲观锚点评估一对偏好有多脆弱，再决定该给它多大权重。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="用当前策略附近的悲观锚点评估一对偏好有多脆弱，再决定该给它多大权重。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p039">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment</h1>
+      <p class="article-subtitle">阅读顺序 064 · 噪声与鲁棒性 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2602.04909" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>核对primary来源题名、摘要；尚未逐项复核全文公式与实验。</p><p class="paper-source-refs">原清单位置：研究想法 #39 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%90%86%E8%A7%A3%E9%97%AE%E9%A2%98"><span class="toc-text">先理解问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="toc-text">方法如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E5%9B%9E%E5%81%8F%E5%A5%BD%E5%AF%B9%E9%BD%90%E7%9A%84%E5%9C%B0%E5%9B%BE"><span class="toc-text">放回偏好对齐的地图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B%E4%B8%8E%E5%8A%A8%E6%89%8B"><span class="toc-text">自测与动手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E9%98%85%E8%AF%BB%E8%8C%83%E5%9B%B4"><span class="toc-text">来源与阅读范围</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p><span class="marker">用当前策略附近的悲观锚点评估一对偏好有多脆弱<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再决定该给它多大权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="先理解问题">先理解问题</h2>
+<p>固定参考策略随着训练推进可能与当前策略越来越不匹配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>完全无参考又可能让奖励不受控漂移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>面对噪声标签<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>需要既随模型状态变化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>又能识别局部不稳定性的参照<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="方法如何工作">方法如何工作</h2>
+<p>GAPO把动态几何锚定义为当前策略小邻域内的对抗扰动<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>作为悲观基线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>用策略与锚的奖励差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>即Anchor Gap<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>估计偏好关系对局部扰动的敏感性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再<span class="marker">对逻辑偏好目标重加权</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>局部易被破坏的样本被降低影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>较稳健信号得到强调<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="放回偏好对齐的地图">放回偏好对齐的地图</h2>
+<p>与全局固定KL锚不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>锚随当前策略移动<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>与分布鲁棒DPO在数据分布不确定集上取最坏情况不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这里的几何邻域围绕当前策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>两种<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>鲁棒<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>所针对的扰动空间不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>小半径与光滑性条件使Anchor Gap具有相应近似解释<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能把它当作真实标注是否正确的判定器<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>稀有但正确的难例也可能几何脆弱<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>应检查是否被系统降权<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测与动手">自测与动手</h2>
+<ol>
+<li>局部敏感度高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为什么既可能表示标签噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也可能表示真实边界样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>如果邻域半径很大<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>局部margin退化的近似解释可能怎样失效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<p>**小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**向数据注入已知翻转标签<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时保留一组干净困难样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>比较GAPO对两组的权重分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>扫描锚半径并测真实验证质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>检验降权是否只针对噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与阅读范围">来源与阅读范围</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2602.04909">论文原文</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>已核对正式论文页面的题名与摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>机制解释同时参照原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>具体公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>证明与实验配置仍需阅读全文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #39</strong></p>
+<p>直接偏好优化<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>及相关方法通过对固定参考策略的更新进行正则化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从成对偏好中对大型语言模型进行对齐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>**随着策略的漂移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>静态参考可能会变得越来越不准确<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>导致分布不匹配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并在噪声监督下放大虚假偏好信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>相反<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>无参考变体避免了不匹配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但往往会遭受不受限的奖励漂移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>**我们提出了几何锚偏好优化<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>GAPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>**它用动态的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>具有几何意识的锚点替代固定参考<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在小半径内对当前策略进行的对抗性局部扰动<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>作为悲观基线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这个锚点使得自适应重加权机制成为可能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>根据每对偏好的局部敏感性调节其重要性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>**我们进一步引入了锚差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>即策略与其锚点之间的奖励差异<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并在平滑条件下证明它近似于最坏情况下的局部边际退化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>通过优化一个加权的逻辑目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该目标根据锚差降低几何脆弱实例的权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时强调稳健的偏好信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/metadata-free-meta-reweighted-direct-preference-optimization-under-noisy-preference-labels/">Metadata-Free Meta-Reweighted Direct Preference Optimization under Noisy Preference Labels</a></li><li><a href="../../papers/wdpo-winsorized-direct-preference-optimization-for-robust-llm-alignment/">wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment</a></li><li><a href="../../papers/directional-alignment-mitigates-reward-hacking-in-reinforcement-learning-for-language-models/">Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/distributionally-robust-listwise-preference-optimization/">← 上一篇 <span>Distributionally Robust Listwise Preference Optimization</span></a><a href="../../papers/geoalign-geometric-rollout-curation-for-robust-llm-reinforcement-learning/">下一篇 → <span>GEOALIGN: Geometric Rollout Curation for Robust LLM Reinforcement Learning</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

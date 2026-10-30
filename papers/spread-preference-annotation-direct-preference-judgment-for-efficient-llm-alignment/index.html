@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="用少量人工偏好启动模型，再让模型从自身logits中提取偏好来扩展训练数据。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/spread-preference-annotation-direct-preference-judgment-for-efficient-llm-alignment/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/spread-preference-annotation-direct-preference-judgment-for-efficient-llm-alignment/">
+  
+  <meta property="og:description" content="用少量人工偏好启动模型，再让模型从自身logits中提取偏好来扩展训练数据。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="用少量人工偏好启动模型，再让模型从自身logits中提取偏好来扩展训练数据。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p103">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment</h1>
+      <p class="article-subtitle">阅读顺序 020 · 数据与偏好结构 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://openreview.net/pdf?id=BPgK5XW1Nb" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>已核验原始摘要或官方论文记录；非全文精读。正式记录为ICLR 2025，清单中的2024对应早期预印本阶段。</p><p class="paper-source-refs">原清单位置：对齐论文表 #19 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%8C%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%80%8E%E6%A0%B7%E5%81%9A"><span class="toc-text">要解决什么，怎样做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C%E5%B7%B2%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">和已有方法的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C%E4%B8%8E%E5%B1%80%E9%99%90"><span class="toc-text">阅读边界与局限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B"><span class="toc-text">自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E5%AE%9E%E9%AA%8C%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%87%AA%E5%AD%A6%E8%AE%BE%E8%AE%A1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">小实验（自学设计）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E6%A0%B8%E9%AA%8C"><span class="toc-text">来源与核验</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p>用少量人工偏好启动模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再让模型从自身logits中提取偏好来扩展训练数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="要解决什么&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;，&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;怎样做">要解决什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>怎样做</h2>
+<p>SPA从一个小型<span class="marker">人工种子集</span>开始<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>先建立初步对齐能力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>随后循环生成回答<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>根据模型logits推导偏好标签<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>再使用自标注数据学习<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>作者还引入噪声感知过程<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>缓解自生成偏好中低质量标签的影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>核心不是完全消除人工反馈<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是让种子数据中的人类先验能逐轮传播到更多样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="和已有方法的区别">和已有方法的区别</h2>
+<p>与调用外部大裁判标注全部新回答不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>SPA挖掘策略内部已学到的偏好信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>与盲目自训练不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它显式处理标签噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>需要区分<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>隐式奖励比较用于标注<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>和<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>模型自然生成的自评文字<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界与局限">阅读边界与局限</h2>
+<p>循环可能放大早期偏见<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也可能只是让模型更自信而非更正确<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>种子集覆盖度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>标注噪声和独立验证集非常关键<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>不能用同一内部信号同时充当训练标签与唯一测试标准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测">自测</h2>
+<ol>
+<li>SPA为什么仍然需要高质量的种子偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>如果各轮内部胜率提高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>人工胜率不变<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>应该怀疑什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<h2 id="小实验&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;自学设计&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>固定少量种子数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>跑两轮自生成偏好学习<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>与相同训练量的种子重复训练比较<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>每轮保留一批人工或可验证测试对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>记录标签准确率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>偏好熵和独立胜率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>监测<span class="marker">自确认偏差</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与核验">来源与核验</h2>
+<p>已核验原始论文摘要或官方论文记录<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以上是导读级自学笔记<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>尚未逐节复核全文证明与实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>正式记录为ICLR 2025<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>清单中的2024对应早期预印本阶段<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><a target="_blank" rel="noopener" href="https://openreview.net/pdf?id=BPgK5XW1Nb">原论文或作者官方来源</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>本地研究清单提供了补充摘录<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>自测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>小实验及分析性提醒为学习设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不是论文报告的结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>对齐论文表 #19</strong></p>
+<p>本文提出了一种名为<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>扩展偏好标注<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Spread Preference Annotation<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>SPA<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的新型框架<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该框架仅需少量人工标注的偏好数据即可提升大型语言模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>LLM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的对齐性能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>其核心贡献在于利用小型种子数据集中的人类先验知识<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过生成自标注偏好数据并从中学习<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>迭代地改进对齐效果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该方法显式地从LLM的logits中提取偏好标签<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>结果表明其比以往使用外部奖励模型或隐式学习的方法更为有效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>此外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该框架还集成了一种噪声感知学习算法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以确保其对低质量生成数据的鲁棒性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并在AlpacaEval 2.0等基准测试中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仅使用少量标准偏好数据就展现出了卓越的对齐性能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/less-is-more-improving-llm-alignment-via-preference-data-selection/">Less is More: Improving LLM Alignment via Preference Data Selection</a></li><li><a href="../../papers/geoalign-geometric-rollout-curation-for-robust-llm-reinforcement-learning/">GEOALIGN: Geometric Rollout Curation for Robust LLM Reinforcement Learning</a></li><li><a href="../../papers/causal-direct-preference-optimization-for-language-model-alignment/">Causal Direct Preference Optimization for Language Model Alignment</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/online-preference-alignment-for-language-models-via-count-based-exploration-copo/">← 上一篇 <span>Online Preference Alignment for Language Models via Count-based Exploration</span></a><a href="../../papers/diverse-ai-feedback-for-large-language-model-alignment/">下一篇 → <span>Diverse AI Feedback For Large Language Model Alignment</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

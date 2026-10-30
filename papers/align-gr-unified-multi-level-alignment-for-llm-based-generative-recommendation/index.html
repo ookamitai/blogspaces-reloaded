@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="让语言模型做推荐，首先要读懂物品和用户行为，再用偏好训练调整推荐，而不是只在最后加DPO。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/align-gr-unified-multi-level-alignment-for-llm-based-generative-recommendation/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/align-gr-unified-multi-level-alignment-for-llm-based-generative-recommendation/">
+  
+  <meta property="og:description" content="让语言模型做推荐，首先要读懂物品和用户行为，再用偏好训练调整推荐，而不是只在最后加DPO。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="让语言模型做推荐，首先要读懂物品和用户行为，再用偏好训练调整推荐，而不是只在最后加DPO。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p124">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation</h1>
+      <p class="article-subtitle">阅读顺序 137 · 扩散、流匹配与应用 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://ojs.aaai.org/index.php/AAAI/article/download/38651/42613" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>已核验原始摘要或官方论文记录；非全文精读。</p><p class="paper-source-refs">原清单位置：对齐论文表 #42 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%8C%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%80%8E%E6%A0%B7%E5%81%9A"><span class="toc-text">要解决什么，怎样做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C%E5%B7%B2%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">和已有方法的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C%E4%B8%8E%E5%B1%80%E9%99%90"><span class="toc-text">阅读边界与局限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B"><span class="toc-text">自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E5%AE%9E%E9%AA%8C%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%87%AA%E5%AD%A6%E8%AE%BE%E8%AE%A1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">小实验（自学设计）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E6%A0%B8%E9%AA%8C"><span class="toc-text">来源与核验</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p>让语言模型做推荐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>首先要读懂物品和用户行为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再用偏好训练调整推荐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是只在最后加DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="要解决什么&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;，&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;怎样做">要解决什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>怎样做</h2>
+<p>Align³GR统一<span class="marker">三个层级</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>tokenization把用户—物品语义和协同信息编码进表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>行为建模通过多任务监督与双向语义对齐学习交互规律<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>偏好层再结合自博弈DPO与真实反馈DPO适应用户<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>三个层级对应从输入词表<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>任务理解到推荐目标的逐级对齐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="和已有方法的区别">和已有方法的区别</h2>
+<p>通用语言偏好对齐主要评价回答质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>推荐系统还涉及物品身份<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>历史交互和排序目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>仅在自然语言回答上训练DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未必能补足协同过滤信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>本方法把这些结构在前面阶段就引入<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界与局限">阅读边界与局限</h2>
+<p>线上点击与真正满意度之间可能有偏差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>曝光机制也影响反馈<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>离线Recall或NDCG改善不自动等于<span class="marker">长期用户福利</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>工业数据与部署条件也可能难以完整复现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测">自测</h2>
+<ol>
+<li>为什么知道物品文本描述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不等于理解用户—物品协同行为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>自博弈反馈和真实用户反馈可能分别带来什么偏差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<h2 id="小实验&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;自学设计&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>在小型公开交互数据上做教学消融<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>文本表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>加入协同表示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>再加入偏好训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>保持候选池一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>测排序质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并按热门/冷门物品分组<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>检查收益是否只是更偏向热门项目<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与核验">来源与核验</h2>
+<p>已核验原始论文摘要或官方论文记录<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以上是导读级自学笔记<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>尚未逐节复核全文证明与实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><a target="_blank" rel="noopener" href="https://ojs.aaai.org/index.php/AAAI/article/download/38651/42613">原论文或作者官方来源</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>本地研究清单提供了补充摘录<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>自测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>小实验及分析性提醒为学习设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不是论文报告的结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>对齐论文表 #42</strong></p>
+<p>提出统一三层对齐框架Align3GR<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>解决LLM在生成式推荐中的语义和行为偏差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>三层对齐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>(1)Token级对齐——双Tokenization融合用户-物品语义信号与协同过滤信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>桥接自然语言与推荐领域差距<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>(2)行为建模级对齐——双向语义对齐增强用户行为模式建模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>(3)偏好级对齐——渐进DPO策略组合自博弈DPO(SP-DPO)和真实反馈DPO(RF-DPO)<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现动态偏好适应<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>从底层token到高层偏好逐级对齐LLM与推荐任务<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/distributional-vision-language-alignment-by-cauchy-schwarz-divergence/">Distributional Vision-Language Alignment by Cauchy-Schwarz Divergence</a></li><li><a href="../../papers/post-hoc-alignment-of-llm-judges-to-human-judgment-distribution/">Post-hoc Alignment of LLM-judges to Human Judgment Distribution</a></li><li><a href="../../papers/on-preference-learning-based-on-sequential-bayesian-optimization-with-pairwise-comparison/">On Preference Learning Based on Sequential Bayesian Optimization with Pairwise Comparison</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/dynamicpo-dynamic-preference-optimization-for-recommendation/">← 上一篇 <span>DynamicPO: Dynamic Preference Optimization for Recommendation</span></a><a href="../../papers/mard-mirror-augmented-reasoning-distillation-for-drug-drug-interaction-prediction/">下一篇 → <span>MARD: Mirror-Augmented Reasoning Distillation for Mechanism-Level Drug-Drug Interaction Prediction</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

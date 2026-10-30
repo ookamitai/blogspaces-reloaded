@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>MARD: Mirror-Augmented Reasoning Distillation for Mechanism-Level Drug-Drug Interaction Prediction | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="把药物相互作用的方向与机制拆开验证，再用可检验的过程信号训练推理。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/mard-mirror-augmented-reasoning-distillation-for-drug-drug-interaction-prediction/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="MARD: Mirror-Augmented Reasoning Distillation for Mechanism-Level Drug-Drug Interaction Prediction | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/mard-mirror-augmented-reasoning-distillation-for-drug-drug-interaction-prediction/">
+  
+  <meta property="og:description" content="把药物相互作用的方向与机制拆开验证，再用可检验的过程信号训练推理。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="MARD: Mirror-Augmented Reasoning Distillation for Mechanism-Level Drug-Drug Interaction Prediction | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="把药物相互作用的方向与机制拆开验证，再用可检验的过程信号训练推理。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p019">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">MARD: Mirror-Augmented Reasoning Distillation for Mechanism-Level Drug-Drug Interaction Prediction</h1>
+      <p class="article-subtitle">阅读顺序 138 · 扩散、流匹配与应用 · 已核验摘要</p>
+      <p class="paper-original-title">原清单题名：MARD: Mirror-Augmented Reasoning Distillation for Drug-Drug Interaction Prediction</p>
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2606.12578" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>正式题名含Mechanism-Level，原清单题名省略；原文为预印本。</p><p class="paper-source-refs">原清单位置：研究想法 #19 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%90%86%E8%A7%A3%E9%97%AE%E9%A2%98"><span class="toc-text">先理解问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="toc-text">方法如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E5%9B%9E%E5%81%8F%E5%A5%BD%E5%AF%B9%E9%BD%90%E7%9A%84%E5%9C%B0%E5%9B%BE"><span class="toc-text">放回偏好对齐的地图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B%E4%B8%8E%E5%8A%A8%E6%89%8B"><span class="toc-text">自测与动手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E9%98%85%E8%AF%BB%E8%8C%83%E5%9B%B4"><span class="toc-text">来源与阅读范围</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p><span class="marker">把药物相互作用的方向与机制拆开验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再用可检验的过程信号训练推理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="先理解问题">先理解问题</h2>
+<p>药物相互作用预测不只是回答<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>有无相互作用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还涉及作用于哪条酶或药效轴<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>方向如何及依据是什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>随机拆分数据容易让同一药物或药物组合在训练与测试中重叠<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而高估泛化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="方法如何工作">方法如何工作</h2>
+<p>MARD结合机制级标签体系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><span class="marker">避免泄漏的冷启动划分</span>和可审计推理指标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>训练组件包括方向标签上的单token KL约束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>过程奖励加权DPO与程序化难负例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以及机制感知检索<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>过程标签可对照结构化DrugBank字段验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>减少对主观judge的依赖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="放回偏好对齐的地图">放回偏好对齐的地图</h2>
+<p>这里DPO是领域推理流水线的一部分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能把所有收益归因于偏好损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>检索<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>数据划分和方向一致性约束各自都可能影响表现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因而需要组件消融和严格防泄漏<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>本笔记讨论机器学习方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不提供用药判断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>结构化数据库标签也有覆盖与时效边界<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>对新药<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>新机制或证据不足的组合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>需要另行验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能把测试准确率当作临床可靠性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测与动手">自测与动手</h2>
+<ol>
+<li>为什么药物对的冷启动划分比普通随机划分更能检验机制泛化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>过程奖励可自动验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>是否就保证模型的所有自然语言解释都正确<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<p>**小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**以公开<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>非临床用途的结构化关系数据模拟任务<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>比较随机拆分和实体冷拆分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>去掉检索<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>方向KL或过程加权分别重测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>判断性能来自记忆<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>检索还是可迁移关系推理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与阅读范围">来源与阅读范围</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2606.12578">论文原文</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>已核对正式论文页面的题名与摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>机制解释同时参照原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>具体公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>证明与实验配置仍需阅读全文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>**核验补充<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**正式题名含Mechanism-Level<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>原清单题名省略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>原文为预印本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #19</strong></p>
+<p>提出MARD框架**将PRM<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>过程奖励模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>加权DPO引入药物相互作用预测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>**利用过程奖励模型为推理链各步骤分配细粒度奖励信号进行加权DPO训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>引导模型学习正确的多步推理路径<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>将偏好优化中常用的成对偏好信号升级为步骤级奖励加权偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在需要精确多步推理的生物医学领域展现潜力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/alignment-tampering-how-reinforcement-learning-from-human-feedback-is-exploited-to-optimize-misalign/">Alignment Tampering: How Reinforcement Learning from Human Feedback Is Exploited to Optimize Misaligned Biases</a></li><li><a href="../../papers/a-survey-on-progress-in-llm-alignment-from-the-perspective-of-reward-design/">A Survey on Progress in LLM Alignment from the Perspective of Reward Design</a></li><li><a href="../../papers/insights-into-alignment-evaluating-dpo-and-its-variants/">Insights into Alignment: Evaluating DPO and its Variants Across Multiple Tasks</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/align-gr-unified-multi-level-alignment-for-llm-based-generative-recommendation/">← 上一篇 <span>Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

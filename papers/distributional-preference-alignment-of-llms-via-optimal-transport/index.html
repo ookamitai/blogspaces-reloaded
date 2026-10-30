@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Distributional Preference Alignment of LLMs via Optimal Transport | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="把“逐对分出胜负”提升为“好回答的奖励分布在各分位点都占优”。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/distributional-preference-alignment-of-llms-via-optimal-transport/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Distributional Preference Alignment of LLMs via Optimal Transport | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/distributional-preference-alignment-of-llms-via-optimal-transport/">
+  
+  <meta property="og:description" content="把“逐对分出胜负”提升为“好回答的奖励分布在各分位点都占优”。">
+  
+  
+  <meta property="og:image" content="http://blog.ookamitai.com/images/papers/figure-01.png">
+  <meta property="og:image:alt" content="Distributional Preference Alignment of LLMs via Optimal Transport">
+  
+  
+  
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Distributional Preference Alignment of LLMs via Optimal Transport | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="把“逐对分出胜负”提升为“好回答的奖励分布在各分位点都占优”。">
+  
+  
+  <meta name="twitter:image" content="http://blog.ookamitai.com/images/papers/figure-01.png">
+  <meta name="twitter:image:alt" content="Distributional Preference Alignment of LLMs via Optimal Transport">
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p001">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Distributional Preference Alignment of LLMs via Optimal Transport</h1>
+      <p class="article-subtitle">阅读顺序 114 · 扩散、流匹配与应用 · 已查阅全文</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2406.05882" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>核对全文第2—3节（FSD定义、成对/非成对版本、排序算法），未独立复现实验。</p><p class="paper-source-refs">原清单位置：研究想法 #1 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%90%86%E8%A7%A3%E9%97%AE%E9%A2%98"><span class="toc-text">先理解问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="toc-text">方法如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E5%9B%9E%E5%81%8F%E5%A5%BD%E5%AF%B9%E9%BD%90%E7%9A%84%E5%9C%B0%E5%9B%BE"><span class="toc-text">放回偏好对齐的地图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%91%98%E8%AE%B0%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E5%8E%9F%E6%96%87%E7%AC%AC2%E8%8A%82%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">定义摘记（原文第2节）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B%E4%B8%8E%E5%8A%A8%E6%89%8B"><span class="toc-text">自测与动手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E9%98%85%E8%AF%BB%E8%8C%83%E5%9B%B4"><span class="toc-text">来源与阅读范围</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p><span class="marker">把<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>逐对分出胜负<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>提升为<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>好回答的奖励分布在各分位点都占优<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="先理解问题">先理解问题</h2>
+<p>DPO常在同一提示下比较chosen与rejected<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但真实资料也可能只有分别收集的好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>坏回答<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>即使训练平均损失下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>奖励分布的某些尾部仍可能较差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因此先要分清<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>平均奖励高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>每对关系成立<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>分布的一阶随机占优<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>是不同要求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="方法如何工作">方法如何工作</h2>
+<p>AOT用<span class="marker">一阶随机占优</span>表述目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>好样本奖励的每个分位数都不低于坏样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它把违反该关系的程度写成凸代价的一维最优传输问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>对经验样本排序后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>把第i小与第i小配对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再计算违反占优的损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>成对版本比较当前策略和参考策略的chosen/rejected对数比<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>非成对版本比较正负样本的策略/参考对数比<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>二者不要混写<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="放回偏好对齐的地图">放回偏好对齐的地图</h2>
+<p>改变的是批量样本之间的耦合方式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不只是给每个DPO样本乘一个权重<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>排序在每步决定配对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>梯度随后沿当前配对传播<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>一维可排序是计算高效的关键<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能直接类推为任意高维OT都同样便宜<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>有限小批量估计的分位数会波动<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>不同提示混合后的分布占优也不自动保证每个提示都改善<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>原文中的统计保证有有界性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>函数类等条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能解释为任意LLM训练的全局最优保证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="定义摘记&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;原文第2节&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">定义摘记<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>原文第2节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p><div class="markdown-them-math-block">$$X\succeq_{\mathrm{FSD}}Y\quad\Longleftrightarrow\quad Q_X(u)\ge Q_Y(u),\ \forall u\in[0,1].$$</div></p>
+<p>这里<span class="markdown-them-math-inline">$Q_X$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span><span class="markdown-them-math-inline">$Q_Y$</span>是分位数函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>均值不等式不足以替代逐分位点要求<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测与动手">自测与动手</h2>
+<ol>
+<li>为什么正样本均值更高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仍可能没有一阶随机占优<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span>试构造两组离散奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>成对AOT与非成对AOT排序的随机变量分别是什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<p>**小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**用两组各20个标量奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>比较随机配对损失与排序配对损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>画分位数差曲线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再将少量低质量正样本注入尾部<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>观察均值和占优违反率如何分离<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与阅读范围">来源与阅读范围</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2406.05882">论文原文</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>已对照全文第2—3节<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>FSD定义<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>成对/非成对版本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>排序算法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>这份笔记聚焦这些章节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并未独立复现实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #1</strong></p>
+<p>问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><strong>现有偏好对齐方法通常只在<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>样本对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>层面优化</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>比如让某个 prompt 下 chosen response 的隐式 reward 高于 rejected response<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><strong>作者认为这不等于<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>分布层面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的对齐</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因为模型可能只是在平均意义或局部样本上变好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是让所有分位点上的 chosen reward 分布都整体优于 rejected reward 分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>另一个问题是<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>很多偏好数据并不是严格成对的 chosen/rejected<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是只有正样本集合和负样本集合<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>传统 DPO 类方法不太适合这种 unpaired setting<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p>方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>把偏好对齐定义为一种 一阶随机占优 FSD<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span><strong>chosen responses 的 reward 分布应该在分布意义上优于 rejected responses 的 reward 分布<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也就是各个分位数上 chosen 都应更高<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p>总结<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**不是只要求每对好坏答案分出胜负<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是要求好答案整体分布都比坏答案更好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>**<strong>排序后一一比较<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>是一种合理又高效的分布对齐方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<figure><img src="/images/papers/figure-01.png" loading="lazy" alt="原研究清单附图<span class=" bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char>未独立核验"><figcaption>原研究清单配图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>出处与推导未独立核验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></figcaption></figure>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/direct-preference-optimization-with-unobserved-preference-heterogeneity-the-necessity-of-ternary-pre/">Direct Preference Optimization with Unobserved Preference Heterogeneity: The Necessity of Ternary Preferences</a></li><li><a href="../../papers/beyond-pairwise-empowering-llm-alignment-with-ranked-choice-modeling/">Beyond Pairwise: Empowering LLM Alignment With Ranked Choice Modeling</a></li><li><a href="../../papers/inspo-unlocking-intrinsic-self-reflection-for-llm-preference-optimization/">InSPO: Unlocking Intrinsic Self-Reflection for LLM Preference Optimization</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/beyond-optimal-transport-model-aligned-coupling-for-flow-matching/">← 上一篇 <span>Beyond Optimal Transport: Model-Aligned Coupling for Flow Matching</span></a><a href="../../papers/direct-distributional-optimization-for-provable-alignment-of-diffusion-models/">下一篇 → <span>Direct Distributional Optimization for Provable Alignment of Diffusion Models</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

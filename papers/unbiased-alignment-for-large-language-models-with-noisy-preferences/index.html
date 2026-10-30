@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Unbiased Alignment for Large Language Models with Noisy Preferences | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="通过修正含噪偏好引起的损失偏差，分别得到无偏奖励建模与无偏 DPO 目标。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/unbiased-alignment-for-large-language-models-with-noisy-preferences/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Unbiased Alignment for Large Language Models with Noisy Preferences | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/unbiased-alignment-for-large-language-models-with-noisy-preferences/">
+  
+  <meta property="og:description" content="通过修正含噪偏好引起的损失偏差，分别得到无偏奖励建模与无偏 DPO 目标。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Unbiased Alignment for Large Language Models with Noisy Preferences | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="通过修正含噪偏好引起的损失偏差，分别得到无偏奖励建模与无偏 DPO 目标。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p072">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Unbiased Alignment for Large Language Models with Noisy Preferences</h1>
+      <p class="article-subtitle">阅读顺序 056 · 噪声与鲁棒性 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2607.03248" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。</p><p class="paper-source-refs">原清单位置：研究想法 #73；研究想法 #75 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E4%B8%8E%E6%9C%BA%E5%88%B6"><span class="toc-text">问题与机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E9%87%8D%E5%8A%A0%E6%9D%83%E6%96%B9%E6%B3%95%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">与重加权方法的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B"><span class="toc-text">自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E5%AE%9E%E9%AA%8C%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%87%AA%E5%AD%A6%E8%AE%BE%E8%AE%A1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">小实验（自学设计）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90"><span class="toc-text">来源</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p>如果知道标签可能怎样被翻转<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以修正训练时的统计量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不必把每一条错误标签都人工找出来<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="问题与机制">问题与机制</h2>
+<p>本文提出 Unbiased Reward Model<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>URM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>与 Unbiased Direct Preference Optimization<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>UDPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>数学上纠正偏好噪声造成的扭曲<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>摘要强调无需干净真值监督即可从噪声数据训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并分析噪声容忍<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>参数向下兼容与分类校准等性质<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><span class="marker"><span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>无偏<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>首先指指定噪声模型下的统计目标</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不是说整个训练过程已经没有任何数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>表示或优化偏差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="与重加权方法的关系">与重加权方法的关系</h2>
+<p>可靠性加权通常根据模型证据减少可疑样本贡献<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>无偏修正则希望使含噪损失的期望与干净目标一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>两者可以在期望目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>方差与假设要求上不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>无需干净监督也不等于没有假设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>复现前应核对噪声参数如何获得<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以及噪声是否允许依赖实例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p><span class="marker">无偏估计可能具有较高方差</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>有限样本性能不必自动更好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>分类校准说明某类最优决策关系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并不等价于生成回答质量全面提升<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>当前核验 arXiv v2<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>2026-10-26<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>原研究清单的早期摘要与当前版应按版本区分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测">自测</h2>
+<ol>
+<li>损失期望无偏<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为什么某次训练仍可能比有偏但低方差的方法差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li><span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>不需要干净标签<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>与<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>不需要噪声假设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>为什么不是同一句话<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<h2 id="小实验&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;自学设计&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>在可知真实标签的偏好集上注入已知翻转率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用干净损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>普通含噪损失和无偏修正分别训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>重复多个随机种子报告均值与方差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再故意使用错误噪声率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>观察理论假设失配的影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源">来源</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2607.03248">论文原文与摘要</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>笔记中的自测与小实验为自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #73</strong></p>
+<p><strong>偏好数据中的标注噪声会扭曲RLHF和DPO的对齐效果</strong></p>
+<p>大型语言模型与人类偏好的对齐通常通过人类反馈的强化学习或直接偏好优化实现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这些方法容易受到现实世界偏好数据集中普遍存在的显著噪声的影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>为了解决这一关键问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们<strong>提出了一个无偏对齐的理论框架<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>引入了无偏奖励模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>URM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>损失和无偏直接偏好优化<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>UDPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>损失</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>通过数学上纠正偏好噪声引起的扭曲<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们的新目标使得能够直接从噪声数据集中进行无偏模型训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而无需干净的真实监督<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<p><strong>研究想法 #75</strong></p>
+<p>研究问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>偏好数据中的标注噪声会扭曲RLHF和DPO的对齐效果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>核心方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>提出无偏奖励模型(URM)损失和无偏DPO(UDPO)损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过数学修正偏好噪声引起的偏差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>无需干净标注即可从含噪数据中训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>主要创新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>理论证明方法具有噪声容忍性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>参数向下兼容性和分类校准性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>首次为偏好噪声环境下的无偏对齐提供了完整的理论框架<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>实验在多个数据集上超越SOTA基线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/todo-enhancing-llm-alignment-with-ternary-preferences/">TODO: Enhancing LLM Alignment with Ternary Preferences</a></li><li><a href="../../papers/negating-negatives-alignment-with-human-dispreference/">Negating Negatives: Alignment with Human Negative Samples via Distributional Dispreference Optimization</a></li><li><a href="../../papers/when-human-preferences-flip-an-instance-dependent-robust-loss-for-rlhf/">When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/pebs-per-rater-empirical-bayes-shrinkage-for-rlhf-reward-model-calibration/">← 上一篇 <span>PEBS: Per-rater Empirical-Bayes Shrinkage for RLHF Reward-Model Calibration</span></a><a href="../../papers/when-human-preferences-flip-an-instance-dependent-robust-loss-for-rlhf/">下一篇 → <span>When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

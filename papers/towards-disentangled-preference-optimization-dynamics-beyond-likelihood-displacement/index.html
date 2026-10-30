@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="用激励分数分解分析 chosen/rejected 的共同更新，再校准权重以减少似然位移。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/towards-disentangled-preference-optimization-dynamics-beyond-likelihood-displacement/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/towards-disentangled-preference-optimization-dynamics-beyond-likelihood-displacement/">
+  
+  <meta property="og:description" content="用激励分数分解分析 chosen/rejected 的共同更新，再校准权重以减少似然位移。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="用激励分数分解分析 chosen/rejected 的共同更新，再校准权重以减少似然位移。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p057">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement</h1>
+      <p class="article-subtitle">阅读顺序 034 · 优化动力学 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2604.18239" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。</p><p class="paper-source-refs">原清单位置：研究想法 #56 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E4%B8%8E%E6%9C%BA%E5%88%B6"><span class="toc-text">问题与机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%95%99%E5%AD%A6%E7%A4%BA%E6%84%8F"><span class="toc-text">一个教学示意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E9%87%8D%E6%96%B0%E8%AE%BE%E8%AE%A1%E6%8D%9F%E5%A4%B1%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">与重新设计损失的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B"><span class="toc-text">自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E5%AE%9E%E9%AA%8C%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%87%AA%E5%AD%A6%E8%AE%BE%E8%AE%A1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">小实验（自学设计）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90"><span class="toc-text">来源</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p>训练的胜负差距变大<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不代表赢家概率在上涨<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>可能只是输家跌得更快<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>赢家也一起被压低<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="问题与机制">问题与机制</h2>
+<p>论文给出统一的 incentive-score decomposition<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>说明多种偏好目标具有共同的局部更新方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而标量权重不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>随后分析 chosen 与 rejected 的似然动态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>提出<span class="marker">解耦带<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>disentanglement band<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>DB<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></span>这一可检验条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>描述训练何时能够抑制输家同时保持赢家<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>允许存在初始过渡期<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>基于此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>Reward Calibration<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>RC<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>自适应调整两类更新的平衡<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使训练趋向更解耦的动力学<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="一个教学示意">一个教学示意</h2>
+<p>仅用来说明相对与绝对量的区别<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>设间隔为 <span class="markdown-them-math-inline">$m=\log p_w-\log p_l$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>即使 <span class="markdown-them-math-inline">$\Delta\log p_w&lt;0$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>只要 rejected 下降更多<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仍有 <span class="markdown-them-math-inline">$\Delta m&gt;0$</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这不是论文 DB 的具体公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>它提示我们<span class="marker">必须同时监测两条似然曲线</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能只记录 margin<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="与重新设计损失的关系">与重新设计损失的关系</h2>
+<p>RC 的目标是作为可插入的校准机制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>覆盖多种基础目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是为每一种损失再造独立替代品<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它关注局部梯度几何与系数分工<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此适合和 LPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>SLIME 等直接改动目标结构的方法比较<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>局部更新分析与实际多步训练之间还有学习率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>共享参数和泛化差距<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>DB 是有条件的动力学诊断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不应解释为每一步所有 chosen 概率都必然单调上升<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>具体满足条件的估计成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>需要查看正文和实现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测">自测</h2>
+<ol>
+<li>margin 提升与 chosen 概率保持<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为什么不是同一个指标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>同一更新方向只改标量系数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为什么仍可能改变最终训练轨迹<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<h2 id="小实验&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;自学设计&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>对固定偏好集训练 DPO 与加 RC 的版本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>每隔若干步记录 chosen/rejected 对数似然<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>margin 和梯度相似度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>按初始质量分组<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>检查平均改善是否掩盖一部分赢家仍在下降的现象<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源">来源</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2604.18239">论文原文与摘要</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>笔记中的自测与小实验为自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #56</strong></p>
+<p>偏好优化广泛用于将大型语言模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>LLMs<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>与人类偏好对齐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>许多基于边际的目标会抑制所选择的响应以及被拒绝的响应<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这一现象被称为<strong>似然位移</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>目前没有通用机制能够在各个目标之间防止这种情况的发生<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>我们通过提出一个统一的<strong>偏好优化激励分数分解</strong>来填补这一空白<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>揭示了不同目标共享相同的局部更新方向</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仅在其标量权重系数上存在差异<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>基于这一分解<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过分析所选择和被拒绝的似然动态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们识别出<strong>解耦带<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>DB<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这是一个简单且可测试的条件<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>表征了训练何时能够通过实现优选路径来避免似然位移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>抑制失败者同时保持赢家<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能在初始瞬态之后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>利用DB<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们提出了一种即插即用的<strong>奖励校准<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>RC<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该方法自适应地重新平衡所选择与被拒绝的更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以满足DB并减轻似然位移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而无需重新设计基础目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>实证结果表明<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>RC引导训练朝向更解耦的动态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通常在多种目标下改善下游性能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/mind-the-gap-structure-aware-consistency-in-preference-learning/">Mind the Gap: Structure-Aware Consistency in Preference Learning</a></li><li><a href="../../papers/groupdpo-memory-efficient-group-wise-direct-preference-optimization/">GroupDPO: Memory efficient Group-wise Direct Preference Optimization</a></li><li><a href="../../papers/slime-stabilized-likelihood-implicit-margin-enforcement-for-preference-optimization/">SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/small-margin-preferences-still-matter-if-you-train-them-right/">← 上一篇 <span>Small-Margin Preferences Still Matter-If You Train Them Right</span></a><a href="../../papers/slime-stabilized-likelihood-implicit-margin-enforcement-for-preference-optimization/">下一篇 → <span>SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

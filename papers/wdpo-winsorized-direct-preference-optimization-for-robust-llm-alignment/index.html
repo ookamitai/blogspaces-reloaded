@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="错误方向的标签与模糊标签不是同一种噪声，应分别校正方向和限制影响。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/wdpo-winsorized-direct-preference-optimization-for-robust-llm-alignment/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/wdpo-winsorized-direct-preference-optimization-for-robust-llm-alignment/">
+  
+  <meta property="og:description" content="错误方向的标签与模糊标签不是同一种噪声，应分别校正方向和限制影响。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="错误方向的标签与模糊标签不是同一种噪声，应分别校正方向和限制影响。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p045">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment</h1>
+      <p class="article-subtitle">阅读顺序 061 · 噪声与鲁棒性 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2603.07211" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>纠正原清单：wDPO正式展开为Winsorized Direct Preference Optimization；不是Weighted，也不同于Wasserstein DPO（WDPO）。</p><p class="paper-source-refs">原清单位置：研究想法 #44 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%90%86%E8%A7%A3%E9%97%AE%E9%A2%98"><span class="toc-text">先理解问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="toc-text">方法如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E5%9B%9E%E5%81%8F%E5%A5%BD%E5%AF%B9%E9%BD%90%E7%9A%84%E5%9C%B0%E5%9B%BE"><span class="toc-text">放回偏好对齐的地图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B%E4%B8%8E%E5%8A%A8%E6%89%8B"><span class="toc-text">自测与动手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E9%98%85%E8%AF%BB%E8%8C%83%E5%9B%B4"><span class="toc-text">来源与阅读范围</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p><span class="marker">错误方向的标签与模糊标签不是同一种噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>应分别校正方向和限制影响<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="先理解问题">先理解问题</h2>
+<p>含噪偏好数据既可能把明显胜负反标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也可能本来就难分高下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>若统一重加权<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能既没纠正方向错误<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>又过度放大高损失的模糊样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>需要区分噪声类型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="方法如何工作">方法如何工作</h2>
+<p>wDPO使用DPO训练已有的隐式对数比margin识别异质噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>对强不一致的hard noise作稀疏数据级校正<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>对模糊比较作梯度级soft winsorization<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">限制高损失尾部的极端影响</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>不依赖外部奖励模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但依赖当前策略信号是否足够可靠<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="放回偏好对齐的地图">放回偏好对齐的地图</h2>
+<p>这里w是winsorized而不是简单weighted<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>更不是Wasserstein DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>winsorization强调对尾部影响的限制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>与直接删除所有难例相比<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它尝试保留部分信息并处理明显方向错误<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>模型不熟悉的正确难例也可能看起来强不一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>自我校正会产生确认偏差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>应检查校正比例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>触发时机与训练初期可靠性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能把高损失等同于错误标注<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测与动手">自测与动手</h2>
+<ol>
+<li>翻转一个标签与把其权重降到零<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在可利用信息上有什么区别<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>为什么训练早期根据模型自身margin修标签<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能比后期更危险<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<p>**小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**构造已知标签翻转和真实平局两种噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>对比统一重加权<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>只校正<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>只winsorization及完整方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>分别统计误校正率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>保留信息和独立安全/有用性表现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与阅读范围">来源与阅读范围</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2603.07211">论文原文</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>已核对正式论文页面的题名与摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>机制解释同时参照原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>具体公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>证明与实验配置仍需阅读全文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>**核验补充<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**纠正原清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>wDPO正式展开为Winsorized Direct Preference Optimization<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>不是Weighted<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也不同于Wasserstein DPO<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>WDPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #44</strong></p>
+<p>合肥工业大学与新加坡国立大学提出了wDPo (Winsorized Direct Preference Optimization)<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>通过分层winsorization策略针对不同类型噪声进行梯度和数据层面的干预<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而提升大语言模型在噪声偏好数据下的鲁棒性和对齐效果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p>直接偏好优化<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>通过优化成对偏好来对齐大型语言模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>作为一种简单且可扩展的替代方案<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>已显示出显著的有效性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>尤其是在强化学习从人类反馈<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>RLHF<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>方面<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在实际应用中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>偏好数据往往是噪声的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>现有的DPO稳健变体主要依赖于均匀的目标修改或全局重加权<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>尽管这些方法在一定程度上有效<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但它们将噪声样本视为同质的不确定性来源<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未能区分不同的噪声类型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而导致次优的对齐稳健性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>在本研究中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们表明<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>稳健的偏好对齐受益于通过针对性干预来处理不同的噪声类型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而非均匀正则化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>我们提出了加权直接偏好优化<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>wDPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这是一种具有分层加权的稳健LLM对齐方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>具体而言<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>wDPO采用了一种无奖励的分层干预策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>仅利用在DPO训练期间已经可用的信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>它首先利用DPO对数比中的隐含边际来识别异质噪声模式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不依赖于外部奖励模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对于难以处理的噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>wDPO通过稀疏地修正强不一致的偏好对进行数据级干预<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>对于模糊比较<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它通过软加权在梯度级别进行干预<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>限制高损失尾部的极端损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以防止弱信息样本主导梯度更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/metadata-free-meta-reweighted-direct-preference-optimization-under-noisy-preference-labels/">Metadata-Free Meta-Reweighted Direct Preference Optimization under Noisy Preference Labels</a></li><li><a href="../../papers/learning-where-it-matters-geometric-anchoring-for-robust-preference-alignment/">Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment</a></li><li><a href="../../papers/directional-alignment-mitigates-reward-hacking-in-reinforcement-learning-for-language-models/">Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/latent-collective-preference-optimization-a-general-framework-for-robust-llm-alignment/">← 上一篇 <span>RE-PO: Robust Enhanced Policy Optimization as a General Framework for LLM Alignment</span></a><a href="../../papers/robust-llm-alignment-via-distributionally-robust-direct-preference-optimization/">下一篇 → <span>Robust LLM Alignment via Distributionally Robust Direct Preference Optimization</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

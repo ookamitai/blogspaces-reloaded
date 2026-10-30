@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="奖励黑客应作为训练中局部发生的转变来监测，而不只看最终模型的平均分。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/when-rlhf-fails-a-mechanistic-taxonomy-of-reward-hacking-collapse-and-evaluator-gaming/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/when-rlhf-fails-a-mechanistic-taxonomy-of-reward-hacking-collapse-and-evaluator-gaming/">
+  
+  <meta property="og:description" content="奖励黑客应作为训练中局部发生的转变来监测，而不只看最终模型的平均分。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="奖励黑客应作为训练中局部发生的转变来监测，而不只看最终模型的平均分。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p014">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming</h1>
+      <p class="article-subtitle">阅读顺序 052 · 噪声与鲁棒性 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2606.03238" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>核对primary来源题名、摘要；尚未逐项复核全文公式与实验。</p><p class="paper-source-refs">原清单位置：研究想法 #14 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%90%86%E8%A7%A3%E9%97%AE%E9%A2%98"><span class="toc-text">先理解问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="toc-text">方法如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E5%9B%9E%E5%81%8F%E5%A5%BD%E5%AF%B9%E9%BD%90%E7%9A%84%E5%9C%B0%E5%9B%BE"><span class="toc-text">放回偏好对齐的地图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B%E4%B8%8E%E5%8A%A8%E6%89%8B"><span class="toc-text">自测与动手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E9%98%85%E8%AF%BB%E8%8C%83%E5%9B%B4"><span class="toc-text">来源与阅读范围</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p><span class="marker">奖励黑客应作为训练中局部发生的转变来监测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不只看最终模型的平均分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="先理解问题">先理解问题</h2>
+<p>一条训练曲线的平均奖励上升<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能掩盖少数提示上质量下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>若只比较训练前后两个检查点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>很难知道失败从何时开始<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也很难区分奖励黑客<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>重复增加或评判器之间的分歧<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="方法如何工作">方法如何工作</h2>
+<p>作者建立紧凑RLHF管线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>对比PPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>DPO与不确定性惩罚PPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>按学习奖励和两个外部judge分数的变化方向分类检查点及逐提示转变<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并同时观测漂移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>多样性和重复等诊断信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>重点是把失败定位到<span class="marker">具体样本和时间段</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再研究前置特征是否有预测信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="放回偏好对齐的地图">放回偏好对齐的地图</h2>
+<p>本工作主要贡献是评价方法而非一个替代DPO的损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>UP-PPO降低某种失败信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不意味着消除了全部风险<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>多个judge一致也不等价于获得人类真实目标<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>摘要支持的是局部信号可分类<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>可部分预期<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能把特定管线的比例当成通用发生率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>使用前置特征预测时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还应检查数据泄漏<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>训练/测试时间划分和类别不平衡<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测与动手">自测与动手</h2>
+<ol>
+<li>如果平均judge分不变<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>逐提示质量是否可能有明显恶化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span>举例说明<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></li>
+<li>为什么<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>奖励升<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>judge降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的规则必须考虑judge噪声和提示匹配<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<p>**小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**保存一条小型RL训练的固定提示集检查点输出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>给每个提示画学习奖励与独立质量曲线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>比较聚合报警和逐提示报警<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并用较早检查点预测较晚转变<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>避免随机拆分造成泄漏<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与阅读范围">来源与阅读范围</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2606.03238">论文原文</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>已核对正式论文页面的题名与摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>机制解释同时参照原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>具体公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>证明与实验配置仍需阅读全文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #14</strong></p>
+<p>对紧凑RLHF管线<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>PPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>UP-PPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>进行系统性失效模式实证研究<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>跨61个检查点<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>1920个行级转换<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>按learned reward方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>judge分数和平均judge分数分类奖励黑客转换<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>激进PPO局部奖励黑客率最高达14.45%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>UP-PPO降至11.33%<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>训练前逻辑回归模型预测奖励黑客ROC-AUC达0.821<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>核心结论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>RLHF失败是可分类<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>可定位<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>可部分预期的训练动态<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/discretizing-reward-models/">Discretizing Reward Models</a></li><li><a href="../../papers/uncertainty-aware-reward-modeling-for-stable-rlhf/">Uncertainty-Aware Reward Modeling for Stable RLHF</a></li><li><a href="../../papers/information-theoretic-reward-modeling-for-stable-rlhf-detecting-and-mitigating-reward-hacking/">Information-Theoretic Reward Modeling for Stable RLHF: Detecting and Mitigating Reward Hacking</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/deft-distribution-guided-efficient-fine-tuning-for-human-alignment/">← 上一篇 <span>DEFT: Distribution-guided Efficient Fine-Tuning for Human Alignment</span></a><a href="../../papers/alignment-tampering-how-reinforcement-learning-from-human-feedback-is-exploited-to-optimize-misalign/">下一篇 → <span>Alignment Tampering: How Reinforcement Learning from Human Feedback Is Exploited to Optimize Misaligned Biases</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>论文 | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="偏好学习、奖励建模、LLM 对齐、扩散与流匹配、密度比估计的中文自学笔记，附原文链接、自测题与实验设计。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="论文 | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/">
+  
+  <meta property="og:description" content="偏好学习、奖励建模、LLM 对齐、扩散与流匹配、密度比估计的中文自学笔记，附原文链接、自测题与实验设计。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="论文 | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="偏好学习、奖励建模、LLM 对齐、扩散与流匹配、密度比估计的中文自学笔记，附原文链接、自测题与实验设计。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<div class="papers-shell" data-paper-library>
+  <header class="papers-intro">
+    <h1 class="article-title">论文</h1>
+    <p class="papers-inventory">138 篇 · 按建议阅读顺序排列 · <a href="../papers/guide/">自学路线</a></p>
+  </header>
+
+  <section class="papers-controls" aria-label="查找论文">
+    <div class="papers-search-wrap">
+      <label for="paper-search">搜索论文</label>
+      <input id="paper-search" type="search" placeholder="标题、关键词、原清单编号" autocomplete="off">
+    </div>
+    <details class="papers-filter-disclosure"><summary>筛选</summary>
+    <div class="papers-filters">
+      <label>研究主题
+        <select id="paper-topic" aria-label="研究主题"><option value="">全部主题</option><option value="偏好优化基础">偏好优化基础（59）</option><option value="奖励建模与评估">奖励建模与评估（29）</option><option value="数据与主动学习">数据与主动学习（30）</option><option value="多目标与个性化">多目标与个性化（28）</option><option value="噪声与鲁棒性">噪声与鲁棒性（25）</option><option value="优化动力学">优化动力学（39）</option><option value="安全与应用">安全与应用（14）</option><option value="推理时对齐">推理时对齐（18）</option><option value="扩散与流匹配">扩散与流匹配（20）</option><option value="密度比估计">密度比估计（9）</option></select>
+      </label>
+      <label>核验程度
+        <select id="paper-verification" aria-label="核验程度"><option value="">全部程度</option><option value="fulltext">已查阅全文</option><option value="abstract">已核验摘要</option><option value="excerpt">原文待核验</option></select>
+      </label>
+      <label>阅读进度
+        <select id="paper-progress" aria-label="阅读进度"><option value="">全部笔记</option><option value="unread">未读</option><option value="read">已读</option></select>
+      </label>
+      <button id="paper-reset" type="button">重置筛选</button>
+    </div>
+    </details>
+  </section>
+
+  <div class="papers-list-heading">
+    <p id="paper-result-count" role="status" aria-live="polite">共 138 篇</p>
+  </div>
+  <noscript><p class="papers-notice">以下是完整论文目录。启用 JavaScript 后可搜索、筛选并保存阅读进度。</p></noscript>
+  <ol class="papers-list" id="paper-list">
+    
+    <li class="paper-stage-heading archive-year-wrap" data-paper-stage="基础与评估"><h2 class="archive-year">基础与评估</h2></li>
+    
+    <li class="paper-row" data-paper-id="p008" data-paper-stage="基础与评估" data-topics="[&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p008 A Survey of Direct Preference Optimization A Survey of Direct Preference Optimization 先建立DPO研究的四维地图，再决定一篇变体究竟改了数据、学习、约束还是模型属性。 基础与评估 偏好优化基础 研究想法 #8">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/a-survey-of-direct-preference-optimization/">A Survey of Direct Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 1">001</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p122" data-paper-stage="基础与评估" data-topics="[&#34;奖励建模与评估&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p122 A Survey on Progress in LLM Alignment from the Perspective of Reward Design A Survey on Progress in LLM Alignment from the Perspective of Reward Design 对齐方法可以沿着“反馈怎样变成奖励、奖励怎样进入优化”这条线组织，先理解接口再记算法名。 基础与评估 奖励建模与评估 偏好优化基础 对齐论文表 #40">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/a-survey-on-progress-in-llm-alignment-from-the-perspective-of-reward-design/">A Survey on Progress in LLM Alignment from the Perspective of Reward Design</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 2">002</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p086" data-paper-stage="基础与评估" data-topics="[&#34;偏好优化基础&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p086 Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study 比较DPO与PPO，要同时比较数据覆盖、在线采样和实现细节，算法名字本身不能决定胜负。 基础与评估 偏好优化基础 数据与主动学习 对齐论文表 #1">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/is-dpo-superior-to-ppo-for-llm-alignment-a-comprehensive-study/">Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 3">003</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p123" data-paper-stage="基础与评估" data-topics="[&#34;偏好优化基础&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p123 Insights into Alignment: Evaluating DPO and its Variants Across Multiple Tasks Insights into Alignment: Evaluating DPO and its Variants 评价DPO变体时，基座是否已做指令训练、是否先SFT以及训练数据量，可能和损失选择同样重要。 基础与评估 偏好优化基础 奖励建模与评估 对齐论文表 #41">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/insights-into-alignment-evaluating-dpo-and-its-variants/">Insights into Alignment: Evaluating DPO and its Variants Across Multiple Tasks</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 4">004</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p093" data-paper-stage="基础与评估" data-topics="[&#34;奖励建模与评估&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p093 Rethinking reward modeling in preference-based large language model alignment Rethinking reward modeling in preference-based large language model alignment 奖励模型最需要保住的可能是正确排序，而不是把每次偏好都严格拟合成BT概率。 基础与评估 奖励建模与评估 偏好优化基础 对齐论文表 #8">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/rethinking-reward-modeling-in-preference-based-large-language-model-alignment/">Rethinking reward modeling in preference-based large language model alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 5">005</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p130" data-paper-stage="基础与评估" data-topics="[&#34;奖励建模与评估&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p130 How to Evaluate Reward Models for RLHF How to Evaluate Reward Models for RLHF (PPE Benchmark) 奖励模型的最终价值，是它能否训练出更受人类认可的助手；离线指标需要用下游结果校准。 基础与评估 奖励建模与评估 偏好优化基础 对齐论文表 #48">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/how-to-evaluate-reward-models-for-rlhf-ppe-benchmark/">How to Evaluate Reward Models for RLHF</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 6">006</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p092" data-paper-stage="基础与评估" data-topics="[&#34;奖励建模与评估&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p092 Learning LLM-as-a-Judge for Preference Alignment Learning LLM-as-a-Judge for Preference Alignment 把裁判的判断过程也当成可学习的生成任务，让模型比较“有依据的正确判断”和“错误判断”。 基础与评估 奖励建模与评估 偏好优化基础 对齐论文表 #7">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/learning-llm-as-a-judge-for-preference-alignment/">Learning LLM-as-a-Judge for Preference Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 7">007</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p080" data-paper-stage="基础与评估" data-topics="[&#34;奖励建模与评估&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p080 Post-hoc Alignment of LLM-judges to Human Judgment Distribution Post-hoc Alignment of LLM-judges to Human Judgment Distribution 让模型裁判预测人类判断分布，而不仅仅命中多数人的最终标签。 基础与评估 奖励建模与评估 多目标与个性化 研究想法 #84">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/post-hoc-alignment-of-llm-judges-to-human-judgment-distribution/">Post-hoc Alignment of LLM-judges to Human Judgment Distribution</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 8">008</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p031" data-paper-stage="基础与评估" data-topics="[&#34;奖励建模与评估&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p031 Discretizing Reward Models Discretizing Reward Models 奖励模型既要区分好坏，也要知道哪些同样好的回答不应被硬分高下。 基础与评估 奖励建模与评估 噪声与鲁棒性 研究想法 #31">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/discretizing-reward-models/">Discretizing Reward Models</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 9">009</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p021" data-paper-stage="基础与评估" data-topics="[&#34;奖励建模与评估&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p021 Representation-Aware Advantage Estimation: Your Reward Model Provides More Than A Scalar Output Representation-Aware Advantage Estimation: Your Reward Model Provides More Than A Scalar Output 奖励模型的隐藏表征能提供样本之间的关系，让优势估计不只依赖一个嘈杂分数。 基础与评估 奖励建模与评估 优化动力学 研究想法 #21">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/representation-aware-advantage-estimation-your-reward-model-provides-more-than-a-scalar-output/">Representation-Aware Advantage Estimation: Your Reward Model Provides More Than A Scalar Output</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 10">010</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-stage-heading archive-year-wrap" data-paper-stage="数据与偏好结构"><h2 class="archive-year">数据与偏好结构</h2></li>
+    
+    <li class="paper-row" data-paper-id="p038" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p038 What Matters in Data for DPO? What Matters in Data for DPO? 构建DPO数据时，先把chosen做好，可能比只追求更差的rejected更有效。 数据与偏好结构 数据与主动学习 偏好优化基础 研究想法 #38 研究想法 #62">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/what-matters-in-data-for-dpo/">What Matters in Data for DPO?</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 11">011</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p097" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p097 Less is More: Improving LLM Alignment via Preference Data Selection Less is more: Improving llm alignment via preference data selection 偏好对更多并不一定更好，关键是筛掉会相互抵消训练方向的噪声，并保留当前模型能学到的差异。 数据与偏好结构 数据与主动学习 噪声与鲁棒性 对齐论文表 #12">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/less-is-more-improving-llm-alignment-via-preference-data-selection/">Less is More: Improving LLM Alignment via Preference Data Selection</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 12">012</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p033" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p033 Which Pairs to Compare for LLM Post-Training? Which Pairs to Compare for LLM Post-Training? 标注预算有限时，应挑能改善最终策略的信息方向，而非只挑看起来最难的比较。 数据与偏好结构 数据与主动学习 偏好优化基础 研究想法 #33">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/which-pairs-to-compare-for-llm-post-training/">Which Pairs to Compare for LLM Post-Training?</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 13">013</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p098" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p098 Larger or Smaller Reward Margins to Select Preferences for LLM Alignment? Larger or Smaller Reward Margins to Select Preferences for LLM Alignment? 最值得学的偏好对，是外部目标有明显差距、但当前模型还没拉开这个差距的样本。 数据与偏好结构 数据与主动学习 优化动力学 对齐论文表 #13">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/larger-or-smaller-reward-margins-to-select-preferences-for-llm-alignment/">Larger or Smaller Reward Margins to Select Preferences for LLM Alignment?</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 14">014</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p041" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p041 Difficulty-Based Preference Data Selection by DPO Implicit Reward Gap Difficulty-Based Preference Data Selection by DPO Implicit Reward Gap 用模型仍难区分的偏好对集中训练，可提升数据效率，但要避免把难例等同于干净信息。 数据与偏好结构 数据与主动学习 研究想法 #41">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/difficulty-based-preference-data-selection-by-dpo-implicit-reward-gap/">Difficulty-Based Preference Data Selection by DPO Implicit Reward Gap</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 15">015</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p099" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p099 On Preference Learning Based on Sequential Bayesian Optimization with Pairwise Comparison On Preference Learning Based on Sequential Bayesian Optimization with Pairwise Comparison 不要求用户给绝对分数，而是反复问最能减少未知偏好的二选一问题。 数据与偏好结构 数据与主动学习 多目标与个性化 对齐论文表 #14">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/on-preference-learning-based-on-sequential-bayesian-optimization-with-pairwise-comparison/">On Preference Learning Based on Sequential Bayesian Optimization with Pairwise Comparison</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 16">016</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2021</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p131" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p131 Active Reward Modeling: Adaptive Preference Labeling for Large Language Model Alignment Active Reward Modeling: Adaptive Preference Labeling for LLM Alignment 有价值的比较既要覆盖新的表示方向，也要让两项差距足够有信息，Fisher信息可以连接这两点。 数据与偏好结构 数据与主动学习 奖励建模与评估 对齐论文表 #49">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/active-reward-modeling-adaptive-preference-labeling-for-llm-alignment/">Active Reward Modeling: Adaptive Preference Labeling for Large Language Model Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 17">017</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p115" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p115 ActiveDPO: Active Direct Preference Optimization for Sample-Efficient Alignment ActiveDPO: Active Direct Preference Optimization for Sample-Efficient Alignment 要挑当前模型最需要人类比较的样本，让标注选择跟着正在对齐的模型状态一起变化。 数据与偏好结构 数据与主动学习 偏好优化基础 对齐论文表 #32">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/activedpo-active-direct-preference-optimization-for-sample-efficient-alignment/">ActiveDPO: Active Direct Preference Optimization for Sample-Efficient Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 18">018</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p121" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p121 Online Preference Alignment for Language Models via Count-based Exploration Online Preference Alignment for Language Models via Count-based Exploration (COPO) 除了偏爱高分回答，还要给没充分探索过的响应机会，避免在线训练反复采到同一小片区域。 数据与偏好结构 数据与主动学习 偏好优化基础 对齐论文表 #39">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/online-preference-alignment-for-language-models-via-count-based-exploration-copo/">Online Preference Alignment for Language Models via Count-based Exploration</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 19">019</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p103" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p103 Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment 用少量人工偏好启动模型，再让模型从自身logits中提取偏好来扩展训练数据。 数据与偏好结构 数据与主动学习 噪声与鲁棒性 对齐论文表 #19">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/spread-preference-annotation-direct-preference-judgment-for-efficient-llm-alignment/">Spread Preference Annotation: Direct Preference Judgment for Efficient LLM Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 20">020</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p095" data-paper-stage="数据与偏好结构" data-topics="[&#34;数据与主动学习&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p095 Diverse AI Feedback For Large Language Model Alignment Diverse ai feedback for large language model alignment “指出哪里错”“给出改写”和“比较谁更好”携带的信息不同，反馈应匹配任务的不确定性。 数据与偏好结构 数据与主动学习 偏好优化基础 对齐论文表 #10">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/diverse-ai-feedback-for-large-language-model-alignment/">Diverse AI Feedback For Large Language Model Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 21">021</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p040" data-paper-stage="数据与偏好结构" data-topics="[&#34;偏好优化基础&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p040 Direct Preference Optimization with Rating Information: Practical Algorithms and Provable Gains Direct Preference Optimization with Rating Information: Practical Algorithms and Provable Gains “好多少”的评分差距，比只有“谁更好”提供更丰富的监督。 数据与偏好结构 偏好优化基础 奖励建模与评估 研究想法 #40">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/direct-preference-optimization-with-rating-information-practical-algorithms-and-provable-gains/">Direct Preference Optimization with Rating Information: Practical Algorithms and Provable Gains</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 22">022</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p028" data-paper-stage="数据与偏好结构" data-topics="[&#34;偏好优化基础&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="fulltext" data-search="p028 TODO: Enhancing LLM Alignment with Ternary Preferences TODO: Enhancing LLM Alignment with Ternary Preferences 平局告诉模型“别强行拉开差距”，它本身就是一种有效监督。 数据与偏好结构 偏好优化基础 噪声与鲁棒性 研究想法 #28">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/todo-enhancing-llm-alignment-with-ternary-preferences/">TODO: Enhancing LLM Alignment with Ternary Preferences</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 23">023</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--fulltext">已查阅全文</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p025" data-paper-stage="数据与偏好结构" data-topics="[&#34;多目标与个性化&#34;,&#34;偏好优化基础&#34;]" data-verification="fulltext" data-search="p025 Direct Preference Optimization with Unobserved Preference Heterogeneity: The Necessity of Ternary Preferences Direct Preference Optimization with Unobserved Preference Heterogeneity: The Necessity of Ternary Preferences 想从没有群体标签的反馈中恢复不同人的偏好，三个候选项可能比两两比较提供本质不同的信息。 数据与偏好结构 多目标与个性化 偏好优化基础 研究想法 #25">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/direct-preference-optimization-with-unobserved-preference-heterogeneity-the-necessity-of-ternary-pre/">Direct Preference Optimization with Unobserved Preference Heterogeneity: The Necessity of Ternary Preferences</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 24">024</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 偏好优化基础</span><span class="paper-verification paper-verification--fulltext">已查阅全文</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p042" data-paper-stage="数据与偏好结构" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p042 Mind the Gap: Structure-Aware Consistency in Preference Learning Mind the Gap: Structure-Aware Consistency in Preference Learning 好优化的代理损失，未必在受限模型类里就能保证好排序；语义距离可以进入一致性设计。 数据与偏好结构 偏好优化基础 优化动力学 研究想法 #41（第二个同号条目）">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/mind-the-gap-structure-aware-consistency-in-preference-learning/">Mind the Gap: Structure-Aware Consistency in Preference Learning</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 25">025</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p100" data-paper-stage="数据与偏好结构" data-topics="[&#34;偏好优化基础&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p100 Preference Ranking Optimization for Human Alignment Preference ranking optimization for human alignment 一次采样得到多个排好序的回答，就把整份排序用起来，而不只抽取一对胜负。 数据与偏好结构 偏好优化基础 数据与主动学习 对齐论文表 #15">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/preference-ranking-optimization-for-human-alignment/">Preference Ranking Optimization for Human Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 26">026</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p049" data-paper-stage="数据与偏好结构" data-topics="[&#34;偏好优化基础&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p049 Beyond Pairwise: Empowering LLM Alignment With Ranked Choice Modeling Beyond Pairwise: Empowering LLM Alignment With Ranked Choice Modeling 把多候选选择与前 k 名排序作为整体反馈建模，避免先拆成许多胜负对。 数据与偏好结构 偏好优化基础 多目标与个性化 研究想法 #48">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/beyond-pairwise-empowering-llm-alignment-with-ranked-choice-modeling/">Beyond Pairwise: Empowering LLM Alignment With Ranked Choice Modeling</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 27">027</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p018" data-paper-stage="数据与偏好结构" data-topics="[&#34;偏好优化基础&#34;,&#34;安全与应用&#34;]" data-verification="fulltext" data-search="p018 Mult-DPO: Multinomial Direct Preference Optimization for Recommender Systems Mult-DPO: Multinomial Direct Preference Optimization for Recommender Systems 一次推荐反馈常给出“多个正项胜过负项”，无需强行给正项内部排次序。 数据与偏好结构 偏好优化基础 安全与应用 研究想法 #18">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/mult-dpo-multinomial-direct-preference-optimization-for-recommender-systems/">Mult-DPO: Multinomial Direct Preference Optimization for Recommender Systems</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 28">028</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 安全与应用</span><span class="paper-verification paper-verification--fulltext">已查阅全文</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p047" data-paper-stage="数据与偏好结构" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p047 GroupDPO: Memory efficient Group-wise Direct Preference Optimization GroupDPO: Memory efficient Group-wise Direct Preference Optimization 同一提示的多个候选一起提供监督，同时通过解耦反向传播控制显存。 数据与偏好结构 偏好优化基础 优化动力学 研究想法 #46">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/groupdpo-memory-efficient-group-wise-direct-preference-optimization/">GroupDPO: Memory efficient Group-wise Direct Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 29">029</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p127" data-paper-stage="数据与偏好结构" data-topics="[&#34;偏好优化基础&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p127 Multi-Preference Optimization: Generalizing DPO via Set-Level Contrasts Multi-Preference Optimization (MPO): Generalizing DPO via Set-Level Contrasts 一次生成多份候选时，可以比较“好回答集合”和“差回答集合”，避免只抽一对而浪费监督。 数据与偏好结构 偏好优化基础 数据与主动学习 对齐论文表 #45">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/multi-preference-optimization-mpo-generalizing-dpo-via-set-level-contrasts/">Multi-Preference Optimization: Generalizing DPO via Set-Level Contrasts</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 30">030</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-stage-heading archive-year-wrap" data-paper-stage="优化动力学"><h2 class="archive-year">优化动力学</h2></li>
+    
+    <li class="paper-row" data-paper-id="p002" data-paper-stage="优化动力学" data-topics="[&#34;优化动力学&#34;]" data-verification="fulltext" data-search="p002 Gradient-Gated DPO: Stabilizing Preference Optimization in Language Models Gradient-Gated DPO: Stabilizing Preference Optimization in Language Models 对已经很低概率的坏回答少施加一点负梯度，保护整体概率分布。 优化动力学 优化动力学 研究想法 #2">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/gradient-gated-dpo-stabilizing-preference-optimization-in-language-models/">Gradient-Gated DPO: Stabilizing Preference Optimization in Language Models</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 31">031</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学</span><span class="paper-verification paper-verification--fulltext">已查阅全文</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p024" data-paper-stage="优化动力学" data-topics="[&#34;优化动力学&#34;]" data-verification="abstract" data-search="p024 AdaDPO: Self-Adaptive Direct Preference Optimization with Balanced Gradient Updates AdaDPO: Self-Adaptive Direct Preference Optimization with Balanced Gradient Updates 按每个偏好对的当前概率平衡正负更新，避免模型只学会压低坏答案。 优化动力学 优化动力学 研究想法 #24">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/adadpo-self-adaptive-direct-preference-optimization-with-balanced-gradient-updates/">AdaDPO: Self-Adaptive Direct Preference Optimization with Balanced Gradient Updates</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 32">032</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p027" data-paper-stage="优化动力学" data-topics="[&#34;数据与主动学习&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p027 Small-Margin Preferences Still Matter-If You Train Them Right Small-Margin Preferences Still Matter-If You Train Them Right 困难偏好对未必应该丢弃，但它们可能更适合提供正样本SFT信号。 优化动力学 数据与主动学习 优化动力学 研究想法 #27">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/small-margin-preferences-still-matter-if-you-train-them-right/">Small-Margin Preferences Still Matter-If You Train Them Right</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 33">033</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p057" data-paper-stage="优化动力学" data-topics="[&#34;优化动力学&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p057 Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement 用激励分数分解分析 chosen/rejected 的共同更新，再校准权重以减少似然位移。 优化动力学 优化动力学 偏好优化基础 研究想法 #56">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/towards-disentangled-preference-optimization-dynamics-beyond-likelihood-displacement/">Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 34">034</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p058" data-paper-stage="优化动力学" data-topics="[&#34;优化动力学&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p058 SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization 无参考目标同时锚定好答案、限制对坏答案的过度压低，并塑造双边际。 优化动力学 优化动力学 偏好优化基础 研究想法 #57">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/slime-stabilized-likelihood-implicit-margin-enforcement-for-preference-optimization/">SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 35">035</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p059" data-paper-stage="优化动力学" data-topics="[&#34;优化动力学&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p059 Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization 用绝对差目标与梯度分离，把保持 chosen 和抑制 rejected 的力度拆开调。 优化动力学 优化动力学 偏好优化基础 研究想法 #58">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/linear-preference-optimization-decoupled-gradient-control-via-absolute-regularization/">Linear Preference Optimization: Decoupled Gradient Control via Absolute Regularization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 36">036</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p114" data-paper-stage="优化动力学" data-topics="[&#34;优化动力学&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p114 BPO: Revisiting Preference Modeling in Direct Preference Optimization BPO: Revisiting Preference Modeling in Direct Preference Optimization 只确保赢家比输家更高还不够，还要防止赢家本身一起退化；优化力度应在两侧动态平衡。 优化动力学 优化动力学 偏好优化基础 对齐论文表 #31">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/bpo-revisiting-preference-modeling-in-direct-preference-optimization/">BPO: Revisiting Preference Modeling in Direct Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 37">037</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p043" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p043 A Stable and Principled Loss Function for Direct Language Model Alignment A Principled Loss Function for Direct Language Model Alignment 把“无限拉大差距”换成“匹配有依据的有限差距”，可以改变过度优化的动力学。 优化动力学 偏好优化基础 优化动力学 研究想法 #42">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/a-principled-loss-function-for-direct-language-model-alignment/">A Stable and Principled Loss Function for Direct Language Model Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 38">038</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p125" data-paper-stage="优化动力学" data-topics="[&#34;优化动力学&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p125 SPO: Self Preference Optimization with Self Regularization SPO: Self Preference Optimization with Self Regularization 让损失在有限间隔处达到最优，可以减少模型为了继续降损失而无限拉大偏好比率的冲动。 优化动力学 优化动力学 偏好优化基础 对齐论文表 #43">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/spo-self-preference-optimization-with-self-regularization/">SPO: Self Preference Optimization with Self Regularization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 39">039</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p044" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p044 Boosting Direct Preference Optimization with Penalization Boosting Direct Preference Optimization with Penalization 固定偏好对之外，参考模型自己会生成什么，也能提供一个有条件使用的训练信号。 优化动力学 偏好优化基础 优化动力学 研究想法 #43">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/boosting-direct-preference-optimization-with-penalization/">Boosting Direct Preference Optimization with Penalization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 40">040</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p126" data-paper-stage="优化动力学" data-topics="[&#34;数据与主动学习&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p126 Anchored Preference Optimization and Contrastive Revisions: Addressing Underspecification in Alignment Anchored Preference Optimization and Contrastive Revisions (CLAIR) 偏好对如果只改关键缺点，监督更清楚；优化目标也应明确决定赢家和输家各自怎样移动。 优化动力学 数据与主动学习 优化动力学 对齐论文表 #44">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/anchored-preference-optimization-and-contrastive-revisions-clair/">Anchored Preference Optimization and Contrastive Revisions: Addressing Underspecification in Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 41">041</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p128" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p128 Explicit Preference Optimization: No Need for an Implicit Reward Model Explicit Preference Optimization (EXPO): No Need for an Implicit Reward Model 不一定要先把奖励藏进策略比率里；可以直接设计透明的偏好优化与正则化规则。 优化动力学 偏好优化基础 优化动力学 对齐论文表 #46">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/explicit-preference-optimization-expo-no-need-for-an-implicit-reward-model/">Explicit Preference Optimization: No Need for an Implicit Reward Model</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 42">042</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p012" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p012 WHY DPO IS A MISSPECIFIED ESTIMATOR AND HOW TO FIX IT WHY DPO IS A MISSPECIFIED ESTIMATOR AND HOW TO FIX IT DPO能够表达的隐式奖励受策略模型族限制，真实奖励不在其中时，优化得更充分也可能学错。 优化动力学 偏好优化基础 优化动力学 研究想法 #12">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/why-dpo-is-a-misspecified-estimator-and-how-to-fix-it/">WHY DPO IS A MISSPECIFIED ESTIMATOR AND HOW TO FIX IT</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 43">043</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p048" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p048 Conditional Equivalence of DPO and RLHF: Implicit Assumption, Failure Modes, and Provable Alignment Conditional Equivalence of DPO and RLHF: Implicit Assumption, Failure Modes, and Provable Alignment DPO 改善的是相对参考策略的优势，是否得到人类偏好的绝对排序还依赖条件。 优化动力学 偏好优化基础 优化动力学 研究想法 #47">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/conditional-equivalence-of-dpo-and-rlhf-implicit-assumption-failure-modes-and-provable-alignment/">Conditional Equivalence of DPO and RLHF: Implicit Assumption, Failure Modes, and Provable Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 44">044</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p085" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p085 Proximalized Preference Optimization for Diverse Feedback Types: A Decomposed Perspective on DPO Proximalized Preference Optimization for Diverse Feedback Types: A Decomposed Perspective on DPO 从 DPO 损失分解解释似然欠确定性，并恢复完整正则以适配多种反馈。 优化动力学 偏好优化基础 优化动力学 研究想法 #89">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/proximalized-preference-optimization-for-diverse-feedback-types-a-decomposed-perspective-on-dpo/">Proximalized Preference Optimization for Diverse Feedback Types: A Decomposed Perspective on DPO</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 45">045</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p004" data-paper-stage="优化动力学" data-topics="[&#34;优化动力学&#34;]" data-verification="abstract" data-search="p004 Sharpness-Aware Minimization in Logit Space Efficiently Enhances Direct Preference Optimization Sharpness-Aware Minimization in Logit Space Efficiently Enhances Direct Preference Optimization 把抗尖锐度的扰动放到logit空间，用较低成本抑制偏好训练的高曲率失稳。 优化动力学 优化动力学 研究想法 #4">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/sharpness-aware-minimization-in-logit-space-efficiently-enhances-direct-preference-optimization/">Sharpness-Aware Minimization in Logit Space Efficiently Enhances Direct Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 46">046</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p006" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;推理时对齐&#34;]" data-verification="abstract" data-search="p006 Convex Optimization for Alignment and Preference Learning on a Single GPU Convex Optimization for Alignment and Preference Learning on a Single GPU 冻结大模型，把可训练部分限制成有凸结构的偏好模块，换取便宜而可分析的优化。 优化动力学 偏好优化基础 推理时对齐 研究想法 #6">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/convex-optimization-for-alignment-and-preference-learning-on-a-single-gpu/">Convex Optimization for Alignment and Preference Learning on a Single GPU</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 47">047</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 推理时对齐</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p060" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p060 InSPO: Unlocking Intrinsic Self-Reflection for LLM Preference Optimization InSPO: Unlocking Intrinsic Self-Reflection for LLM Preference Optimization 将备选响应纳入策略条件，让模型利用“与另一个答案比较”的信息来学习。 优化动力学 偏好优化基础 多目标与个性化 研究想法 #59">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/inspo-unlocking-intrinsic-self-reflection-for-llm-preference-optimization/">InSPO: Unlocking Intrinsic Self-Reflection for LLM Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 48">048</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p054" data-paper-stage="优化动力学" data-topics="[&#34;奖励建模与评估&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p054 Learning from Failures: Understanding LLM Alignment through Failure-Aware Inverse RL Learning from Failures: Understanding LLM Alignment through Failure-Aware Inverse RL 用奖励提取模型分错或分不清的偏好对，审计 RLHF 学到的潜在激励。 优化动力学 奖励建模与评估 数据与主动学习 研究想法 #53">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/learning-from-failures-understanding-llm-alignment-through-failure-aware-inverse-rl/">Learning from Failures: Understanding LLM Alignment through Failure-Aware Inverse RL</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 49">049</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p106" data-paper-stage="优化动力学" data-topics="[&#34;偏好优化基础&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p106 Negating Negatives: Alignment with Human Negative Samples via Distributional Dispreference Optimization Negating Negatives: Alignment with Human Dispreference 如果“什么是坏回答”比“什么是好回答”更可靠，就先学习避开坏分布，再用自身生成维持能力。 优化动力学 偏好优化基础 噪声与鲁棒性 对齐论文表 #22">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/negating-negatives-alignment-with-human-dispreference/">Negating Negatives: Alignment with Human Negative Samples via Distributional Dispreference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 50">050</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p053" data-paper-stage="优化动力学" data-topics="[&#34;数据与主动学习&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p053 DEFT: Distribution-guided Efficient Fine-Tuning for Human Alignment DEFT: Distribution-guided Efficient Fine-Tuning for Human Alignment 从偏好数据构造差异分布，用它同时筛选训练样本和引导模型输出。 优化动力学 数据与主动学习 偏好优化基础 研究想法 #52">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/deft-distribution-guided-efficient-fine-tuning-for-human-alignment/">DEFT: Distribution-guided Efficient Fine-Tuning for Human Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 51">051</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-stage-heading archive-year-wrap" data-paper-stage="噪声与鲁棒性"><h2 class="archive-year">噪声与鲁棒性</h2></li>
+    
+    <li class="paper-row" data-paper-id="p014" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;奖励建模与评估&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p014 When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming 奖励黑客应作为训练中局部发生的转变来监测，而不只看最终模型的平均分。 噪声与鲁棒性 奖励建模与评估 噪声与鲁棒性 研究想法 #14">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/when-rlhf-fails-a-mechanistic-taxonomy-of-reward-hacking-collapse-and-evaluator-gaming/">When RLHF Fails: A Mechanistic Taxonomy of Reward Hacking, Collapse, and Evaluator Gaming</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 52">052</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p011" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;安全与应用&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p011 Alignment Tampering: How Reinforcement Learning from Human Feedback Is Exploited to Optimize Misaligned Biases Alignment Tampering: How Reinforcement Learning from Human Feedback Is Exploited to Optimize Misaligned Biases 如果好质量与偏见在候选回答里绑定，偏好学习可能把二者一起放大。 噪声与鲁棒性 安全与应用 奖励建模与评估 研究想法 #11">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/alignment-tampering-how-reinforcement-learning-from-human-feedback-is-exploited-to-optimize-misalign/">Alignment Tampering: How Reinforcement Learning from Human Feedback Is Exploited to Optimize Misaligned Biases</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 53">053</span></header>
+        <div class="paper-meta"><span class="paper-topics">安全与应用 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p032" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;奖励建模与评估&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p032 Uncertainty-Aware Reward Modeling for Stable RLHF Uncertainty-Aware Reward Modeling for Stable RLHF 奖励不仅要给分，还应告诉优化器这个分数有多不可靠。 噪声与鲁棒性 奖励建模与评估 噪声与鲁棒性 研究想法 #32">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/uncertainty-aware-reward-modeling-for-stable-rlhf/">Uncertainty-Aware Reward Modeling for Stable RLHF</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 54">054</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p037" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;奖励建模与评估&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p037 PEBS: Per-rater Empirical-Bayes Shrinkage for RLHF Reward-Model Calibration PEBS: Per-rater Empirical-Bayes Shrinkage for RLHF Reward-Model Calibration 每个人打分尺度不同，少量个人数据应适度向群体平均收缩，而非完全混成一个平均评分者。 噪声与鲁棒性 奖励建模与评估 多目标与个性化 研究想法 #37">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/pebs-per-rater-empirical-bayes-shrinkage-for-rlhf-reward-model-calibration/">PEBS: Per-rater Empirical-Bayes Shrinkage for RLHF Reward-Model Calibration</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 55">055</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p072" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p072 Unbiased Alignment for Large Language Models with Noisy Preferences Unbiased Alignment for Large Language Models with Noisy Preferences 通过修正含噪偏好引起的损失偏差，分别得到无偏奖励建模与无偏 DPO 目标。 噪声与鲁棒性 噪声与鲁棒性 偏好优化基础 研究想法 #73 研究想法 #75">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/unbiased-alignment-for-large-language-models-with-noisy-preferences/">Unbiased Alignment for Large Language Models with Noisy Preferences</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 56">056</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p120" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p120 When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF 偏好被标反的概率往往取决于样本有多难，不能假设每个标签都以同样概率出错。 噪声与鲁棒性 噪声与鲁棒性 偏好优化基础 对齐论文表 #38">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/when-human-preferences-flip-an-instance-dependent-robust-loss-for-rlhf/">When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 57">057</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p083" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p083 PLC-DPO: Posterior Label Correction in Noisy and Ambiguous Preference Optimization PLC-DPO: Posterior Label Correction in Noisy and Ambiguous Preference Optimization 将偏好对路由为保持、翻转或平局三类，主动修正监督方向与强度。 噪声与鲁棒性 噪声与鲁棒性 偏好优化基础 研究想法 #87">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/plc-dpo-posterior-label-correction-in-noisy-and-ambiguous-preference-optimization/">PLC-DPO: Posterior Label Correction in Noisy and Ambiguous Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 58">058</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p074" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p074 Metadata-Free Meta-Reweighted Direct Preference Optimization under Noisy Preference Labels Metadata-Free Meta-Reweighted Direct Preference Optimization under Noisy Preference Labels 用双层优化学习偏好样本权重，并用提示增强一致性替代难获得的元数据。 噪声与鲁棒性 噪声与鲁棒性 优化动力学 研究想法 #76">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/metadata-free-meta-reweighted-direct-preference-optimization-under-noisy-preference-labels/">Metadata-Free Meta-Reweighted Direct Preference Optimization under Noisy Preference Labels</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 59">059</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p046" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p046 RE-PO: Robust Enhanced Policy Optimization as a General Framework for LLM Alignment Latent Collective Preference Optimization: A General Framework for Robust LLM Alignment 把“这条偏好标签可能出错”变成可推断的隐变量，再据此调节训练权重。 噪声与鲁棒性 噪声与鲁棒性 偏好优化基础 研究想法 #45 对齐论文表 #17">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/latent-collective-preference-optimization-a-general-framework-for-robust-llm-alignment/">RE-PO: Robust Enhanced Policy Optimization as a General Framework for LLM Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 60">060</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p045" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p045 wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment 错误方向的标签与模糊标签不是同一种噪声，应分别校正方向和限制影响。 噪声与鲁棒性 噪声与鲁棒性 优化动力学 研究想法 #44">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/wdpo-winsorized-direct-preference-optimization-for-robust-llm-alignment/">wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 61">061</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p029" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p029 Robust LLM Alignment via Distributionally Robust Direct Preference Optimization Robust LLM Alignment via Distributionally Robust Direct Preference Optimization 把训练偏好分布附近最不利的变化也纳入优化，减轻静态数据与真实用户的分布错配。 噪声与鲁棒性 噪声与鲁棒性 偏好优化基础 研究想法 #29 对齐论文表 #36">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/robust-llm-alignment-via-distributionally-robust-direct-preference-optimization/">Robust LLM Alignment via Distributionally Robust Direct Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 62">062</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p065" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p065 Distributionally Robust Listwise Preference Optimization Distributionally Robust Listwise Preference Optimization 直接对候选列表的排名标签做鲁棒优化，并利用排序结构避免枚举全部排列。 噪声与鲁棒性 噪声与鲁棒性 偏好优化基础 研究想法 #65">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/distributionally-robust-listwise-preference-optimization/">Distributionally Robust Listwise Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 63">063</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p039" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p039 Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment 用当前策略附近的悲观锚点评估一对偏好有多脆弱，再决定该给它多大权重。 噪声与鲁棒性 噪声与鲁棒性 优化动力学 研究想法 #39">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/learning-where-it-matters-geometric-anchoring-for-robust-preference-alignment/">Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 64">064</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p030" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;数据与主动学习&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p030 GEOALIGN: Geometric Rollout Curation for Robust LLM Reinforcement Learning GEOALIGN: Geometric Rollout Curation for Robust LLM Reinforcement Learning 高奖励rollout若推动的偏好方向与多数样本强烈冲突，先检查它是否是不可靠的更新来源。 噪声与鲁棒性 数据与主动学习 噪声与鲁棒性 研究想法 #30">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/geoalign-geometric-rollout-curation-for-robust-llm-reinforcement-learning/">GEOALIGN: Geometric Rollout Curation for Robust LLM Reinforcement Learning</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 65">065</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p010" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;优化动力学&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p010 Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models 奖励黑客可能表现为更新方向偏离可信轨迹，因此约束方向可以补充标量KL约束。 噪声与鲁棒性 优化动力学 噪声与鲁棒性 研究想法 #10 研究想法 #68 对齐论文表 #51">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/directional-alignment-mitigates-reward-hacking-in-reinforcement-learning-for-language-models/">Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 66">066</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p061" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;推理时对齐&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p061 Robust Preference Alignment via Directional Neighborhood Consensus Robust Preference Alignment via Directional Neighborhood Consensus 从目标偏好的邻域生成多样候选，再按原始意图选择，弥补偏好覆盖不足。 噪声与鲁棒性 推理时对齐 多目标与个性化 研究想法 #60">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/robust-preference-alignment-via-directional-neighborhood-consensus/">Robust Preference Alignment via Directional Neighborhood Consensus</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 67">067</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p068" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;优化动力学&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p068 Gradient Regularization Prevents Reward Hacking in Reinforcement Learning from Human Feedback and Verifiable Rewards Gradient Regularization Prevents Reward Hacking in Reinforcement Learning from Human Feedback and Verifiable Rewards 通过梯度正则把训练偏向奖励更可靠的区域，补充仅靠参考策略 KL 的控制方式。 噪声与鲁棒性 优化动力学 奖励建模与评估 研究想法 #69">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/gradient-regularization-prevents-reward-hacking-in-reinforcement-learning-from-human-feedback-and-ve/">Gradient Regularization Prevents Reward Hacking in Reinforcement Learning from Human Feedback and Verifiable Rewards</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 68">068</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p069" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;奖励建模与评估&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p069 Information-Theoretic Reward Modeling for Stable RLHF: Detecting and Mitigating Reward Hacking Information-Theoretic Reward Modeling for Stable RLHF: Detecting and Mitigating Reward Hacking 先用信息瓶颈学偏好相关表示，再在该表示空间检测并惩罚奖励黑客的异常偏移。 噪声与鲁棒性 奖励建模与评估 噪声与鲁棒性 研究想法 #70">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/information-theoretic-reward-modeling-for-stable-rlhf-detecting-and-mitigating-reward-hacking/">Information-Theoretic Reward Modeling for Stable RLHF: Detecting and Mitigating Reward Hacking</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 69">069</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p070" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;奖励建模与评估&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p070 Eliminating Inductive Bias in Reward Models with Information-Theoretic Guidance Eliminating Inductive Bias in Reward Models with Information-Theoretic Guidance 同时保留奖励与偏好相关的信息、减少奖励与偏置属性相关的信息，处理非线性捷径。 噪声与鲁棒性 奖励建模与评估 噪声与鲁棒性 研究想法 #71">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/eliminating-inductive-bias-in-reward-models-with-information-theoretic-guidance/">Eliminating Inductive Bias in Reward Models with Information-Theoretic Guidance</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 70">070</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p071" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;奖励建模与评估&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p071 Mitigating Reward Hacking in RLHF via Bayesian Non-negative Reward Modeling Mitigating Reward Hacking in RLHF via Bayesian Non-negative Reward Modeling 用稀疏非负潜在因子分解奖励，并以贝叶斯推断表达不确定性。 噪声与鲁棒性 奖励建模与评估 噪声与鲁棒性 研究想法 #72">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/mitigating-reward-hacking-in-rlhf-via-bayesian-non-negative-reward-modeling/">Mitigating Reward Hacking in RLHF via Bayesian Non-negative Reward Modeling</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 71">071</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p067" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p067 Wasserstein Distributionally Robust Regret Optimization for Reinforcement Learning from Human Feedback Wasserstein Distributionally Robust Regret Optimization for Reinforcement Learning from Human Feedback 面对奖励误设，控制同一扰动下相对最佳策略的后悔值，而不只追求最坏绝对收益。 噪声与鲁棒性 噪声与鲁棒性 奖励建模与评估 研究想法 #67">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/wasserstein-distributionally-robust-regret-optimization-for-reinforcement-learning-from-human-feedba/">Wasserstein Distributionally Robust Regret Optimization for Reinforcement Learning from Human Feedback</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 72">072</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p073" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;安全与应用&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p073 Primal-Dual Direct Preference Optimization for Constrained LLM Alignment Primal-Dual Direct Preference Optimization for Constrained LLM Alignment Provably Convergent Primal-Dual DPO for Constrained LLM Alignment 把奖励最大化与安全成本约束分开，用两阶段原始—对偶偏好优化协调。 噪声与鲁棒性 安全与应用 偏好优化基础 研究想法 #74 对齐论文表 #33">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/primal-dual-direct-preference-optimization-for-constrained-llm-alignment/">Primal-Dual Direct Preference Optimization for Constrained LLM Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 73">073</span></header>
+        <div class="paper-meta"><span class="paper-topics">安全与应用 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p108" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;偏好优化基础&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p108 Adversarial Preference Optimization: Enhancing Your Alignment via RM-LLM Game Adversarial Preference Optimization: Enhancing Large Language Model Alignment 策略更新后会生成新的回答分布，奖励模型也应跟着适应，而不一直停留在旧标注数据上。 噪声与鲁棒性 偏好优化基础 奖励建模与评估 对齐论文表 #25">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/adversarial-preference-optimization-enhancing-large-language-model-alignment/">Adversarial Preference Optimization: Enhancing Your Alignment via RM-LLM Game</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 74">074</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p119" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;安全与应用&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p119 Adversarial Preference Learning for Robust LLM Alignment Adversarial Preference Learning for Robust LLM Alignment 防御模型要持续接触针对自身弱点的新变化，训练可以围绕“发现漏洞—反馈—修补”构成闭环。 噪声与鲁棒性 安全与应用 数据与主动学习 对齐论文表 #37">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/adversarial-preference-learning-for-robust-llm-alignment/">Adversarial Preference Learning for Robust LLM Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 75">075</span></header>
+        <div class="paper-meta"><span class="paper-topics">安全与应用 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p091" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;安全与应用&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p091 Improving LLM Safety Alignment with Dual-Objective Optimization Improving LLM Safety Alignment with Dual-Objective Optimization 安全对齐要分别教模型“怎样拒绝”和“不要继续有害内容”，不能只扩大安全与有害回答的相对差距。 噪声与鲁棒性 安全与应用 优化动力学 对齐论文表 #6">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/improving-llm-safety-alignment-with-dual-objective-optimization/">Improving LLM Safety Alignment with Dual-Objective Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 76">076</span></header>
+        <div class="paper-meta"><span class="paper-topics">安全与应用 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p017" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;数据与主动学习&#34;,&#34;安全与应用&#34;]" data-verification="abstract" data-search="p017 DOG-DPO:Dynamic Optimization in Geometry for Safety Alignment DOG-DPO:Dynamic Optimization in Geometry for Safety Alignment 筛安全偏好数据时，覆盖不同的改变方向比收集许多相似高分样本更重要。 噪声与鲁棒性 数据与主动学习 安全与应用 研究想法 #17">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/dog-dpo-dynamic-optimization-in-geometry-for-safety-alignment/">DOG-DPO:Dynamic Optimization in Geometry for Safety Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 77">077</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 安全与应用</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p113" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p113 Causal Direct Preference Optimization for Language Model Alignment Causal Direct Preference Optimization for Language Model Alignment 偏好标签可能混入主题、风格或用户目标的影响，因果调整试图把真正的偏好信号分离出来。 噪声与鲁棒性 噪声与鲁棒性 数据与主动学习 对齐论文表 #30">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/causal-direct-preference-optimization-for-language-model-alignment/">Causal Direct Preference Optimization for Language Model Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 78">078</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p129" data-paper-stage="噪声与鲁棒性" data-topics="[&#34;噪声与鲁棒性&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p129 Robust Preference Optimization through Reward Model Distillation Robust Preference Optimization through Reward Model Distillation 一张硬胜负标签可能只是一次有噪声的投票，让策略学习有不确定性的偏好分布会更稳健。 噪声与鲁棒性 噪声与鲁棒性 奖励建模与评估 对齐论文表 #47">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/robust-preference-optimization-through-reward-model-distillation/">Robust Preference Optimization through Reward Model Distillation</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 79">079</span></header>
+        <div class="paper-meta"><span class="paper-topics">噪声与鲁棒性 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-stage-heading archive-year-wrap" data-paper-stage="多目标与推理时对齐"><h2 class="archive-year">多目标与推理时对齐</h2></li>
+    
+    <li class="paper-row" data-paper-id="p090" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;偏好优化基础&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p090 Nash Learning from Human Feedback Nash Learning from Human Feedback 当偏好无法压缩成每个回答的一个固定分数时，可以直接寻找在成对比较博弈中稳健的策略。 多目标与推理时对齐 偏好优化基础 多目标与个性化 对齐论文表 #5">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/nash-learning-from-human-feedback/">Nash Learning from Human Feedback</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 80">080</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p110" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;偏好优化基础&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p110 Improving LLM General Preference Alignment via Optimistic Online Mirror Descent Improving LLM General Preference Alignment via Optimistic Online Mirror Descent 把一般偏好对齐当作两人博弈后，可以用带预测的镜像下降减少策略来回追逐。 多目标与推理时对齐 偏好优化基础 优化动力学 对齐论文表 #27">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/improving-llm-general-preference-alignment-via-optimistic-online-mirror-descent/">Improving LLM General Preference Alignment via Optimistic Online Mirror Descent</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 81">081</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p015" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;偏好优化基础&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p015 Efficient Exploration for Iterative Nash Preference Optimization Efficient Exploration for Iterative Nash Preference Optimization 当偏好可能循环时，用博弈目标学习还不够，还要显式探索未覆盖的回答。 多目标与推理时对齐 偏好优化基础 数据与主动学习 研究想法 #15">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/efficient-exploration-for-iterative-nash-preference-optimization/">Efficient Exploration for Iterative Nash Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 82">082</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p034" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p034 Panacea: Pareto Alignment via Preference Adaptation for LLMs Panacea: Pareto Alignment for Multi-Dimensional LLM Optimization 训练一个可调的Pareto模型，把偏好权重作为输入，而不是为每组权重重新微调。 多目标与推理时对齐 多目标与个性化 研究想法 #34 对齐论文表 #24">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/panacea-pareto-alignment-for-multi-dimensional-llm-optimization/">Panacea: Pareto Alignment via Preference Adaptation for LLMs</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 83">083</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p016" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p016 PolyAlign: Conditional Human-Distribution Alignment PolyAlign: Conditional Human-Distribution Alignment 自然回答风格应随语言和交互场景变化，不能把所有人对齐到同一种助手口吻。 多目标与推理时对齐 多目标与个性化 研究想法 #16">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/polyalign-conditional-human-distribution-alignment/">PolyAlign: Conditional Human-Distribution Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 84">084</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p013" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;奖励建模与评估&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p013 Interpretability Is Not Just a Tax: Sparsity and Diversity Yield Legible and Composable Reward Experts for Personalization Sparse Mixture-of-Experts Reward Models Learn Interpretable and Specialized Experts for Personalized Preference Modeling 奖励专家只有在训练中学会分工，个性化时调整专家权重才容易解释和组合。 多目标与推理时对齐 奖励建模与评估 多目标与个性化 研究想法 #13">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/sparse-mixture-of-experts-reward-models-learn-interpretable-and-specialized-experts-for-personalized/">Interpretability Is Not Just a Tax: Sparsity and Diversity Yield Legible and Composable Reward Experts for Personalization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 85">085</span></header>
+        <div class="paper-meta"><span class="paper-topics">奖励建模与评估 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p035" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;偏好优化基础&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p035 MaPPO: Maximum a Posteriori Preference Optimization with Prior Knowledge MaPPO: Maximum a Posterior Preference Optimization with Prior Knowledge 把先验奖励知识加到偏好学习里，让二元标签之外的质量信息参与校准。 多目标与推理时对齐 偏好优化基础 奖励建模与评估 研究想法 #35">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/mappo-maximum-a-posterior-preference-optimization-with-prior-knowledge/">MaPPO: Maximum a Posteriori Preference Optimization with Prior Knowledge</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 86">086</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p096" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p096 Robust Multi-Objective Preference Alignment with Online DPO Robust Multi-Objective Preference Alignment with Online DPO 训练一个“知道当前偏好权重”的策略，再用在线数据教它在多个目标之间切换。 多目标与推理时对齐 多目标与个性化 数据与主动学习 对齐论文表 #11">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/robust-multi-objective-preference-alignment-with-online-dpo/">Robust Multi-Objective Preference Alignment with Online DPO</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 87">087</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p104" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p104 Beyond Compromise: Pareto-Lenient Consensus for Efficient Multi-Preference LLM Alignment Beyond Compromise: Pareto-Lenient Consensus for Efficient Multi-Preference LLM Alignment 多目标优化若不允许任何目标暂时退步，可能把模型困在保守折中点；适度让步可以帮助探索更好的整体前沿。 多目标与推理时对齐 多目标与个性化 优化动力学 对齐论文表 #20">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/beyond-compromise-pareto-lenient-consensus-for-efficient-multi-preference-llm-alignment/">Beyond Compromise: Pareto-Lenient Consensus for Efficient Multi-Preference LLM Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 88">088</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p117" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p117 Listwise Direct Preference Optimization with Multi-Dimensional Preference Mixing Listwise Direct Preference Optimization with Multi-Dimensional Preference Mixing (λ-DPO) 先保留每个偏好维度的候选分布，再按权重混合它们，比过早压成唯一总排名保留更多信息。 多目标与推理时对齐 多目标与个性化 偏好优化基础 对齐论文表 #34">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/listwise-direct-preference-optimization-with-multi-dimensional-preference-mixing-dpo/">Listwise Direct Preference Optimization with Multi-Dimensional Preference Mixing</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 89">089</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p075" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p075 Multi-Objective Exploration and Preference Optimization via Mutual Information MI-EPO: Multi-Objective Exploration and Preference Optimization via Mutual Information 用联合条件互信息同时组织多目标对齐与偏好感知探索，让不同偏好条件产生可区分行为。 多目标与推理时对齐 多目标与个性化 数据与主动学习 研究想法 #77">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/mi-epo-multi-objective-exploration-and-preference-optimization-via-mutual-information/">Multi-Objective Exploration and Preference Optimization via Mutual Information</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 90">090</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p064" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;,&#34;数据与主动学习&#34;,&#34;扩散与流匹配&#34;]" data-verification="abstract" data-search="p064 PAPA: Online Personalized Active Preference Alignment PAPA: Online Personalized Active Preference Alignment 直接使用交互偏好更新扩散模型，减少个性化场景对大规模奖励数据的依赖。 多目标与推理时对齐 多目标与个性化 数据与主动学习 扩散与流匹配 研究想法 #64">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/papa-online-personalized-active-preference-alignment/">PAPA: Online Personalized Active Preference Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 91">091</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 数据与主动学习 / 扩散与流匹配</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p102" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p102 NextQuill: Causal Preference Modeling for Enhancing LLM Personalization Nextquill: Causal preference modeling for enhancing llm personalization 个性化应学习用户历史真正改变了哪些预测，而不只是模仿带有用户标签的整段文本。 多目标与推理时对齐 多目标与个性化 数据与主动学习 对齐论文表 #18">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/nextquill-causal-preference-modeling-for-enhancing-llm-personalization/">NextQuill: Causal Preference Modeling for Enhancing LLM Personalization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 92">092</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p109" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;多目标与个性化&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p109 LifeAlign: Lifelong Alignment for Large Language Models with Memory-Augmented Focalized Preference Optimization LifeAlign: Lifelong Preference Alignment for Large Language Models 连续学习新偏好时，要把新经验转成稳定记忆，避免每次对齐都覆盖旧准则。 多目标与推理时对齐 多目标与个性化 优化动力学 对齐论文表 #26">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/lifealign-lifelong-preference-alignment-for-large-language-models/">LifeAlign: Lifelong Alignment for Large Language Models with Memory-Augmented Focalized Preference Optimization</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 93">093</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p132" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p132 MATO: Multi-objective Personalized Alignment with Test-time Optimization for Large Language Models MATO: Multi-objective Personalized Alignment with Test-time Optimization for Large Language Models 多个用户偏好可以在解码时动态协商权重，让尚未生成的token补足当前回答忽略的目标。 多目标与推理时对齐 推理时对齐 多目标与个性化 对齐论文表 #50">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/mato-multi-objective-personalized-alignment-with-test-time-optimization-for-large-language-models/">MATO: Multi-objective Personalized Alignment with Test-time Optimization for Large Language Models</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 94">094</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p087" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;安全与应用&#34;]" data-verification="abstract" data-search="p087 Aligner: Efficient Alignment by Learning to Correct Aligner: Efficient alignment by learning to correct 让一个小模型学习“怎样改好现有回答”，可以把纠错能力复用于多个上游模型。 多目标与推理时对齐 推理时对齐 安全与应用 对齐论文表 #2">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/aligner-efficient-alignment-by-learning-to-correct/">Aligner: Efficient Alignment by Learning to Correct</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 95">095</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 安全与应用</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p094" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p094 Align-Pro: A Principled Approach to Prompt Optimization for LLM Alignment Align-Pro: A Principled Approach to Prompt Optimization for LLM Alignment 当不能改模型参数时，把提示生成器看作可优化策略，研究它能把冻结模型推到多好的输出分布。 多目标与推理时对齐 推理时对齐 偏好优化基础 对齐论文表 #9">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/align-pro-a-principled-approach-to-prompt-optimization-for-llm-alignment/">Align-Pro: A Principled Approach to Prompt Optimization for LLM Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 96">096</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p101" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p101 PITA: Preference-Guided Inference-Time Alignment for LLM Post-Training PITA: Preference-Guided Inference-Time Alignment for LLM Post-Training 冻结大模型，用一个较小的偏好指导策略在生成时调整token概率。 多目标与推理时对齐 推理时对齐 多目标与个性化 对齐论文表 #16">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/pita-preference-guided-inference-time-alignment-for-llm-post-training/">PITA: Preference-Guided Inference-Time Alignment for LLM Post-Training</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 97">097</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p089" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p089 Transfer Q Star: Principled Decoding for LLM Alignment Transfer q-star: Principled decoding for llm alignment 解码不只看当前token好不好，还要估计这一步会把后续整段回答带向哪里。 多目标与推理时对齐 推理时对齐 偏好优化基础 对齐论文表 #4">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/transfer-q-star-principled-decoding-for-llm-alignment/">Transfer Q Star: Principled Decoding for LLM Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 98">098</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p056" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p056 Alignment-Aware Decoding Alignment-Aware Decoding 在标准 DPO 所提供的模型信息上改变解码规则，推理时继续强化偏好。 多目标与推理时对齐 推理时对齐 偏好优化基础 研究想法 #55">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/alignment-aware-decoding/">Alignment-Aware Decoding</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 99">099</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p020" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p020 Gradient-Guided Reward Optimization for Inference-time Alignment Gradient-Guided Reward Optimization for Inference-time Alignment 发现生成轨迹可能偏离时，用奖励梯度给一点局部引导，而不只是生成很多答案再重排。 多目标与推理时对齐 推理时对齐 奖励建模与评估 研究想法 #20">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/gradient-guided-reward-optimization-for-inference-time-alignment/">Gradient-Guided Reward Optimization for Inference-time Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 100">100</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p051" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p051 REAR: Test-time Preference Realignment through Reward Decomposition REAR: Test-time Preference Realignment through Reward Decomposition 从问题信息和偏好信息的奖励分解出发，用 token 对数概率构造测试时重对齐信号。 多目标与推理时对齐 推理时对齐 多目标与个性化 研究想法 #50">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/rear-test-time-preference-realignment-through-reward-decomposition/">REAR: Test-time Preference Realignment through Reward Decomposition</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 101">101</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p055" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;多目标与个性化&#34;,&#34;噪声与鲁棒性&#34;]" data-verification="abstract" data-search="p055 DARC: Disagreement-Aware Alignment via Risk-Constrained Decoding DARC: Disagreement-Aware Alignment via Risk-Constrained Decoding 在候选重排序时显式约束分歧和尾部风险，让平均高分不再遮住少数人的差体验。 多目标与推理时对齐 推理时对齐 多目标与个性化 噪声与鲁棒性 研究想法 #54">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/darc-disagreement-aware-alignment-via-risk-constrained-decoding/">DARC: Disagreement-Aware Alignment via Risk-Constrained Decoding</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 102">102</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 多目标与个性化 / 噪声与鲁棒性</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p088" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p088 Spectral Editing of Activations for Large Language Model Alignment Spectral editing of activations for large language model alignment 从正负示例的激活协方差中找方向，再把推理时表示投影到更符合目标行为的子空间。 多目标与推理时对齐 推理时对齐 优化动力学 对齐论文表 #3">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/spectral-editing-of-activations-for-large-language-model-alignment/">Spectral Editing of Activations for Large Language Model Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 103">103</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p111" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p111 Aligning Large Language Models with Human Preferences through Representation Engineering Aligning Large Language Models with Human Preferences through Representation Engineering 人类偏好会体现在模型内部活动差异中，控制这些表示是一条区别于复杂强化学习的对齐路径。 多目标与推理时对齐 推理时对齐 多目标与个性化 对齐论文表 #28">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/aligning-large-language-models-with-human-preferences-through-representation-engineering/">Aligning Large Language Models with Human Preferences through Representation Engineering</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 104">104</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p062" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;优化动力学&#34;,&#34;推理时对齐&#34;]" data-verification="abstract" data-search="p062 D-STEER - Preference Alignment Techniques Learn to Behave, not to Believe - Beneath the Surface, DPO as Steering Vector Perturbation in Activation Space D-STEER - Preference Alignment Techniques Learn to Behave, not to Believe - Beneath the Surface, DPO as Steering Vector Perturbation in Activation Space 用激活引导向量与谱分析研究 DPO 行为变化的低秩结构，同时谨慎解释“信念”。 多目标与推理时对齐 优化动力学 推理时对齐 研究想法 #61">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/d-steer-preference-alignment-techniques-learn-to-behave-not-to-believe-beneath-the-surface-dpo-as-st/">D-STEER - Preference Alignment Techniques Learn to Behave, not to Believe - Beneath the Surface, DPO as Steering Vector Perturbation in Activation Space</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 105">105</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 推理时对齐</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p076" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p076 On the Limits of Steering Vectors for Preference-Aligned Generation On the Limits of Steering Vectors for Preference-Aligned Generation 从属性表达、任务迁移与多属性组合三条轴检查 steering vector 的能力边界。 多目标与推理时对齐 推理时对齐 多目标与个性化 研究想法 #79">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/on-the-limits-of-steering-vectors-for-preference-aligned-generation/">On the Limits of Steering Vectors for Preference-Aligned Generation</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 106">106</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p081" data-paper-stage="多目标与推理时对齐" data-topics="[&#34;推理时对齐&#34;,&#34;密度比估计&#34;]" data-verification="abstract" data-search="p081 When Metropolis and Hastings Meet Bradley and Terry: Exact MCMC From Preference Voting When Metropolis and Hastings Meet Bradley and Terry: Exact MCMC From Preference Voting 只用随机成对偏好反馈构造有效的 MCMC 接受规则，连接选择概率与目标密度比。 多目标与推理时对齐 推理时对齐 密度比估计 研究想法 #85">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/when-metropolis-and-hastings-meet-bradley-and-terry-exact-mcmc-from-preference-voting/">When Metropolis and Hastings Meet Bradley and Terry: Exact MCMC From Preference Voting</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 107">107</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 密度比估计</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-stage-heading archive-year-wrap" data-paper-stage="密度比基础"><h2 class="archive-year">密度比基础</h2></li>
+    
+    <li class="paper-row" data-paper-id="p133" data-paper-stage="密度比基础" data-topics="[&#34;密度比估计&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p133 Density-ratio matching under the Bregman divergence: a unified framework of density-ratio estimation Density-ratio matching under the bregman divergence: a unified framework of density-ratio estimation 如果最终只需要两个分布的比值，就直接估计这个比值，避免先分别学习两个更难的密度。 密度比基础 密度比估计 偏好优化基础 密度比论文表 #1">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/density-ratio-matching-under-the-bregman-divergence-a-unified-framework-of-density-ratio-estimation/">Density-ratio matching under the Bregman divergence: a unified framework of density-ratio estimation</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 108">108</span></header>
+        <div class="paper-meta"><span class="paper-topics">密度比估计 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2012</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p138" data-paper-stage="密度比基础" data-topics="[&#34;密度比估计&#34;,&#34;扩散与流匹配&#34;]" data-verification="abstract" data-search="p138 Generative Modeling with Flow-Guided Density Ratio Learning Generative Modeling with Flow-Guided Density Ratio Learning 当源分布离目标很远时，一次训练好的比率估计器不够用，需要让它跟着逐渐改善的样本一起学习。 密度比基础 密度比估计 扩散与流匹配 密度比论文表 #6">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/generative-modeling-with-flow-guided-density-ratio-learning/">Generative Modeling with Flow-Guided Density Ratio Learning</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 109">109</span></header>
+        <div class="paper-meta"><span class="paper-topics">密度比估计 / 扩散与流匹配</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p139" data-paper-stage="密度比基础" data-topics="[&#34;密度比估计&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p139 Don&#39;t Forget Its Variance! The Minimum Path Variance Principle for Accurate and Stable Score-Based Density Ratio Estimation Don&#39;t Forget Its Variance! The Minimum Path Variance Principle for Accurate and Stable Score-Based Density Ratio Estimation 理论上路径无关的密度比积分，在有限模型和有限样本下仍会受路径方差影响，路径也值得学习。 密度比基础 密度比估计 优化动力学 密度比论文表 #7">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/don-t-forget-its-variance-the-minimum-path-variance-principle-for-accurate-and-stable-score-based-de/">Don&#39;t Forget Its Variance! The Minimum Path Variance Principle for Accurate and Stable Score-Based Density Ratio Estimation</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 110">110</span></header>
+        <div class="paper-meta"><span class="paper-topics">密度比估计 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p137" data-paper-stage="密度比基础" data-topics="[&#34;密度比估计&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p137 Preference Optimization by Estimating the Ratio of the Data Distribution Preference Optimization by Estimating the Ratio of the Data Distribution 偏好对齐可以看作目标策略比率的匹配；换一种Bregman目标，仍可能保留同一个理想策略。 密度比基础 密度比估计 偏好优化基础 密度比论文表 #5">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/preference-optimization-by-estimating-the-ratio-of-the-data-distribution/">Preference Optimization by Estimating the Ratio of the Data Distribution</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 111">111</span></header>
+        <div class="paper-meta"><span class="paper-topics">密度比估计 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p136" data-paper-stage="密度比基础" data-topics="[&#34;密度比估计&#34;,&#34;扩散与流匹配&#34;]" data-verification="abstract" data-search="p136 Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models 冻结已有扩散模型，再训练判别器估计生成分布与真实分布的差距，用这个差距修正采样score。 密度比基础 密度比估计 扩散与流匹配 密度比论文表 #4">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/refining-generative-process-with-discriminator-guidance-in-score-based-diffusion-models/">Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 112">112</span></header>
+        <div class="paper-meta"><span class="paper-topics">密度比估计 / 扩散与流匹配</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2023</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-stage-heading archive-year-wrap" data-paper-stage="扩散、流匹配与应用"><h2 class="archive-year">扩散、流匹配与应用</h2></li>
+    
+    <li class="paper-row" data-paper-id="p063" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p063 Beyond Optimal Transport: Model-Aligned Coupling for Flow Matching Beyond Optimal Transport: Model-Aligned Coupling for Flow Matching 耦合不仅要几何短，还应当是当前模型容易学习的运输方向。 扩散、流匹配与应用 扩散与流匹配 数据与主动学习 研究想法 #63">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/beyond-optimal-transport-model-aligned-coupling-for-flow-matching/">Beyond Optimal Transport: Model-Aligned Coupling for Flow Matching</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 113">113</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p001" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;偏好优化基础&#34;,&#34;多目标与个性化&#34;]" data-verification="fulltext" data-search="p001 Distributional Preference Alignment of LLMs via Optimal Transport Distributional Preference Alignment of LLMs via Optimal Transport 把“逐对分出胜负”提升为“好回答的奖励分布在各分位点都占优”。 扩散、流匹配与应用 偏好优化基础 多目标与个性化 研究想法 #1">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/distributional-preference-alignment-of-llms-via-optimal-transport/">Distributional Preference Alignment of LLMs via Optimal Transport</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 114">114</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 多目标与个性化</span><span class="paper-verification paper-verification--fulltext">已查阅全文</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p009" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;密度比估计&#34;]" data-verification="abstract" data-search="p009 Direct Distributional Optimization for Provable Alignment of Diffusion Models Direct Distributional Optimization for Provable Alignment of Diffusion Models 先在概率分布空间求想要的分布，再研究如何用扩散过程从中采样。 扩散、流匹配与应用 扩散与流匹配 密度比估计 研究想法 #9">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/direct-distributional-optimization-for-provable-alignment-of-diffusion-models/">Direct Distributional Optimization for Provable Alignment of Diffusion Models</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 115">115</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 密度比估计</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p022" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p022 Diffusion Policy Optimization without Drifting Apart Diffusion Policy Optimization without Drifting Apart 扩散策略优化的代理似然若越学越松，策略梯度也会跟着偏；要同步维持代理的紧致性。 扩散、流匹配与应用 扩散与流匹配 优化动力学 研究想法 #22">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/diffusion-policy-optimization-without-drifting-apart/">Diffusion Policy Optimization without Drifting Apart</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 116">116</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p003" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;优化动力学&#34;,&#34;扩散与流匹配&#34;]" data-verification="abstract" data-search="p003 Beyond Reward Margin: Rethinking and Resolving Likelihood Displacement in Diffusion Models via Video Generation Beyond Reward Margin: Rethinking and Resolving Likelihood Displacement in Diffusion Models via Video Generation 小间隔时避免负样本误伤，大间隔时继续给好样本学习信号。 扩散、流匹配与应用 优化动力学 扩散与流匹配 研究想法 #3">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/beyond-reward-margin-rethinking-and-resolving-likelihood-displacement-in-diffusion-models-via-video/">Beyond Reward Margin: Rethinking and Resolving Likelihood Displacement in Diffusion Models via Video Generation</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 117">117</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 扩散与流匹配</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p005" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p005 Stitched Value Model for Diffusion Alignment Stitched Value Model for Diffusion Alignment 让干净图像奖励模型借用扩散主干的表征，直接给带噪中间状态估值。 扩散、流匹配与应用 扩散与流匹配 奖励建模与评估 研究想法 #5">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/stitched-value-model-for-diffusion-alignment/">Stitched Value Model for Diffusion Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 118">118</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p052" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;推理时对齐&#34;,&#34;扩散与流匹配&#34;]" data-verification="abstract" data-search="p052 DiffRGD: An Inference-Time Diffusion Guidance Through Riemannian Gradient Descent DiffRGD: An Inference-Time Diffusion Guidance Through Riemannian Gradient Descent 把 latent 的引导更新限制在高斯结构诱导的球面几何上，减少采样分布漂移。 扩散、流匹配与应用 推理时对齐 扩散与流匹配 研究想法 #51 研究想法 #80">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/diffrgd-an-inference-time-diffusion-guidance-through-riemannian-gradient-descent/">DiffRGD: An Inference-Time Diffusion Guidance Through Riemannian Gradient Descent</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 119">119</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 扩散与流匹配</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p050" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;推理时对齐&#34;,&#34;扩散与流匹配&#34;]" data-verification="abstract" data-search="p050 PG-MAP: Joint MAP Optimization for Inference-Time Alignment of Diffusion and Flow-Matching Models PG-MAP: Joint Inference-Time Alignment of Diffusion and Flow Models 把条件文本与生成潜变量放进同一个轨迹优化问题，协调两种控制入口。 扩散、流匹配与应用 推理时对齐 扩散与流匹配 研究想法 #49">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/pg-map-joint-inference-time-alignment-of-diffusion-and-flow-models/">PG-MAP: Joint MAP Optimization for Inference-Time Alignment of Diffusion and Flow-Matching Models</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 120">120</span></header>
+        <div class="paper-meta"><span class="paper-topics">推理时对齐 / 扩散与流匹配</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p026" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p026 Threshold-Guided Optimization for Visual Generative Models Threshold-Guided Optimization for Visual Generative Models 只有独立标量评分，也可以通过阈值构造对齐信号，不必先凑成成对标签。 扩散、流匹配与应用 扩散与流匹配 偏好优化基础 研究想法 #26">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/threshold-guided-optimization-for-visual-generative-models/">Threshold-Guided Optimization for Visual Generative Models</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 121">121</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p023" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p023 STAR: SpatioTemporal Adaptive Reward Allocation for Text-to-Image RL Post-Training STAR: SpatioTemporal Adaptive Reward Allocation for Text-to-Image RL Post-Training 同一张图的奖励，不应不分时间和位置地平均施加到所有生成变量。 扩散、流匹配与应用 扩散与流匹配 优化动力学 研究想法 #23">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/star-spatiotemporal-adaptive-reward-allocation-for-text-to-image-rl-post-training/">STAR: SpatioTemporal Adaptive Reward Allocation for Text-to-Image RL Post-Training</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 122">122</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p036" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p036 NormGuard: Reward-Preserving Norm Constraints in Flow-Matching Reinforcement Learning NormGuard: Reward-Preserving Norm Constraints in Flow-Matching Reinforcement Learning 流匹配奖励训练可能把速度范数越推越大，训练时约束这种膨胀可保护感知质量。 扩散、流匹配与应用 扩散与流匹配 优化动力学 研究想法 #36">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/normguard-reward-preserving-norm-constraints-in-flow-matching-reinforcement-learning/">NormGuard: Reward-Preserving Norm Constraints in Flow-Matching Reinforcement Learning</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 123">123</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p066" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p066 Optimizing Visual Generative Models via Distribution-wise Rewards Optimizing Visual Generative Models via Distribution-wise Rewards 以整组生成样本的分布质量构造奖励，减少逐样本冲同一高分模式造成的坍缩。 扩散、流匹配与应用 扩散与流匹配 奖励建模与评估 研究想法 #66 研究想法 #78">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/optimizing-visual-generative-models-via-distribution-wise-rewards/">Optimizing Visual Generative Models via Distribution-wise Rewards</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 124">124</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p077" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p077 Manifold Drift in Flow Preference Optimization: A Root Cause of Reward Hacking Manifold Drift in Flow Preference Optimization: A Root Cause of Reward Hacking 将 flow 偏好更新离开预训练数据流形的现象形式化，并用温控锚定缓解。 扩散、流匹配与应用 扩散与流匹配 优化动力学 研究想法 #81">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/manifold-drift-in-flow-preference-optimization-a-root-cause-of-reward-hacking/">Manifold Drift in Flow Preference Optimization: A Root Cause of Reward Hacking</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 125">125</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p082" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;优化动力学&#34;]" data-verification="abstract" data-search="p082 ReNFT: Repairing Mode Collapse in Reward Post-Training via Internal Probability-Mass Recalibration ReNFT: Repairing Mode Collapse in Reward Post-Training via Internal Probability-Mass Recalibration 把坍缩理解为已有模式被压低概率，并通过内部反事实路径重新分配质量。 扩散、流匹配与应用 扩散与流匹配 优化动力学 研究想法 #86">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/renft-repairing-mode-collapse-in-reward-post-training-via-internal-probability-mass-recalibration/">ReNFT: Repairing Mode Collapse in Reward Post-Training via Internal Probability-Mass Recalibration</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 126">126</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 优化动力学</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p084" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p084 Reward-guided Fine-Tuning of One-Step Generative Models via Wasserstein Gradient Flow Reward-guided Fine-Tuning of One-Step Generative Models via Wasserstein Gradient Flow 从概率空间的 Wasserstein 梯度流出发，平滑地更新一步生成器且不依赖奖励导数。 扩散、流匹配与应用 扩散与流匹配 奖励建模与评估 研究想法 #88">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/reward-guided-fine-tuning-of-one-step-generative-models-via-wasserstein-gradient-flow/">Reward-guided Fine-Tuning of One-Step Generative Models via Wasserstein Gradient Flow</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 127">127</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p134" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;密度比估计&#34;,&#34;扩散与流匹配&#34;]" data-verification="abstract" data-search="p134 One-step Diffusion Models with Bregman Density Ratio Matching One-step Diffusion Models with Bregman Density Ratio Matching 一步生成蒸馏可以从“匹配教师与学生的密度比”理解，不同Bregman几何给出不同训练目标。 扩散、流匹配与应用 密度比估计 扩散与流匹配 密度比论文表 #2">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/one-step-diffusion-models-with-bregman-density-ratio-matching/">One-step Diffusion Models with Bregman Density Ratio Matching</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 128">128</span></header>
+        <div class="paper-meta"><span class="paper-topics">密度比估计 / 扩散与流匹配</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p135" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;密度比估计&#34;,&#34;扩散与流匹配&#34;]" data-verification="abstract" data-search="p135 Target Concrete Score Matching: A Holistic Framework for Discrete Diffusion Target Concrete Score Matching: A Holistic Framework for Discrete Diffusion 把离散扩散需要估计的统计量放回干净目标空间，可以更自然地接上奖励、偏好和自回归教师。 扩散、流匹配与应用 密度比估计 扩散与流匹配 密度比论文表 #3">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/target-concrete-score-matching-a-holistic-framework-for-discrete-diffusion/">Target Concrete Score Matching: A Holistic Framework for Discrete Diffusion</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 129">129</span></header>
+        <div class="paper-meta"><span class="paper-topics">密度比估计 / 扩散与流匹配</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p079" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;扩散与流匹配&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p079 Self-OPD: On-Policy Distillation for Flow Matching Models without Teacher Self-OPD: On-Policy Distillation for Flow Matching Models without Teacher 用学生自身随机分支的奖励差生成逐步监督，不再依赖任务专用教师。 扩散、流匹配与应用 扩散与流匹配 多目标与个性化 研究想法 #83">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/self-opd-on-policy-distillation-for-flow-matching-models-without-teacher/">Self-OPD: On-Policy Distillation for Flow Matching Models without Teacher</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 130">130</span></header>
+        <div class="paper-meta"><span class="paper-topics">扩散与流匹配 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p112" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;多目标与个性化&#34;,&#34;安全与应用&#34;]" data-verification="abstract" data-search="p112 Distributional Vision-Language Alignment by Cauchy-Schwarz Divergence Distributional Vision-Language Alignment by Cauchy-Schwarz Divergence 跨模态配对正确不代表两种模态的整体表示分布也贴合，需要同时对齐局部语义与全局分布。 扩散、流匹配与应用 多目标与个性化 安全与应用 对齐论文表 #29">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/distributional-vision-language-alignment-by-cauchy-schwarz-divergence/">Distributional Vision-Language Alignment by Cauchy-Schwarz Divergence</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 131">131</span></header>
+        <div class="paper-meta"><span class="paper-topics">多目标与个性化 / 安全与应用</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p078" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;安全与应用&#34;,&#34;偏好优化基础&#34;]" data-verification="abstract" data-search="p078 PEA-DPO: Perception-Enhanced Alignment Direct Preference Optimization for MLLMs Alignment PEA-DPO: Perception-Enhanced Alignment Direct Preference Optimization for MLLMs Alignment 为多模态偏好训练加入视觉信号，避免只按语言先验判断而忽略关键图像内容。 扩散、流匹配与应用 安全与应用 偏好优化基础 研究想法 #82">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/pea-dpo-perception-enhanced-alignment-direct-preference-optimization-for-mllms-alignment/">PEA-DPO: Perception-Enhanced Alignment Direct Preference Optimization for MLLMs Alignment</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 132">132</span></header>
+        <div class="paper-meta"><span class="paper-topics">安全与应用 / 偏好优化基础</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p107" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;优化动力学&#34;,&#34;安全与应用&#34;]" data-verification="abstract" data-search="p107 LeanPO: Lean Preference Optimization for Likelihood Alignment in Video-LLMs LEANPO: Lean Preference Optimization for Reliable Video-LLM Alignment 视频偏好优化不能只看赢家比输家高多少，还要检查两个回答的生成可能性是否一起下降。 扩散、流匹配与应用 优化动力学 安全与应用 对齐论文表 #23">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/leanpo-lean-preference-optimization-for-reliable-video-llm-alignment/">LeanPO: Lean Preference Optimization for Likelihood Alignment in Video-LLMs</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 133">133</span></header>
+        <div class="paper-meta"><span class="paper-topics">优化动力学 / 安全与应用</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p105" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;偏好优化基础&#34;,&#34;安全与应用&#34;]" data-verification="abstract" data-search="p105 Step-DPO: Step-wise Preference Optimization for Long-chain Reasoning of LLMs Step-DPO: Step-wise Preference Optimization for Long-chain Reasoning of LLMs 推理题的第一处错误比整段答案的总胜负更能告诉模型该修改哪一步。 扩散、流匹配与应用 偏好优化基础 安全与应用 对齐论文表 #21">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/step-dpo-step-wise-preference-optimization-for-long-chain-reasoning-of-llms/">Step-DPO: Step-wise Preference Optimization for Long-chain Reasoning of LLMs</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 134">134</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 安全与应用</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2024</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p118" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;偏好优化基础&#34;,&#34;数据与主动学习&#34;]" data-verification="abstract" data-search="p118 Enhancing LLM Reasoning with Iterative DPO: A Comprehensive Empirical Investigation Enhancing LLM Reasoning with Iterative DPO DPO也可以通过“生成—验证—再训练”的循环持续改善推理，关键在于反馈与新数据是否可靠。 扩散、流匹配与应用 偏好优化基础 数据与主动学习 对齐论文表 #35">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/enhancing-llm-reasoning-with-iterative-dpo/">Enhancing LLM Reasoning with Iterative DPO: A Comprehensive Empirical Investigation</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 135">135</span></header>
+        <div class="paper-meta"><span class="paper-topics">偏好优化基础 / 数据与主动学习</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2025</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p007" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;数据与主动学习&#34;,&#34;安全与应用&#34;]" data-verification="abstract" data-search="p007 DynamicPO: Dynamic Preference Optimization for Recommendation DynamicPO: Dynamic Preference Optimization for Recommendation 推荐任务里更多负样本未必更好，关键是让边界附近的负样本真正产生梯度。 扩散、流匹配与应用 数据与主动学习 安全与应用 研究想法 #7">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/dynamicpo-dynamic-preference-optimization-for-recommendation/">DynamicPO: Dynamic Preference Optimization for Recommendation</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 136">136</span></header>
+        <div class="paper-meta"><span class="paper-topics">数据与主动学习 / 安全与应用</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p124" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;安全与应用&#34;,&#34;多目标与个性化&#34;]" data-verification="abstract" data-search="p124 Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation 让语言模型做推荐，首先要读懂物品和用户行为，再用偏好训练调整推荐，而不是只在最后加DPO。 扩散、流匹配与应用 安全与应用 多目标与个性化 对齐论文表 #42">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/align-gr-unified-multi-level-alignment-for-llm-based-generative-recommendation/">Align³GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 137">137</span></header>
+        <div class="paper-meta"><span class="paper-topics">安全与应用 / 多目标与个性化</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+    <li class="paper-row" data-paper-id="p019" data-paper-stage="扩散、流匹配与应用" data-topics="[&#34;安全与应用&#34;,&#34;奖励建模与评估&#34;]" data-verification="abstract" data-search="p019 MARD: Mirror-Augmented Reasoning Distillation for Mechanism-Level Drug-Drug Interaction Prediction MARD: Mirror-Augmented Reasoning Distillation for Drug-Drug Interaction Prediction 把药物相互作用的方向与机制拆开验证，再用可检验的过程信号训练推理。 扩散、流匹配与应用 安全与应用 奖励建模与评估 研究想法 #19">
+      <div class="paper-row-content archive-article-inner">
+        <header class="archive-article-header"><h2><a class="archive-article-title" href="../papers/mard-mirror-augmented-reasoning-distillation-for-drug-drug-interaction-prediction/">MARD: Mirror-Augmented Reasoning Distillation for Mechanism-Level Drug-Drug Interaction Prediction</a><span class="paper-read-indicator" hidden>已读</span></h2><div class="archive-article-line"></div><span class="paper-number" aria-label="建议阅读顺序 138">138</span></header>
+        <div class="paper-meta"><span class="paper-topics">安全与应用 / 奖励建模与评估</span><span class="paper-verification paper-verification--abstract">已核验摘要</span><span>2026</span></div>
+      </div>
+    </li>
+    
+  </ol>
+  <div class="papers-empty" id="paper-empty" hidden><h2>没有匹配的论文</h2><p>试试更短的关键词，或重置筛选条件。</p></div>
+  <footer class="papers-library-footer"><p>148 条原始记录已合并去重。核验范围见各篇笔记。</p><p id="paper-storage-note">阅读进度仅保存在当前浏览器。</p></footer>
+</div>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../js/clipboard.min.js"></script>
+
+
+<script src="../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

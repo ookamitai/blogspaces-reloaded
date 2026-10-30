@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="奖励黑客可能表现为更新方向偏离可信轨迹，因此约束方向可以补充标量KL约束。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/directional-alignment-mitigates-reward-hacking-in-reinforcement-learning-for-language-models/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/directional-alignment-mitigates-reward-hacking-in-reinforcement-learning-for-language-models/">
+  
+  <meta property="og:description" content="奖励黑客可能表现为更新方向偏离可信轨迹，因此约束方向可以补充标量KL约束。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="奖励黑客可能表现为更新方向偏离可信轨迹，因此约束方向可以补充标量KL约束。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p010">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Directional Alignment Mitigates Reward Hacking in Reinforcement Learning for Language Models</h1>
+      <p class="article-subtitle">阅读顺序 066 · 噪声与鲁棒性 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2605.25189" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>核对primary来源题名、摘要；尚未逐项复核全文公式与实验。</p><p class="paper-source-refs">原清单位置：研究想法 #10；研究想法 #68；对齐论文表 #51 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%90%86%E8%A7%A3%E9%97%AE%E9%A2%98"><span class="toc-text">先理解问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="toc-text">方法如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E5%9B%9E%E5%81%8F%E5%A5%BD%E5%AF%B9%E9%BD%90%E7%9A%84%E5%9C%B0%E5%9B%BE"><span class="toc-text">放回偏好对齐的地图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B%E4%B8%8E%E5%8A%A8%E6%89%8B"><span class="toc-text">自测与动手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E9%98%85%E8%AF%BB%E8%8C%83%E5%9B%B4"><span class="toc-text">来源与阅读范围</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p><span class="marker">奖励黑客可能表现为更新方向偏离可信轨迹<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因此约束方向可以补充标量KL约束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="先理解问题">先理解问题</h2>
+<p>模型可能靠捷径提高代理奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时真实数学任务能力下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>单看奖励或更新步长<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>无法分辨沿可靠方向进步与朝漏洞方向移动<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>论文关注参数更新的主导方向是否发生异常变化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="方法如何工作">方法如何工作</h2>
+<p>作者通过参数更新的奇异方向研究干净训练与奖励黑客训练的差别<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并提出可信方向投影<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>先从干净参考训练提取低维子空间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>随后<span class="marker">把强化学习梯度约束在其中</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>其思路是保留可信学习方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>同时抑制偏离该子空间的分量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="放回偏好对齐的地图">放回偏好对齐的地图</h2>
+<p>KL主要控制分布偏离幅度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>方向投影对允许的参数变化方向施加额外结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>与GEOALIGN根据rollout表示筛选数据不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这里直接限制梯度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>二者需要分别评价信息损失与计算成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>可信子空间取决于干净数据质量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>覆盖和秩<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>把新任务有效梯度投出去也会降低学习能力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>数学实验不能证明所有奖励黑客都由同一低维方向漂移引起<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>扩散迁移属于原清单的个人想法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测与动手">自测与动手</h2>
+<ol>
+<li>为什么范数很小的更新仍可能朝奖励漏洞方向移动<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>如果新任务所需方向不在参考子空间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>投影会带来什么代价<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<p>**小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**在可控代理奖励含捷径的任务中比较无投影<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>随机同秩投影<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>干净子空间投影<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>画代理奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>真实奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>投影保留梯度比例<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>排除仅减小有效学习率的解释<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与阅读范围">来源与阅读范围</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2605.25189">论文原文</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>已核对正式论文页面的题名与摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>机制解释同时参照原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>具体公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>证明与实验配置仍需阅读全文<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #10</strong></p>
+<p>**1.问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**LLM 强化学习中的 reward hacking 问题</p>
+<p><em>所谓 reward hacking<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>是指模型在训练中并没有真正学会目标任务<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是找到了某种<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>投机取巧<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的方式来提高代理奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>比如在数学推理任务中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>训练环境或者评估规则可能存在某些漏洞<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型不是真的提升了数学推理能力<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而是学会利用这些漏洞来获得高 reward<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></em></p>
+<p><strong>reward hacking 不仅仅是 reward model 设计不完美的问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也可能是优化方向发生了偏移的问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p><strong>2.做法<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>梯度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong></p>
+<ol>
+<li>
+<p><strong>可信方向梯度对齐</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>干净训练中的模型更新方向往往具有稳定的低维结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>reward hacking 发生时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型更新方向会偏离这个稳定轨迹<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>**reward hacking 是<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>方向漂移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>**<strong>如果 reward hacking 对应的是偏离<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>可信学习方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>那么可以通过限制梯度方向来抑制 reward hacking<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+</li>
+<li>
+<p>先用一小段干净数据训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>得到可信的更新方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>然后在 RL 训练过程中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>只允许梯度沿这些可信方向更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+<li>
+<p>后续RL中需要保证在可信方向更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能随便朝reward hacking的方向跑偏</p>
+</li>
+</ol>
+<p><strong>3.总结<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong></p>
+<p>它提出了一个新的 reward hacking 解释视角<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<blockquote>
+<p>reward hacking 可以被看作 RL 更新方向偏离 clean learning trajectory 的现象<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</blockquote>
+<p>它用 SVD 和 CCA 实证验证了这个现象<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<blockquote>
+<p>clean training 的主导更新方向较稳定<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而 hacking training 的方向漂移明显更强<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</blockquote>
+<p><strong>它把 reward hacking 从<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>奖励函数问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>转化成了<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>优化几何问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p><strong>这篇论文的核心结论是<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong></p>
+<blockquote>
+<p>reward hacking 在参数空间中表现为主导更新方向的明显漂移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>如果把 RL 梯度限制在由 clean training 得到的可信方向子空间中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>就可以有效延缓 reward hacking<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并更好地保持真实任务性能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</blockquote>
+<p><strong>4.迁移到 diffusion model alignment<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></strong></p>
+<ol>
+<li>
+<p>用 clean preference data 或 supervised denoising warmup 提取可信更新方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span></p>
+</li>
+<li>
+<p>分析 aligned diffusion model 和 hacking diffusion model 的参数更新子空间差异<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span></p>
+</li>
+<li>
+<p>在 preference optimization 或 reward-guided finetuning 中约束梯度方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span></p>
+</li>
+<li>
+<p>防止模型朝某些 reward shortcut 方向优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>比如过度提高 aesthetic score<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>牺牲 prompt faithfulness<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>产生 mode collapse 或 reward overoptimization<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+</ol>
+<hr>
+<p><strong>研究想法 #68</strong></p>
+<p>奖励黑客行为发生在模型通过利用捷径来提高代理奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是解决预期任务<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>我们通过语言模型中强化学习更新的几何结构研究这种失败模式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并认为当优化偏离稳定的低维学习轨迹时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>黑客行为就会出现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>我们<strong>通过参数更新的主导奇异方向分析这种偏移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并显示奖励黑客行为的运行表现出比正常运行显著更大的方向变化</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>基于这一观察<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们引入了可信方向投影<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该方法限制梯度保持在一个干净的参考子空间内<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>在数学推理的奖励黑客实验中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>所提出的方法延迟了捷径的利用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并更好地保持了任务性能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<hr>
+<p><strong>对齐论文表 #51</strong></p>
+<p>通过RL更新几何分析奖励黑客行为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>当优化偏离稳定低维学习轨迹时黑客行为出现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>分析参数更新主导奇异方向发现奖励黑客运行的方向变化显著大于干净运行<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>提出可信方向投影约束梯度保持在干净参考子空间内<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>数学推理奖励黑客实验上延迟捷径利用并更好保持任务性能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>为理解和缓解RLHF中的奖励过度优化提供几何视角<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/metadata-free-meta-reweighted-direct-preference-optimization-under-noisy-preference-labels/">Metadata-Free Meta-Reweighted Direct Preference Optimization under Noisy Preference Labels</a></li><li><a href="../../papers/wdpo-winsorized-direct-preference-optimization-for-robust-llm-alignment/">wDPO: Winsorized Direct Preference Optimization for Robust LLM Alignment</a></li><li><a href="../../papers/learning-where-it-matters-geometric-anchoring-for-robust-preference-alignment/">Learning Where It Matters: Geometric Anchoring for Robust Preference Alignment</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/geoalign-geometric-rollout-curation-for-robust-llm-reinforcement-learning/">← 上一篇 <span>GEOALIGN: Geometric Rollout Curation for Robust LLM Reinforcement Learning</span></a><a href="../../papers/robust-preference-alignment-via-directional-neighborhood-consensus/">下一篇 → <span>Robust Preference Alignment via Directional Neighborhood Consensus</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>TODO: Enhancing LLM Alignment with Ternary Preferences | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="平局告诉模型“别强行拉开差距”，它本身就是一种有效监督。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/todo-enhancing-llm-alignment-with-ternary-preferences/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="TODO: Enhancing LLM Alignment with Ternary Preferences | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/todo-enhancing-llm-alignment-with-ternary-preferences/">
+  
+  <meta property="og:description" content="平局告诉模型“别强行拉开差距”，它本身就是一种有效监督。">
+  
+  
+  <meta property="og:image" content="http://blog.ookamitai.com/images/papers/figure-27.png">
+  <meta property="og:image:alt" content="TODO: Enhancing LLM Alignment with Ternary Preferences">
+  
+  
+  
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TODO: Enhancing LLM Alignment with Ternary Preferences | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="平局告诉模型“别强行拉开差距”，它本身就是一种有效监督。">
+  
+  
+  <meta name="twitter:image" content="http://blog.ookamitai.com/images/papers/figure-27.png">
+  <meta name="twitter:image:alt" content="TODO: Enhancing LLM Alignment with Ternary Preferences">
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p028">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">TODO: Enhancing LLM Alignment with Ternary Preferences</h1>
+      <p class="article-subtitle">阅读顺序 023 · 数据与偏好结构 · 已查阅全文</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2411.02442" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>DPO-RK与扩散迁移在原清单中混入本条；本笔记只把可对照TODO原文的TOBT机制归为论文结论。</p><p class="paper-source-refs">原清单位置：研究想法 #28 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%90%86%E8%A7%A3%E9%97%AE%E9%A2%98"><span class="toc-text">先理解问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="toc-text">方法如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E5%9B%9E%E5%81%8F%E5%A5%BD%E5%AF%B9%E9%BD%90%E7%9A%84%E5%9C%B0%E5%9B%BE"><span class="toc-text">放回偏好对齐的地图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E7%BB%93%E6%9E%84%E6%91%98%E8%AE%B0%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E5%8E%9F%E6%96%87%E7%AC%AC42%E8%8A%82%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">目标结构摘记（原文第4.2节）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B%E4%B8%8E%E5%8A%A8%E6%89%8B"><span class="toc-text">自测与动手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E9%98%85%E8%AF%BB%E8%8C%83%E5%9B%B4"><span class="toc-text">来源与阅读范围</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p><span class="marker">平局告诉模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>别强行拉开差距<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它本身就是一种有效监督<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></span></p>
+<h2 id="先理解问题">先理解问题</h2>
+<p>真实偏好数据包含质量相近<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>表达不同的回答<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>二元Bradley-Terry模型只能描述甲胜或乙胜<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>丢弃平局会浪费信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>随机强制胜负又会制造方向性噪声<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="方法如何工作">方法如何工作</h2>
+<p>TODO先以TOBT扩展偏好模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在潜在效用差附近引入不确定区间<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而给胜<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>负<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>平分别赋概率<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>把DPO的策略/参考对数比代入后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">明确偏好与平局使用不同损失</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>平局项在估计奖励差为零时不推动无意义更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>差值偏离零时则把两者拉回<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="放回偏好对齐的地图">放回偏好对齐的地图</h2>
+<p>与三候选可识别性论文不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这里的三元指两个候选的三种关系<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>平局要求隐式奖励差接近零<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也不表示两个回答的原始生成概率必然相等<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因为参考概率仍参与奖励定义<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p>原清单把TODO与DPO-RK相关讨论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>反转平局标签实验和扩散迁移想法混写<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>这些不能全部归为TODO已验证结论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>尤其<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>可以直接扩展Diffusion-DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>应视为待检验研究设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="目标结构摘记&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;原文第42节&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">目标结构摘记<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>原文第4.2节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p><div class="markdown-them-math-block">$$\mathcal L_{\mathrm{TODO}}=(1-I_{\rm tie})\mathcal L^{p}_{\mathrm{TODO}}+I_{\rm tie}\mathcal L^{t}_{\mathrm{TODO}}.$$</div></p>
+<p><span class="markdown-them-math-inline">$I_{\rm tie}$</span>表示是否平局<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>明确偏好项与平局项承担不同更新任务<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测与动手">自测与动手</h2>
+<ol>
+<li>若参考模型对两个平局回答概率不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>隐式奖励差为零时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>新策略必须给相同原始概率吗<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>人为平局与标注者群体意见分裂<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>是否应总用同一个平局标签处理<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<p>**小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**保持明确偏好数据不变<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>增加同样数量的平局对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>比较丢弃平局<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>随机胜负与显式平局损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>交换平局对顺序<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>检查损失对称性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>扩散迁移需另外验证去噪代理下的梯度行为<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与阅读范围">来源与阅读范围</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2411.02442">论文原文</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>已对照全文第4.1—4.3节<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>TOBT<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>两类损失与更新方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>这份笔记聚焦这些章节<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并未独立复现实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>**核验补充<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>**DPO-RK与扩散迁移在原清单中混入本条<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>本笔记只把可对照TODO原文的TOBT机制归为论文结论<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #28</strong></p>
+<p>这项研究针对大型语言模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>LLM<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>对齐中的偏好缺失问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>指出传统的DPO算法受限于二元BT模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>**无法有效处理样本中普遍存在的平局<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Tie<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>**为此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>作者提出了TOBT模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>通过引入不确定性边界将偏好关系从二元扩展至三元结构<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>基于该理论构建的TODO算法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不仅能更精准地捕捉人类意图的多样性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还能在仅有二元数据的情况下表现出更强的稳健性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>Diffusion-DPO采用了一种基于间隔的过滤策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在预处理过程中去除低置信度或接近相等的偏好对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因此<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模糊<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>类似平局<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的监督信号被排除在训练之外<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而将模型简化为一个困难的二元偏好学习问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>Diffusion-DPO 采用一种基于边界<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>margin-based<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的过滤策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在预处理阶段剔除置信度较低或偏好差异极小的样本对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这使得训练过程排除了具有歧义性<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>即结果难分伯仲<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的监督信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而将学习任务简化为一种硬边界二元偏好优化问题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这也导致了偏好分布的截断<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>模型仅接触到置信度高的比较样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>因而无法捕捉到扩散式生成输出中普遍存在的不确定性区域<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><strong>为了解决这一局限性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们扩展了 Diffusion-DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使其具有受 TOBT/TODO 启发的感知并列偏好公式<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该公式明确地对模糊偏好区域进行建模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是将其丢弃<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<p>Diffusion-DPO 把 preference learning 变成了 <strong>truncated binary classification problem<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而实际上应该是</strong>learning from <strong>truncated + ambiguous + full-spectrum preference distribution</strong></p>
+<p>Diffusion-DPO 通过过滤掉低间隔样本来隐式地假设偏好可分离性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而我们认为被丢弃的区域包含结构化的不确定性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可以通过三元偏好公式来建模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>可以直接将 TODO 扩展到 Diffusion-DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span><strong>其动机在于<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>Diffusion-DPO 采用了一种基于间隔的过滤策略<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该策略会移除置信度低或偏好值接近相等的选项对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而有效地将问题转化为一个难度较高的二元偏好学习任务<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这会导致结构化歧义信息的丢失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而我们通过引入一种受 TOBT/TODO 启发的三元偏好公式<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>感知并列偏好的优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>来恢复这些信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></strong></p>
+<figure><img src="/images/papers/figure-27.png" loading="lazy" alt="原研究清单附图<span class=" bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char>未独立核验"><figcaption>原研究清单配图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>出处与推导未独立核验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></figcaption></figure>
+<figure><img src="/images/papers/figure-28.png" loading="lazy" alt="原研究清单附图<span class=" bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char>未独立核验"><figcaption>原研究清单配图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>出处与推导未独立核验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></figcaption></figure>
+<figure><img src="/images/papers/figure-29.png" loading="lazy" alt="原研究清单附图<span class=" bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char>未独立核验"><figcaption>原研究清单配图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>出处与推导未独立核验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></figcaption></figure>
+<p>任何不允许平局可能性的模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>都没有充分利用‘无偏好’类别中所包含的信息</p>
+<p>迁移到Diffusion-DPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<p>利用Pick-a-pic的平局数据做实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>引入平局项</p>
+<ul>
+<li>
+<p>在DPO-RK<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>与TODO做法类似<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>优化目标包含了相互竞争的两项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>对于明确胜负的数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型依然致力于扩大奖励差值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span><strong>但对于标记为<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>平局<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型的优化目标是将其奖励差值的绝对值最小化<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>即驱动两者差值趋向于零<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>模型通过动态调整梯度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>学习到了如何同时对<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>胜出<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>和<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>平局<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>进行建模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这是原始DPO完全不具备的机制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+<li>
+<p>如果在原始的DPO模型中强行加入平局数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>会导致严重的任务性能下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>DPO-RK在引入平局数据时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不仅不会出现性能下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还能对参考模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>reference model<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>产生极强的正则化作用</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>通过保持平局数据的偏好比例与参考模型一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这两个变体能够<strong>在更小的KL散度下<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>即更不容易偏离参考模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现比原始DPO更高的任务表现</strong></p>
+</li>
+<li>
+<p>传统DPO会直接丢弃这些评价冲突的样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而<strong>DPO-RK能够将这些由于评价冲突而产生的成对数据视为<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>平局<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>进行学习</strong></p>
+</li>
+</ul>
+<p><strong>如何证明效果增益是来自<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>平局项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而非数据量增加<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></strong></p>
+<p>为了排除<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>数据量增加带来性能提升<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>这一干扰因素<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>论文设计了关键的对照实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>主要通过以下三个层面的对比来证明增益的真正来源<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></p>
+<ol>
+<li>**核心控制组<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>在完全相同的数据量下对比 <strong>DPO(CP+TP)</strong> 与 **DPO-RK(CP+TP) 这是最核心的证明逻辑<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>论文对比了以下几种训练设置<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span></li>
+</ol>
+<ul>
+<li>
+<p><strong>DPO(CP)</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>仅使用明确偏好数据训练<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>基线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+<li>
+<p><strong>DPO(CP+TP)</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>使用明确偏好数据 + 平局数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>进行<strong>原始DPO</strong>训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+<li>
+<p><strong>DPO-RK(CP+TP)</strong> <span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>使用明确偏好数据 + 平局数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>进行<strong>带有平局项的新变体</strong>训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+</ul>
+<p>这里 <code>DPO(CP+TP)</code> 与新变体使用的数据集<strong>大小<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>内容完全一模一样</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<ol start="2">
+<li>
+<p><strong>原始DPO加入平局数据后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>导致性能崩塌</strong> 实验结果表明<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>如果只是单纯增加数据量<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>即在原始DPO中加入平局数据构成 <code>DPO(CP+TP)</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>不仅没有带来增益<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>反而导致了任务性能的显著下降</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>因为原始DPO无法理解平局<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>它会强行把质量相似的TP数据视作一胜一负<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而给模型提供了错误的梯度信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>导致其生成能力受损</p>
+</li>
+<li>
+<p><strong>只有引入平局项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>才能在不损害性能的情况下获得正则化增益</strong> 相反<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>当使用完全相同的数据量<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但采用包含<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>平局优化项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>的新变体 <code>DPO-RK(CP+TP)</code>  时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型没有出现性能下降<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>更重要的是<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>新变体实现了比单独使用CP数据<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>DPO(CP)<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>更低的KL散度<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>即更不容易偏离基座模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而在相同的偏离度下实现了更高的任务表现</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这证明了增益直接来源于新损失函数中对平局的特殊处理机制<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>将奖励差值最小化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+<li>
+<p><strong>进一步验证<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>反转平局标签实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>rTP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></strong> 在文本摘要任务中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为了进一步<strong>证明平局项处理<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>无偏好方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>数据的优越性</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>研究人员进行了一项精妙的测试<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>他们将平局数据<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>TP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>中的胜者和败者互换<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>构造了<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>反转平局对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>rTP<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并训练了 <code>DPO(CP+rTP)</code><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span> 结果显示<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><code>DPO(CP+rTP)</code> 的表现与 <code>DPO(CP+TP)</code> 同样糟糕<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而 <code>DPO-RK</code> 的表现依然大幅领先<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这再次无可辩驳地证明<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>由于平局项使得模型不需要去强行区分谁胜谁负<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>没有偏好方向<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>这才是模型能力得到保护和提升的关键<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>绝非简单增加了配对数据<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</li>
+</ol>
+<p><strong>为什么平局项可以提升性能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></strong></p>
+<p>加入平局项之所以能带来性能的提升<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从理论角度来说<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><strong>核心确实在于它提供了一种极强的<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>内生的<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>正则化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Regularization<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>机制</strong></p>
+<figure><img src="/images/papers/figure-30.png" loading="lazy" alt="原研究清单附图<span class=" bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char>未独立核验"><figcaption>原研究清单配图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>出处与推导未独立核验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></figcaption></figure>
+<figure><img src="/images/papers/figure-31.png" loading="lazy" alt="原研究清单附图<span class=" bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char>未独立核验"><figcaption>原研究清单配图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>出处与推导未独立核验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></figcaption></figure>
+<p>在传统的DPO中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>由于没有平局项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>模型会把所有质量相似的数据都视为<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>必须分出胜负<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而为了拉大微小差异而大幅修改参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>导致偏离参考模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>KL散度爆炸<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>并引发<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>奖励作弊<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>Reward Hacking<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>——即生成极长但无意义的文本来骗取高分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>加入平局项后<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>训练数据中包含的大量平局对起到了**<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>稳定锚<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>**的作用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这些数据不断地通过损失函数向模型传递理论信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>保持基座模型原有的好习惯<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不要在这里乱动参数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>这使得模型在学习<span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>清晰偏好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>数据<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>提高特定任务表现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>的同时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>由于平局数据的牵制<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不会过度拟合偏好数据而崩溃<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>最终在更小的模型偏移<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>低KL散度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>下<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现了更优的整体生成性能</p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/negating-negatives-alignment-with-human-dispreference/">Negating Negatives: Alignment with Human Negative Samples via Distributional Dispreference Optimization</a></li><li><a href="../../papers/unbiased-alignment-for-large-language-models-with-noisy-preferences/">Unbiased Alignment for Large Language Models with Noisy Preferences</a></li><li><a href="../../papers/when-human-preferences-flip-an-instance-dependent-robust-loss-for-rlhf/">When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/direct-preference-optimization-with-rating-information-practical-algorithms-and-provable-gains/">← 上一篇 <span>Direct Preference Optimization with Rating Information: Practical Algorithms and Provable Gains</span></a><a href="../../papers/direct-preference-optimization-with-unobserved-preference-heterogeneity-the-necessity-of-ternary-pre/">下一篇 → <span>Direct Preference Optimization with Unobserved Preference Heterogeneity: The Necessity of Ternary Preferences</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

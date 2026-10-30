@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>Transfer Q Star: Principled Decoding for LLM Alignment | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="解码不只看当前token好不好，还要估计这一步会把后续整段回答带向哪里。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/transfer-q-star-principled-decoding-for-llm-alignment/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="Transfer Q Star: Principled Decoding for LLM Alignment | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/transfer-q-star-principled-decoding-for-llm-alignment/">
+  
+  <meta property="og:description" content="解码不只看当前token好不好，还要估计这一步会把后续整段回答带向哪里。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Transfer Q Star: Principled Decoding for LLM Alignment | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="解码不只看当前token好不好，还要估计这一步会把后续整段回答带向哪里。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p089">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">Transfer Q Star: Principled Decoding for LLM Alignment</h1>
+      <p class="article-subtitle">阅读顺序 098 · 多目标与推理时对齐 · 已核验摘要</p>
+      <p class="paper-original-title">原清单题名：Transfer q-star: Principled decoding for llm alignment</p>
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2405.20495" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>已核验原始摘要或官方论文记录；非全文精读。</p><p class="paper-source-refs">原清单位置：对齐论文表 #4 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%8C%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E6%80%8E%E6%A0%B7%E5%81%9A"><span class="toc-text">要解决什么，怎样做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C%E5%B7%B2%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">和已有方法的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C%E4%B8%8E%E5%B1%80%E9%99%90"><span class="toc-text">阅读边界与局限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B"><span class="toc-text">自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E5%AE%9E%E9%AA%8C%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%87%AA%E5%AD%A6%E8%AE%BE%E8%AE%A1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">小实验（自学设计）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90%E4%B8%8E%E6%A0%B8%E9%AA%8C"><span class="toc-text">来源与核验</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p>解码不只看当前token好不好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还要估计这一步会把后续整段回答带向哪里<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="要解决什么&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;，&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;怎样做">要解决什么<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>怎样做</h2>
+<p>基于价值函数的对齐解码需要目标奖励对应的<span class="marker">最优Q函数</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但实际通常拿不到它<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>Transfer Q Star利用一个已经按基线奖励对齐的模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>隐式估计目标奖励所需的最优价值信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>减少只用SFT策略价值或短期奖励造成的<span class="marker">次优性</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>读论文时应区分目标奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>基线奖励和基线模型<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>基线奖励不要求与目标完全相同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>迁移误差才是关键<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="和已有方法的区别">和已有方法的区别</h2>
+<p>它属于解码阶段改变响应分布的路线<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>和直接训练目标模型的DPO不同<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>相对短视的token打分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>价值函数试图计入后续结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>不能把Q函数简单等同于奖励模型的一次句子评分<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界与局限">阅读边界与局限</h2>
+<p>理论上界需要相应假设<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实际效果还受基线模型与目标的距离<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>价值估计误差及推理开销约束<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>摘要中的可控性不等于任意目标都可由同一个基线无损迁移<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测">自测</h2>
+<ol>
+<li>当前奖励相同的两个token<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>为什么可能有不同Q值<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>基线奖励和目标奖励差异扩大时<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>应该重点检查哪类误差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<h2 id="小实验&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;自学设计&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>先在三步树形生成任务上写出真实终局奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>精确计算最优Q<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>再分别使用短期奖励<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>SFT价值和可迁移基线价值进行解码<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>比较终局奖励与分布多样性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>直观看到前瞻价值的作用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源与核验">来源与核验</h2>
+<p>已核验原始论文摘要或官方论文记录<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>以上是导读级自学笔记<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>尚未逐节复核全文证明与实验<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2405.20495">原论文或作者官方来源</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>本地研究清单提供了补充摘录<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>自测<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>小实验及分析性提醒为学习设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不是论文报告的结果<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>对齐论文表 #4</strong></p>
+<p>本文提出了一种名为 Transfer <span class="markdown-them-math-inline">$Q^*$</span> 的原理性解码方法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>用于对齐大型语言模型 (LLM)<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该方法通过隐式估计目标奖励的最优值函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而无需直接访问最优 Q 函数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>该方法利用一个与不同奖励对齐的基线模型来减少先前方法中观察到的次优差距<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>并在各种数据集上展现出在连贯性<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>多样性和质量方面的卓越实证性能<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/convex-optimization-for-alignment-and-preference-learning-on-a-single-gpu/">Convex Optimization for Alignment and Preference Learning on a Single GPU</a></li><li><a href="../../papers/align-pro-a-principled-approach-to-prompt-optimization-for-llm-alignment/">Align-Pro: A Principled Approach to Prompt Optimization for LLM Alignment</a></li><li><a href="../../papers/alignment-aware-decoding/">Alignment-Aware Decoding</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/pita-preference-guided-inference-time-alignment-for-llm-post-training/">← 上一篇 <span>PITA: Preference-Guided Inference-Time Alignment for LLM Post-Training</span></a><a href="../../papers/alignment-aware-decoding/">下一篇 → <span>Alignment-Aware Decoding</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>

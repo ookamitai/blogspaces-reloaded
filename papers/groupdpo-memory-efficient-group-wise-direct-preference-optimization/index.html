@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('color-scheme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('color-scheme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+  </script>
+
+<head>
+<meta name="color-scheme" content="light dark">
+<script data-site-theme-detection>
+  (function () {
+    if (window.__siteThemeDetectionInitialized) return;
+    window.__siteThemeDetectionInitialized = true;
+
+    var root = document.documentElement;
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    var saved;
+
+    try {
+      saved = localStorage.getItem('color-scheme');
+    } catch (error) {
+      saved = null;
+    }
+
+    function applyTheme(prefersDark) {
+      var useDark = saved === 'dark' || (saved !== 'light' && prefersDark);
+      root.classList.toggle('dark', useDark);
+      root.style.colorScheme = useDark ? 'dark' : 'light';
+    }
+
+    applyTheme(media.matches);
+
+    function handleChange(event) {
+      if (saved !== 'dark' && saved !== 'light') applyTheme(event.matches);
+    }
+
+    if (media.addEventListener) media.addEventListener('change', handleChange);
+    else if (media.addListener) media.addListener(handleChange);
+  })();
+</script>
+  <meta charset="utf-8">
+  
+  
+  <title>GroupDPO: Memory efficient Group-wise Direct Preference Optimization | ookamitai::blogspaces</title>
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/ChineseMono-normal-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-italic-normal.min.css">
+
+  
+<link rel="stylesheet" href="../../css/fonts/Chinese-normal-bold.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" itemprop="description" content="同一提示的多个候选一起提供监督，同时通过解耦反向传播控制显存。">
+  
+  <link rel="canonical" href="http://blog.ookamitai.com/papers/groupdpo-memory-efficient-group-wise-direct-preference-optimization/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ookamitai::blogspaces">
+  <meta property="og:title" content="GroupDPO: Memory efficient Group-wise Direct Preference Optimization | ookamitai::blogspaces">
+  <meta property="og:url" content="http://blog.ookamitai.com/papers/groupdpo-memory-efficient-group-wise-direct-preference-optimization/">
+  
+  <meta property="og:description" content="同一提示的多个候选一起提供监督，同时通过解耦反向传播控制显存。">
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GroupDPO: Memory efficient Group-wise Direct Preference Optimization | ookamitai::blogspaces">
+  
+  <meta name="twitter:description" content="同一提示的多个候选一起提供监督，同时通过解耦反向传播控制显存。">
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+    
+<link rel="stylesheet" href="../../fancybox/jquery.fancybox-1.3.4.css">
+
+  
+  
+    <link rel="stylesheet" href="../../katex/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="../../katex/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="../../katex/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+      });
+    </script>
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;">
+  <defs>
+    <filter id="glass"
+            x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <!-- <feConvolveMatrix in="SourceGraphic"
+                        order="3 3"
+                        kernelMatrix="0 -1 0
+                                      0  1 0
+                                      0  1 0"
+                        result="emboss" />
+      <feGaussianBlur in="emboss"
+                      stdDeviation="1"
+                      result="embossBlur" />
+      <feComposite in="embossBlur"
+                   in2="SourceAlpha"
+                   operator="in"
+                   result="bevelMask" />
+      <feComposite in="SourceGraphic"
+                   in2="bevelMask"
+                   operator="atop"
+                   result="withBevel" />
+      <feGaussianBlur in="withBevel" stdDeviation="1" result="blurred" />
+      <feComposite in="blurred" in2="withBevel" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="lit" /> -->
+      <feTurbulence in="SourceGraphic" type="fractalNoise" baseFrequency="0.0001 0.0001" numOctaves="4" result="noise" />
+      <feOffset in="noise" dx="0" dy="-1000" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="0" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11"
+                         result="distorted" />
+      <feOffset in="distorted" dx="5" dy="0" result="distorted"/>
+      <!-- <feColorMatrix in="distorted" type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feOffset in="red" dx="1" dy="0" result="redShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feOffset in="green" dx="0" dy="1" result="greenShift"/>
+      <feColorMatrix in="distorted" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feOffset in="blue" dx="-1" dy="-0.5" result="blueShift"/>
+      <feBlend in="redShift" in2="greenShift" mode="screen" result="rgBlend"/>
+      <feBlend in="rgBlend" in2="blueShift" mode="screen" result="chromatic"/>
+      <feBlend in="distorted" in2="chromatic" mode="overlay" result="final"/>
+      <feComposite in="final" in2="withBevel" operator="atop" result="preblur"/> -->
+      <feGaussianBlur in="distorted" stdDeviation="0" result="blurred"/>
+    </filter>
+  </defs>
+</svg>
+
+<meta name="generator" content="Hexo 8.1.1">  <link rel="stylesheet" href="/css/papers.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div id="nav-outer">
+  <nav id="main-nav" class="outer">
+    <a id="main-nav-toggle" class="nav-icon"></a>
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/papers/">论文</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+    <div class="main-nav-space-between"></div>
+    
+  </nav>
+  <div id="reading-progress-bar"></div>
+</div>
+<div id="header-title">
+  <h1 id="logo-wrap">
+    <a href="../../index.html" id="logo">ookamitai::blogspaces</a>
+  </h1>
+  
+    <h2 id="subtitle-wrap">
+      <a href="../../index.html" id="subtitle">Only my humble memories and sentiments...</a>
+    </h2>
+  
+</div>
+
+      <div id="content" class="outer">
+        <section id="main">
+<article class="papers-shell paper-note article" data-paper-note data-paper-id="p047">
+  <div class="article-inner paper-note-inner">
+    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="../../papers/">← 全部论文</a><a href="../../papers/guide/">自学路线</a></nav>
+    <header class="paper-note-header article-header">
+      <h1 class="article-title">GroupDPO: Memory efficient Group-wise Direct Preference Optimization</h1>
+      <p class="article-subtitle">阅读顺序 029 · 数据与偏好结构 · 已核验摘要</p>
+      
+      <div class="paper-note-actions"><a class="paper-source-link" href="https://arxiv.org/abs/2604.15602" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a><button type="button" id="paper-mark-read" aria-pressed="false" hidden>标记为已读</button><span id="paper-save-status" role="status" aria-live="polite"></span></div>
+    </header>
+    <details class="paper-evidence"><summary>来源与核验</summary><p>已核验原文摘要及书目信息；方法细节按摘要与原研究摘录整理，未逐条复核正文证明及全部实验。</p><p class="paper-source-refs">原清单位置：研究想法 #46 · 整理于 2026-10-30</p></details>
+    <details class="paper-toc"><summary>本篇目录</summary><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%9B%B4%E8%A7%89"><span class="toc-text">一句话直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E4%B8%8E%E6%9C%BA%E5%88%B6"><span class="toc-text">问题与机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E6%99%AE%E9%80%9A-dpo%20%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">与普通 DPO 的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E8%BE%B9%E7%95%8C"><span class="toc-text">阅读边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%B5%8B"><span class="toc-text">自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E5%AE%9E%E9%AA%8C%3Cspan-class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-end%22%3E%3Ch-inner%3E%EF%BC%88%3C/h-inner%3E%3C/h-char%3E%3C/span%3E%E8%87%AA%E5%AD%A6%E8%AE%BE%E8%AE%A1%3Cspan%20class=%22bd-box%22%3E%3Ch-char%20class=%22bd%20bd-beg%22%3E%3Ch-inner%3E%EF%BC%89%3C/h-inner%3E%3C/h-char%3E%3C/span%3E"><span class="toc-text">小实验（自学设计）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90"><span class="toc-text">来源</span></a></li></ol></details>
+    <div class="article-entry paper-note-body"><h2 id="一句话直觉">一句话直觉</h2>
+<p>一个问题若有五个候选<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>只拿最好与最差配成一对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>会浪费中间答案携带的信息<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>但把五个答案一起反向传播又很占显存<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="问题与机制">问题与机制</h2>
+<p>GroupDPO 研究组内偏好优化的经验效果和系统实现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>同一提示下的多个响应通过组耦合目标共同决定更新<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>而不是独立抽一个正负对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>难点是组内比较让样本彼此依赖<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>直接实现通常需要同时保留大量计算图<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>论文给出<span class="marker">保留一阶梯度</span>的实现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>先获得目标对应的每响应系数<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再在反向传播时解耦样本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>使更大的候选组可以训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>作者还强调<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>对正响应加入负对数似然<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>NLL<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>项<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>对性能和稳定性都很关键<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="与普通-dpo 的关系">与普通 DPO 的关系</h2>
+<p>这是两个可分开思考的改进<span class="bd-box"><h-char class="bd bd-beg"><h-inner>：</h-inner></h-char></span>组目标利用更多监督<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>内存实现降低执行成本<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>只看到显存降低<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不能推导监督更好<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>只看到组规模增加<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>也不能推导算法本身更优<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>NLL 锚定还提醒我们<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span><span class="marker">相对胜负优化并不自动保证高质量答案的绝对概率</span><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="阅读边界">阅读边界</h2>
+<p><span class="bd-box"><h-char class="bd bd-end"><h-inner>“</h-inner></h-char></span>保留梯度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>”</h-inner></h-char></span>指对应一阶优化信号<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>不等于所有高阶导数或浮点计算逐位一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>实际节约多少显存取决于序列长度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>组规模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>缓存方式与框架<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>论文摘要支持离线和在线设置的改进趋势<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>具体收益应回到相同计算预算的实验比较<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="自测">自测</h2>
+<ol>
+<li>把组目标拆成多个独立 pair<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>什么时候会改变梯度而非只改变实现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+<li>为什么已经有偏好损失<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>还可能需要正样本 NLL<span class="bd-box"><h-char class="bd bd-beg"><h-inner>？</h-inner></h-char></span></li>
+</ol>
+<h2 id="小实验&lt;span-class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-end&quot;&gt;&lt;h-inner&gt;（&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;自学设计&lt;span class=&quot;bd-box&quot;&gt;&lt;h-char class=&quot;bd bd-beg&quot;&gt;&lt;h-inner&gt;）&lt;/h-inner&gt;&lt;/h-char&gt;&lt;/span&gt;">小实验<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></h2>
+<p>用固定五候选的小模型实现直接组反向传播和解耦实现<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>在相同参数处比较梯度余弦与最大误差<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>再测峰值显存<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>之后才增加组规模<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>分别保持训练样本数和总 token 预算一致<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>观察稳定性是否仍有提升<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<h2 id="来源">来源</h2>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2604.15602">论文原文与摘要</a><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>笔记中的自测与小实验为自学设计<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<details class="paper-source-excerpt">
+<summary>原清单摘录与附图<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>保留原始表述<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span></summary>
+<p>以下内容来自原研究清单<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>可能包含旧标题<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>待验证的推测或尚未纠正的摘要<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>附图也可能是个人或 AI 辅助示意<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>未独立核验其出处与推导<span class="bd-box"><h-char class="bd bd-beg"><h-inner>；</h-inner></h-char></span>阅读时以本页上方核验说明和论文原文为准<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p><strong>研究想法 #46</strong></p>
+<p>卡内基梅隆大学<span class="bd-box"><h-char class="bd bd-beg"><h-inner>、</h-inner></h-char></span>谷歌DeepMind与谷歌联合推出了<strong>GroupDPO<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>一种通过在反向传播中解耦样本以显著降低内存占用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>实现大规模组内偏好优化的高效算法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>提升了多响应训练的性能与稳定性</strong><span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+<p>偏好优化广泛用于将大型语言模型<span class="bd-box"><h-char class="bd bd-end"><h-inner>（</h-inner></h-char></span>LLMs<span class="bd-box"><h-char class="bd bd-beg"><h-inner>）</h-inner></h-char></span>与偏好反馈对齐<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>然而<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>大多数现有方法在每个提示上仅训练一个正负对<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>忽略了偏好数据集中通常包含的多个候选响应所提供的额外监督<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>受到这一限制的启发<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>近期的研究探索了组内偏好优化<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该方法对同一提示的多个响应进行联合对比<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>但由于组耦合目标的内存开销<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>其经验行为和可扩展性仍未得到充分探讨<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span>在本研究中<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>我们提出了一种内存高效的组内偏好优化算法<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>该算法在反向传播过程中解耦样本的同时保留梯度<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>显著降低了峰值内存使用<span class="bd-box"><h-char class="bd bd-beg"><h-inner>，</h-inner></h-char></span>从而实现了更大组规模的可扩展训练<span class="bd-box"><h-char class="bd bd-beg"><h-inner>。</h-inner></h-char></span></p>
+</details>
+</div>
+    <aside class="paper-related"><h2>接着读</h2><ul><li><a href="../../papers/mind-the-gap-structure-aware-consistency-in-preference-learning/">Mind the Gap: Structure-Aware Consistency in Preference Learning</a></li><li><a href="../../papers/towards-disentangled-preference-optimization-dynamics-beyond-likelihood-displacement/">Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement</a></li><li><a href="../../papers/slime-stabilized-likelihood-implicit-margin-enforcement-for-preference-optimization/">SLIME: Stabilized Likelihood Implicit Margin Enforcement for Preference Optimization</a></li></ul></aside>
+    <nav class="paper-pagination" aria-label="前后篇笔记"><a href="../../papers/mult-dpo-multinomial-direct-preference-optimization-for-recommender-systems/">← 上一篇 <span>Mult-DPO: Multinomial Direct Preference Optimization for Recommender Systems</span></a><a href="../../papers/multi-preference-optimization-mpo-generalizing-dpo-via-set-level-contrasts/">下一篇 → <span>Multi-Preference Optimization: Generalizing DPO via Set-Level Contrasts</span></a></nav>
+  </div>
+</article>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../2026/09/11/llm-rnd/">为什么不能拿豆包抽随机数</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/07/31/chu-aichart/">中二节奏 AI 写谱</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-cam/">日二节奏 Freecam Patch</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/06/18/chu-wunv/">巫女插件使用说明书</a>
+          </li>
+        
+          <li>
+            <a href="../../2026/05/06/chu-net/">日二节奏启用国服上传体验</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AI/" style="font-size: 13.33px;">AI</a> <a href="../../tags/Archive/" style="font-size: 10px;">Archive</a> <a href="../../tags/LLM/" style="font-size: 10px;">LLM</a> <a href="../../tags/RTC/" style="font-size: 10px;">RTC</a> <a href="../../tags/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0/" style="font-size: 10px;">三角函数</a> <a href="../../tags/%E4%B8%AD%E4%BA%8C%E8%8A%82%E5%A5%8F/" style="font-size: 20px;">中二节奏</a> <a href="../../tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" style="font-size: 16.67px;">逆向工程</a> <a href="../../tags/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">高中数学</a>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+        <p>- Ars gratia artis. -</p>
+      
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/papers/" class="mobile-nav-link">论文</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<script src="../../js/clipboard.min.js"></script>
+
+
+<script src="../../js/jquery-1.4.3.min.js"></script>
+
+
+  
+<script src="../../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+
+
+
+<script src="../../js/script.js"></script>
+
+
+<script>
+(function(){
+  var bar = document.getElementById('reading-progress-bar');
+  var article = document.querySelector('.article-inner');
+  if (!bar || !article) return;
+
+  window.addEventListener('scroll', function(){
+    var rect = article.getBoundingClientRect();
+    var total = article.offsetHeight - window.innerHeight;
+    if (total <= 0) { bar.style.width = '0%'; return; }
+    var scrolled = -rect.top;
+    var pct = Math.min(100, Math.max(0, (scrolled / total) * 100));
+    bar.style.width = pct < 3 ? '0%' : pct + '%';
+  }, {passive: true});
+})();
+</script>
+
+
+
+
+
+
+
+  </div>
+  <script src="/js/papers.js" defer></script>
+</body>
+</html>
