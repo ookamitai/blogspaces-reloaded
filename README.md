@@ -57,13 +57,3 @@ The push to `master` triggers the **Build and publish website** workflow, which 
 Pull requests run the complete build check but do not publish. A deployment can also be rerun manually from the Actions tab with **Run workflow**.
 
 GitHub Pages serves the root of the `gh-pages` branch. The custom domain is retained through `source/CNAME`.
-
-## Paper study notes
-
-The paper notes remain available at `/papers/`, outside the main navigation. The directory follows a suggested reading order in seven stages, with keyword search, topic and evidence filters, and browser-local reading progress. `/papers/guide/` explains the prerequisites and study exercises.
-
-Notes live in `source/papers/<slug>/index.md`. Use `$...$` / `$$...$$` for LaTeX and `==important text==` for highlights. Keep independent study exercises and conjectures distinct from the paper's results. Each note states whether the original abstract or full text was checked; original excerpts and figures are preserved in a separate disclosure.
-
-`source/_data/papers.json` contains the catalog, original-source references, and reading order. When adding a note, update the catalog, its `paper_id` front matter, and the coverage ledger in `tools/check-papers.mjs` together. The site-owned views in `layouts/` are registered by `scripts/papers.js`, so no theme submodule change is needed.
-
-`npm run check` builds from scratch and validates source coverage, note routes, reading order, highlights, LaTeX, and internal links. CI runs the same command.

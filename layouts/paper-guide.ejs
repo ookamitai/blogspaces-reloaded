@@ -1,8 +1,0 @@
-<article class="papers-shell paper-note article" data-paper-guide>
-  <div class="article-inner paper-note-inner">
-    <nav class="paper-breadcrumb" aria-label="论文导航"><a href="<%- url_for('/papers/') %>">← 全部论文</a></nav>
-    <header class="paper-note-header article-header"><h1 class="article-title"><%= page.title %></h1></header>
-    <details class="paper-toc"><summary>学习路线目录</summary><%- toc(page.content, {list_number: false, max_depth: 2}) %></details>
-    <div class="article-entry paper-note-body"><%- page.content %></div>
-  </div>
-</article>
