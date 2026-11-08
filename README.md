@@ -60,7 +60,7 @@ GitHub Pages serves the root of the `gh-pages` branch. The custom domain is reta
 
 ## Paper study notes
 
-The **论文** navigation item opens `/papers/`. The directory follows a suggested reading order in seven stages, with keyword search, topic and evidence filters, and browser-local reading progress. `/papers/guide/` explains the prerequisites and study exercises.
+The paper notes remain available at `/papers/`, outside the main navigation. The directory follows a suggested reading order in seven stages, with keyword search, topic and evidence filters, and browser-local reading progress. `/papers/guide/` explains the prerequisites and study exercises.
 
 Notes live in `source/papers/<slug>/index.md`. Use `$...$` / `$$...$$` for LaTeX and `==important text==` for highlights. Keep independent study exercises and conjectures distinct from the paper's results. Each note states whether the original abstract or full text was checked; original excerpts and figures are preserved in a separate disclosure.
 
